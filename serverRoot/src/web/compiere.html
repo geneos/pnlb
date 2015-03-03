@@ -1,0 +1,112 @@
+<html>
+<head>
+<title>Compiere Application Home</title>
+<meta name="description" content="Compiere Application Home">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link href="/standard.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" type="text/javascript">
+var javawsInstalled = false;
+if (navigator.mimeTypes && navigator.mimeTypes.length)
+  javawsInstalled = navigator.mimeTypes['application/x-java-jnlp-file'];
+else
+  isIE = true;
+
+function insertLink (url, name) 
+{
+  if (javawsInstalled) 
+  {
+  }
+  else 
+  {
+    document.write("You need to install Java or configure Java Web Start");
+	document.write("<br>visit ");
+	document.write("<a href=\"http://java.sun.com/j2se/1.5.0/download.html\">" );
+	document.write("Java Installation");
+	document.write("</a><br>");
+  }
+}
+</script>
+<script language="VBScript" type="text/vbscript">
+on error resume next
+If isIE Then
+  If Not(IsObject(CreateObject("JavaWebStart.IsInstalled"))) Then
+	javawsInstalled = false
+  Else
+	javawsInstalled = true
+  End If
+End If
+</script>
+</head>
+<body>
+<h1><a href="http://www.compiere.org/" target="_blank"><img src="Compiere120x60.gif" width="120" height="60" align="right" border="0" alt="Compiere (c) Jorg Janke">
+</a>
+Compiere&#8482; 2.5.3 Home</h1>
+<p>Welcome to the Compiere Home Page! &nbsp; <a href="http://www.compiere.org/product/status.html" target="_blank">Compiere 
+  Product Status</a> - <a href="http://www.compiere.org/product/rel252.html" target="_blank">Release 
+  Notes</a>
+</p>
+<table width="100%" border="2" cellpadding="5" cellspacing="0" id="Compiere">
+  <!--DWLayoutTable-->
+  <tr> 
+    <td width="23%" valign="top"> <h2><img src="/C32.gif" alt="Compiere" width="32" height="32" align="absmiddle">Web 
+        Start</h2>
+    </td>
+    <td width="77%"> <p>
+		<a href="compiere.jnlp"><img src="webstart.jpg" width="237" height="57" border="0" align="right" alt="Compiere WebStart"></a>
+        <script language="JavaScript" type="text/javascript">
+		<!--
+		insertLink ("compiere.jnlp","Compiere Web Start");
+		// -->
+		</script>
+        Install &nbsp;<a href="http://java.sun.com/j2se/1.5.0/download.html" target="sun">Java 
+        1.5.0 JRE (Runtime)</a> and press WebStart<br>
+        Check also WebStart <a href="http://www.compiere.org/support/install/webStart.html" target="c">Details</a>.<br>
+        If you have trouble starting, try <a href="/compiereHome/compiereDirect.jnlp">this</a> 
+        (or via 
+        <a href="/applet.html">Applet</a>
+        )</p>
+    </td>
+  </tr>
+  <tr> 
+    <td><h2><img src="/C32.gif" alt="Compiere" width="32" height="32" align="absmiddle">Local 
+        Install </h2>
+    </td> 
+    <td><a href="/compiereHome/Compiere2Client.zip"><img src="zip.gif" alt="Compiere Client Zip" width="32" height="32" border="0" align="right"></a>Install 
+      &nbsp;<a href="http://java.sun.com/j2se/1.5.0/download.html" target="sun">Java
+       1.5.0 JRE (Runtime)</a>; Download and extract the Compiere Client <a href="/compiereHome/Compiere2Client.zip" title="Download Compiere Client">zip</a> 
+      file on your Client;.
+    Start Compiere via RUN_Compiere2 </td>
+  </tr>
+  <tr> 
+    <td valign="top"> <h2>Web Application</h2></td>
+    <td> <p><a href="/compiere">Compiere Application Login (</a><a href="/compiere/WStart">alternative)</a></p>
+    </td>
+  </tr>
+  <tr> 
+    <td valign="top"> <h2>Self Service</h2></td>
+    <td> <a href="/wstore/index.jsp">Web Store</a> - Send <a href="/wstore/request.jsp">Request</a></td>
+  </tr>
+  <tr> 
+    <td valign="top"> <h2>Server</h2>
+    </td>
+    <td>
+      <p><a href="/compiereMonitor">Compiere Server Managment</a>
+      <!--a href="/jmx-console" target="_blank">JBoss 3.2.3 Management Server Agent</a -->
+	  </p>
+    </td>
+  </tr>
+  <tr> 
+    <td valign="top"><h2>Compiere Support</h2></td>
+    <td>
+      <p><a href="http://www.compiere.com/" target="_blank"><img src="ComPiere150x50.gif" alt="Support from ComPiere " width="150" height="50" border="0" align="right"></a><a href="http://sourceforge.net/tracker/index.php?group_id=29057&atid=410216">Support
+           Requests</a>
+-    <a href="http://www.compiere.com/support.html">Production&nbsp;Support</a> <br>
+        <a href="http://www.compiere.com/training/index.html">Intensive&nbsp;Training</a> 
+      -      <a href="http://www.compiere.com/wstore/"><strong>Get User  Documentation</strong></a></p>
+    </td>
+  </tr>
+</table>
+<p>&copy; Copyright 2005 ComPiere, Inc. - All rights reserved - <a href="http://www.compiere.org/license.html" target="_blank">License</a> </p>
+<p><img src="http://www.web-stat.com/count.cgi?jjanke3::R251::::::R251::::0" alt="" width="1" height="1" border="0"></p>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<%--
+  - Author:  Jorg Janke
+  - Version: $Id: head.jspf,v 1.9 2005/07/18 03:53:16 jjanke Exp $
+  - Compiere ERP & CRM Smart Business Solution - Copyright (c) 1999-2004 Jorg Janke
+  - - -
+  - Web Store Head
+  --%>
+<link href="standard.css" rel="stylesheet" type="text/css"/>
+<script src="/compiere/standard.js" language="JavaScript" type="text/JavaScript"></script>
+<script src="/compiere/wstore.js" language="JavaScript" type="text/JavaScript"></script>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="Compiere Web Store">

@@ -1,0 +1,145 @@
+<!-- ============================================= -->
+<!-- XML2AD build file.                            -->
+<!--                                               -->
+<!-- Marco LOMBARDO.                               -->
+<!-- lombardo@mayking.com                          -->
+<!-- Trifon N. Trifonov                            -->
+<!-- trifonnt@yahoo.com                            -->
+<!-- ============================================= -->
+
+<project name="kompiere" default="install" basedir=".">
+
+  <description>
+    Install e-Evolution Kompiere Extensions 
+  </description>
+
+  <!-- Set global properties for this build -->
+  <property environment="env"/>
+  <property file="build.properties"/>
+  <property name="src.dir" value="src"/>
+  <property name="patch.dir" value="patch"/>
+  <property name="build.dir" value="build"/>
+  <property name="dist.dir" value="dist"/>
+  <!--property name="compiere.dir" value="${env.COMPIERE_HOME}"/-->
+  <property name="compiere.dir" value="/app/compiere/e-evolution/252d/install/build/Compiere2"/>	
+  <property name="jar.path.dir" value="${compiere.dir}/lib"/>
+  <property name="jar.name" value="XML2AD"/>
+  
+  <!-- Value of this properties could be overriden by property specified on command line -->
+  <property name="model.file" value="../tmp/model/model.xml"/>
+  <property name="view.file" value="../tmp/view/view.xml"/>
+  <property name="data.file" value="../tmp/data/data.xml"/>
+  
+  <!-- Set path to include the necessary jar files for javac -->
+  <path id="project.classpath">
+  	<pathelement path="../lib/XML2AD.jar"/>
+  	<pathelement path="../lib/xercesImpl.jar"/>
+    <pathelement path="${compiere.dir}/lib/Compiere.jar"/>
+  	<pathelement path="${compiere.dir}/lib/Compiere.jar"/>
+    <pathelement path="${compiere.dir}/lib/CompiereCLib.jar"/>
+    <pathelement path="${compiere.dir}/lib/CSTools.jar"/>
+    <pathelement path="${compiere.dir}/lib/oracle.jar"/>
+  	<pathelement path="${compiere.dir}/lib/postgresql.jar"/>
+    <pathelement path="${compiere.dir}/lib/jboss.jar"/>
+    <pathelement path="${compiere.dir}/lib/CClient.jar"/> <!-- Version 2.5.1x -->
+    <pathelement path="${build.dir}"/>
+  </path>
+
+  <echo>compiere.dir = ${compiere.dir}</echo>
+  <echo>project.classpath = ${project.classpath}</echo>
+
+  <target name="install" depends="tmp,createDB,alterDB,model">  	
+  	<unjar src="${extension}" dest="../tmp" />
+  </target>
+	
+  <target name="tmp">  	
+	  	<unjar src="${extension}" dest="../tmp" />
+  </target>
+
+  <target name="createDB">
+    <sql
+      driver="${jdbc}"
+      url="${dburl}${dbhost}:${dbport}:${dbname}"
+      userid="${dbusername}"
+      password="${dbpassword}"
+      src="../tmp/model/create.sql"
+      print="yes"
+      output="crete.log"
+      onerror="continue"
+    >
+      <classpath>
+	    <pathelement location="${compiere.dir}/lib/oracle.jar:${compiere.dir}/lib/postgresql.jar"/>
+      </classpath>
+    </sql>
+  </target>
+  
+  <target name="alterDB">
+    <sql
+      driver="${jdbc}"
+      url="${dburl}${dbhost}:${dbport}:${dbname}"
+      userid="${dbusername}"
+      password="${dbpassword}"
+      src="../tmp/model/alter.sql"
+      print="yes"
+      output="alter.log"
+      onerror="continue"
+    >
+      <classpath>
+	    <pathelement location="${compiere.dir}/lib/oracle.jar:${compiere.dir}/lib/postgresql.jar"/>
+      </classpath>
+    </sql>
+  </target>
+
+ 
+  <target name="model">
+    <java classname="org.compiere.compilo.XML2AD">
+      <arg value="${model.file}"/>
+      <arg value="${db}"/>
+      <arg value="${dbhost}"/>
+      <arg value="${dbport}"/>
+      <arg value="${dbname}"/>
+      <arg value="${dbusername}"/>
+      <arg value="${dbpassword}"/>
+      <classpath refid="project.classpath"/>    	
+    </java>
+  </target>
+
+  <target name="view">
+    <java classname="org.compiere.compilo.XML2AD">
+      <arg value="${view.file}"/>
+      <arg value="${db}"/>	
+      <arg value="${dbhost}"/>
+      <arg value="${dbport}"/>
+      <arg value="${dbname}"/>
+      <arg value="${dbusername}"/>
+      <arg value="${dbpassword}"/>
+      <classpath refid="project.classpath"/>
+    </java>
+  </target>
+
+  <target name="data">
+    <java classname="org.compiere.compilo.XML2AD">
+      <arg value="${data.file}"/>
+      <arg value="${db}"/>	
+      <arg value="${dbhost}"/>
+      <arg value="${dbport}"/>
+      <arg value="${dbname}"/>
+      <arg value="${dbusername}"/>
+      <arg value="${dbpassword}"/>
+      <classpath refid="project.classpath"/>
+    </java>
+  </target>
+
+  <target name="clean">
+    <!-- Delete the ${build.dir} directory tree -->
+    <delete dir="../tmp"/>
+    <!--delete file="${dist.dir}/${jar.name}.jar" failonerror="false"/-->
+  </target>
+
+</project>
+
+<!-- Marco LOMBARDO, 2004-08-07, Italy.            -->
+<!-- lombardo@mayking.com                          -->
+<!-- Trifon N. Trifonov                            -->
+<!-- trifonnt@yahoo.com                            -->
+

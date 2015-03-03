@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<database name="Compilo-XML2AD" build="332" date="2005-12-16 12:16:01">
+	<table name="QM_Specification">
+		<field name="QM_Specification_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="AD_Client_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="AD_Org_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="IsActive" type="YesNo" sqlType="CHAR(1)">
+			<attrib name="Def" value="'Y' "/>
+			<attrib name="NotN"/>
+		</field>
+		<field name="Created" type="DATE" sqlType="DATE">
+			<attrib name="Def" value="SYSDATE "/>
+			<attrib name="NotN"/>
+		</field>
+		<field name="CreatedBy" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="Updated" type="DATE" sqlType="DATE">
+			<attrib name="Def" value="SYSDATE "/>
+			<attrib name="NotN"/>
+		</field>
+		<field name="UpdatedBy" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="Value" type="Value40" sqlType="NVARCHAR2(40)"/>
+		<field name="Name" type="Name60" sqlType="NVARCHAR2(60)"/>
+		<field name="Description" type="Description255" sqlType="NVARCHAR2(255)"/>
+		<field name="M_Product_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="MPC_Product_BOM_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="AD_Workflow_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="M_AttributeSet_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="ValidFrom" type="DATE" sqlType="DATE"/>
+		<field name="ValidTo" type="DATE" sqlType="DATE"/>
+	</table>
+	<table name="QM_SpecificationLine">
+		<field name="QM_SpecificationLine_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="AD_Client_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="AD_Org_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="IsActive" type="YesNo" sqlType="CHAR(1)">
+			<attrib name="Def" value="'Y' "/>
+			<attrib name="NotN"/>
+		</field>
+		<field name="Created" type="DATE" sqlType="DATE">
+			<attrib name="Def" value="SYSDATE "/>
+			<attrib name="NotN"/>
+		</field>
+		<field name="CreatedBy" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="Updated" type="DATE" sqlType="DATE">
+			<attrib name="Def" value="SYSDATE "/>
+			<attrib name="NotN"/>
+		</field>
+		<field name="UpdatedBy" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="SeqNo" type="NUMBER22" sqlType="NUMBER(22)"/>
+		<field name="M_Attribute_ID" type="ID" sqlType="NUMBER(10,0)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="ValidFrom" type="DATE" sqlType="DATE"/>
+		<field name="ValidTo" type="DATE" sqlType="DATE"/>
+		<field name="AndOr" type="Char1" sqlType="CHAR(1)">
+			<attrib name="Def" value="O"/>
+			<attrib name="NotN"/>
+		</field>
+		<field name="Value" type="Value40" sqlType="NVARCHAR2(40)"/>
+		<field name="Operation" type="CHAR2" sqlType="CHAR(2)">
+			<attrib name="NotN"/>
+		</field>
+		<field name="Value2" type="Value40" sqlType="NVARCHAR2(40)"/>
+		<field name="QM_Specification_ID" type="QM_Specification(QM_Specification_ID)" sqlType="NUMBER(10,0)"/>
+	</table>
+</database>

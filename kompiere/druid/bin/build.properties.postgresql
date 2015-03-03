@@ -1,0 +1,17 @@
+#jdbc=org.postgresql.Driver
+#db=PostgreSQL
+#dburl=jdbc:postgresql://
+#dbhost=vpj
+#dbport=5432
+#dbname=kompiere
+#dbusername=compiere
+#dbpassword=compiere
+
+jdbc=oracle.jdbc.OracleDriver
+db=Oracle
+dburl=jdbc:oracle:thin:@
+dbhost=database
+dbport=1521
+dbname=propalma
+dbusername=compiere
+dbpassword=compiere

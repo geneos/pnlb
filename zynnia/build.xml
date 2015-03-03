@@ -1,0 +1,113 @@
+<!-- ============================================= -->
+<!-- Client                                        -->
+<!-- ============================================= -->
+
+<project name="zynnia_ext" default="dist" basedir=".">
+
+  <description>
+    This buildfile is used to build the zynnia_ext subproject within 
+    the Compiere project.
+  </description>
+
+  <!-- set global properties for this build -->
+  <property name="src" value="src"/>
+  <property name="build.dir" value="build"/>
+  <property name="dist.dir" value="../lib"/>
+  <property name="jar.path" value="../lib"/>
+  <property name="jar.name" value="ZynCompiere"/>
+  <property environment="env"/>
+
+  <!-- set path to include the necessary jar files for javac -->
+  <path id="project.class.path">
+    <pathelement path="${classpath}"/>
+    <pathelement path="../lib/CCTools.jar"/>
+    <pathelement path="../lib/CSTools.jar"/>
+    <pathelement path="../lib/Compiere.jar"/>
+	<pathelement path="../lib/jxl.jar"/>
+	<pathelement path="../lib/iText-5.0.6.jar"/>
+	<pathelement path="../lib/jasperreports-1.2.0.jar"/>  
+	<pathelement path="../lib/miniTemplator.jar"/>
+	<pathelement path="../JasperReports/CompiereJasper.jar"/>    
+	<pathelement path="../lib/commons-httpclient-3.1.jar"/>
+  </path>  
+  <target name="init" description="initialization target">
+    <echo message="=========== Build Manufacturing ZynCompiere"/>
+    <!-- create the time stamp -->
+    <tstamp/>
+    <!-- create the build directory structure used by compile -->
+    <mkdir dir="${build.dir}"/>
+    <!-- check for the distribution directory -->
+    <available file="${dist.dir}" type="dir" property="dist.dir.exists"/>
+
+    <uptodate property="jar.uptodate"
+		targetfile="${dist.dir}/${jar.name}.jar">
+      <srcfiles dir="${src}" includes="**/*.java"/>
+    </uptodate>
+  </target>
+
+  <target name="makedir" depends="init" unless="dist.dir.exists">
+    <!-- create the distribution directory if not available -->
+    <mkdir dir="${dist.dir}"/>
+  </target>
+  
+
+  <!-- =========================================== -->
+  <!-- Compile                                     -->
+  <!-- =========================================== -->
+  <target name="compile" depends="makedir">
+    <!-- compile the java code from ${src} into ${build.dir} -->
+    <javac srcdir="${src}" destdir="${build.dir}" deprecation="on" debug="on">
+      <classpath refid="project.class.path"/>
+    </javac>
+    <!-- copy all image & sound files from src to the build directory -->
+    <copy todir="${build.dir}">
+      <fileset dir="${src}">
+        <!--include name="**/images/*"/-->
+        <include name="**/*.gif"/>
+        <!--include name="**/*.jpg"/-->
+        <!--include name="**/*.wav"/-->
+        <!--include name="**/*.htm"/-->
+        <!--include name="**/*.html"/-->
+        <!--include name="**/*.properties"/-->
+        <!--exclude name="**/package.html"/-->
+      </fileset>
+    </copy>
+  </target>
+
+
+  <!-- =========================================== -->
+  <!-- Distribution                                -->
+  <!-- =========================================== -->
+  <target name="dist" depends="compile" unless="jar.uptodate">
+  	<!--unjar src="lib/bcprov-jdk15-128.jar" dest="${build.dir}"/-->  	
+    <!-- put everything from ${build.dir} into the ${jar.name}.jar file -->
+    <jar
+	  jarfile="${dist.dir}/${jar.name}.jar" 
+	  basedir="${build.dir}" 
+	  excludes="**/*.jbx"
+	  index="yes">
+      <manifest>
+        <attribute name="Specification-Title" value="ZynCompiere"/>
+        <attribute name="Specification-Version" value="${env.COMPIERE_VERSION}"/>
+        <attribute name="Specification-Vendor" value="(C) 2011 Zynnia"/>
+        <attribute name="Implementation-Title" value="Kompiere ${env.COMPIERE_VERSION}"/>
+        <attribute name="Implementation-Version" value="${env.COMPIERE_VERSION} ${DSTAMP}-${TSTAMP}"/>
+        <attribute name="Implementation-Vendor" value="${env.COMPIERE_VENDOR}"/> 
+        <attribute name="Implementation-URL" value="http://www.zynnia.net"/>
+        <attribute name="Main-Class" value="org.compiere.Compiere"/>
+        <attribute name="Class-Path" value="CCTools.jar oracle.jar postgresql.jar"/>
+      </manifest> 
+    </jar>
+
+      
+  </target>
+
+
+  <target name="clean">
+    <!-- Delete the ${build.dir} directory trees -->
+    <delete dir="${build.dir}"/>
+    <delete file="${dist.dir}/${jar.name}.jar" failonerror="false"/>
+    <delete file="../jboss/server/compiere/deploy/${jar.name}.jar" failonerror="false"/>
+  </target>
+
+</project>

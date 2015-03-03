@@ -1,0 +1,6 @@
+oracle.host=HOST
+oracle.port=1521
+oracle.sid=SID
+oracle.search=orcl
+oracle.username=USER_NAME
+oracle.password=PASSWORD

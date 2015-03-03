@@ -1,0 +1,125 @@
+Index: build.xml
+===================================================================
+RCS file: /cvsroot/compiere/client/build.xml,v
+retrieving revision 1.25
+diff -u -r1.25 build.xml
+--- build.xml	22 Jan 2005 21:49:31 -0000	1.25
++++ build.xml	4 Mar 2005 21:37:10 -0000
+@@ -94,6 +94,7 @@
+     <unjar src="..\print\Print.jar" dest="${build.dir}" />
+     <unjar src="..\extend\Extend.jar" dest="${build.dir}" />
+     <unjar src="..\interfaces\Interfaces.jar" dest="${build.dir}" />
++  	<unjar src="..\jasperreports\CompiereJasper.jar" dest="${build.dir}" />
+     <delete dir="${build.dir}/META-INF"/>
+ 
+     <!-- put everything from ${build.dir} into Compiere.jar file -->
+
+Index: .classpath
+===================================================================
+RCS file: /cvsroot/compiere/dbPort/.classpath,v
+retrieving revision 1.11
+diff -u -r1.11 .classpath
+--- .classpath	14 Feb 2005 02:23:50 -0000	1.11
++++ .classpath	4 Mar 2005 21:37:40 -0000
+@@ -12,8 +12,8 @@
+ 	<classpathentry kind="var" path="ORACLE"/>
+ 	<classpathentry sourcepath="/JTDS_SOURCE" kind="var" path="SYBASE"/>
+ 	<classpathentry kind="var" path="ROWSET"/>
+-	<classpathentry sourcepath="/JTDS_SOURCE" kind="var" path="JTDS"/>
+ 	<classpathentry kind="lib" path="/tools/lib/jconn3.jar"/>
+ 	<classpathentry kind="lib" path="/tools/lib/ocrs12.jar"/>
++	<classpathentry kind="var" path="JTDS"/>
+ 	<classpathentry kind="output" path="lib"/>
+ </classpath>
+Index: build.xml
+===================================================================
+RCS file: /cvsroot/compiere/install/build.xml,v
+retrieving revision 1.34
+diff -u -r1.34 build.xml
+--- build.xml	14 Feb 2005 02:25:09 -0000	1.34
++++ build.xml	4 Mar 2005 21:41:09 -0000
+@@ -147,6 +147,7 @@
+ 	<copy file="${launch.dir}/Release/Compiere2.exe" todir="${build.dir}/Compiere2/lib"/>
+ 	<copy file="CInstall.jar" todir="${build.dir}/Compiere2/lib"/>
+ 	<copy file="../sqlj/sqlj.jar" todir="${build.dir}/Compiere2/lib"/>
++  	<copy file="../JasperReports/CompiereJasperReqs.jar" todir="${build.dir}/Compiere2/lib"/>
+ 	<concat destfile="${build.dir}/Compiere2/lib/index.html">CompiereHome</concat>
+ 
+ 
+Index: Compiere2/build.xml
+===================================================================
+RCS file: /cvsroot/compiere/install/Compiere2/build.xml,v
+retrieving revision 1.30
+diff -u -r1.30 build.xml
+--- Compiere2/build.xml	31 Jan 2005 06:08:15 -0000	1.30
++++ Compiere2/build.xml	4 Mar 2005 21:41:10 -0000
+@@ -196,8 +196,12 @@
+       storepass="${COMPIERE_KEYSTOREPASS}" keystore="${COMPIERE_KEYSTORE}" />
+       	
+     <delete dir="buildSLib" />
+-  </target>
+ 	
++    <!-- Sign CompiereJasperReqs.jar for Java Web Start	-->
++    <signjar jar="lib/CompiereJasperReqs.jar"
++      alias="${COMPIERE_KEYSTORECODEALIAS}"
++      storepass="${COMPIERE_KEYSTOREPASS}" keystore="${COMPIERE_KEYSTORE}" />	
++  </target>
+ 	
+   <!-- ==================================================== -->
+   <!-- Setup Lib                                            -->
+@@ -223,7 +227,7 @@
+ 	  <zipfileset dir="utils" prefix="Compiere2"
+ 	  	includes="WinEnv.js"/>
+ 	  <zipfileset dir="lib" prefix="Compiere2/lib"
+-		includes="Compiere2.exe,*.ico,Compiere.jar,CompiereCLib.jar,compiereDirect.jnlp,index.html,*.0"/>
++		includes="Compiere2.exe,*.ico,Compiere.jar,CompiereJasperReqs.jar,CompiereCLib.jar,compiereDirect.jnlp,index.html,*.0"/>
+ 	</zip>
+ 
+ 	<!--	Save properties		-->
+@@ -246,7 +250,7 @@
+ 		<zipfileset src="${basedir}/lib/compiereRootBase.war" />
+ 		<!-- copy to compiereHome	-->
+ 		<zipfileset dir="${basedir}/lib" 
+-			includes="Compiere2Client.zip,Compiere.jar,CompiereCLib.jar,*.jnlp,*.0,*.html"
++			includes="Compiere2Client.zip,CompiereJasperReqs.jar, Compiere.jar,CompiereCLib.jar,*.jnlp,*.0,*.html"
+ 			prefix="compiereHome"/>
+ 	</zip>
+ 
+Index: src/web/compiere.jnlp
+===================================================================
+RCS file: /cvsroot/compiere/serverRoot/src/web/compiere.jnlp,v
+retrieving revision 1.19
+diff -u -r1.19 compiere.jnlp
+--- src/web/compiere.jnlp	26 Feb 2005 17:56:55 -0000	1.19
++++ src/web/compiere.jnlp	4 Mar 2005 21:41:56 -0000
+@@ -16,6 +16,7 @@
+ 	<resources>
+ 		<j2se version = "1.4*" href = "http://java.sun.com/products/autodl/j2se" initial-heap-size = "32m" max-heap-size = "512m"/>
+ 		<jar href = "Compiere.jar" main = "true" download = "eager"/>
++		<jar href = "CompiereJasperReqs.jar" main = "false" download = "eager"/>
+ 		<jar href = "CompiereCLib.jar" main = "false" download = "eager"/>
+ 	</resources>  
+ 	<application-desc main-class = "org.compiere.Compiere"/>  
+Index: build.xml
+===================================================================
+RCS file: /cvsroot/compiere/utils_dev/build.xml,v
+retrieving revision 1.27
+diff -u -r1.27 build.xml
+--- build.xml	4 Sep 2004 06:25:35 -0000	1.27
++++ build.xml	4 Mar 2005 21:43:35 -0000
+@@ -22,6 +22,7 @@
+ 		<ant inheritAll="false" dir="print"/>
+ 		<ant inheritAll="false" dir="base"/>
+ 		<ant inheritAll="false" dir="extend"/>
++		<ant inheritAll="false" dir="jasperreports"/>
+ 		<ant inheritAll="false" dir="client"/>
+ 		<ant inheritAll="false" dir="serverRoot"/>
+ 		<ant inheritAll="false" dir="serverApps"/>
+@@ -35,6 +36,7 @@
+ 		<ant inheritAll="false" dir="dbPort" target="clean"/>
+ 		<ant inheritAll="false" dir="base" target="clean"/>
+ 		<ant inheritAll="false" dir="extend" target="clean"/>
++		<ant inheritAll="false" dir="jasperreports" target="clean"/>
+ 		<ant inheritAll="false" dir="client" target="clean"/>
+ 		<ant inheritAll="false" dir="serverRoot" target="clean"/>
+ 		<ant inheritAll="false" dir="serverApps" target="clean"/>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<database name="PostgreSQL db" build="237" date="2005-09-04 21:06:36">
+	<table name="AD_FieldGroup">
+		<field name="IsTab" type="YesNo" sqlType="CHAR(1)" ddEquiv="">
+			<attrib name="NotN"/>
+			<attrib name="Def" value="N"/>
+		</field>
+	</table>
+	<table name="AD_Field">
+		<field name="Included_Tab_ID" type="ID" sqlType="decimal(10,0)" ddEquiv=""/>
+	</table>
+</database>
+<!--compiereAD>
+<window name = "Field Group">
+		<tab name="Field group" tablename="AD_FieldGroup" syncfields="N">
+			<field name="IsTab" columnname="IsTab" isDisplayed="Y" isSameLine="" displayLength="" defaultValue="" />
+		</tab>
+	</window>
+	<window name = "Window, Tab and Field">
+		<tab name="Field" tablename="AD_Field" syncfields="N">
+			<field name="Included_Tab_ID" columnname="Included_Tab_ID" isDisplayed="Y" isSameLine="" displayLength="" defaultValue="" />
+		</tab>
+</window>
+</compiereAD-->
+

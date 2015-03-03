@@ -1,0 +1,258 @@
+/** Generated Model - DO NOT CHANGE - Copyright (C) 1999-2005 Jorg Janke */
+package org.compiere.model;
+
+import java.util.*;
+import java.sql.*;
+import java.math.*;
+import org.compiere.util.*;
+
+/**
+ * Generated Model for C_CommissionDetail
+ * 
+ * @author Jorg Janke (generated)
+ * @version Release 2.5.3b - 2008-04-04 14:05:59.125
+ */
+public class X_C_CommissionDetail extends PO {
+	/** Standard Constructor */
+	public X_C_CommissionDetail(Properties ctx, int C_CommissionDetail_ID,
+			String trxName) {
+		super(ctx, C_CommissionDetail_ID, trxName);
+		/**
+		 * if (C_CommissionDetail_ID == 0) { setActualAmt (Env.ZERO);
+		 * setActualQty (Env.ZERO); setC_CommissionAmt_ID (0);
+		 * setC_CommissionDetail_ID (0); setC_Currency_ID (0); setConvertedAmt
+		 * (Env.ZERO); }
+		 */
+	}
+
+	/** Load Constructor */
+	public X_C_CommissionDetail(Properties ctx, ResultSet rs, String trxName) {
+		super(ctx, rs, trxName);
+	}
+
+	/** TableName=C_CommissionDetail */
+	public static final String Table_Name = "C_CommissionDetail";
+
+	/** AD_Table_ID */
+	public int Table_ID;
+
+	protected KeyNamePair Model;
+
+	/** Load Meta Data */
+	protected POInfo initPO(Properties ctx) {
+		POInfo info = initPO(ctx, Table_Name);
+		Table_ID = info.getAD_Table_ID();
+		Model = new KeyNamePair(Table_ID, Table_Name);
+		return info;
+	}
+
+	protected BigDecimal accessLevel = new BigDecimal(1);
+
+	/** AccessLevel 1 - Org */
+	protected int get_AccessLevel() {
+		return accessLevel.intValue();
+	}
+
+	public String toString() {
+		StringBuffer sb = new StringBuffer("X_C_CommissionDetail[").append(
+				get_ID()).append("]");
+		return sb.toString();
+	}
+
+	/**
+	 * Set Actual Amount. The actual amount
+	 */
+	public void setActualAmt(BigDecimal ActualAmt) {
+		if (ActualAmt == null)
+			throw new IllegalArgumentException("ActualAmt is mandatory.");
+		set_Value("ActualAmt", ActualAmt);
+	}
+
+	/**
+	 * Get Actual Amount. The actual amount
+	 */
+	public BigDecimal getActualAmt() {
+		BigDecimal bd = (BigDecimal) get_Value("ActualAmt");
+		if (bd == null)
+			return Env.ZERO;
+		return bd;
+	}
+
+	/**
+	 * Set Actual Quantity. The actual quantity
+	 */
+	public void setActualQty(BigDecimal ActualQty) {
+		if (ActualQty == null)
+			throw new IllegalArgumentException("ActualQty is mandatory.");
+		set_Value("ActualQty", ActualQty);
+	}
+
+	/**
+	 * Get Actual Quantity. The actual quantity
+	 */
+	public BigDecimal getActualQty() {
+		BigDecimal bd = (BigDecimal) get_Value("ActualQty");
+		if (bd == null)
+			return Env.ZERO;
+		return bd;
+	}
+
+	/**
+	 * Set Commission Amount. Generated Commission Amount
+	 */
+	public void setC_CommissionAmt_ID(int C_CommissionAmt_ID) {
+		if (C_CommissionAmt_ID < 1)
+			throw new IllegalArgumentException(
+					"C_CommissionAmt_ID is mandatory.");
+		set_ValueNoCheck("C_CommissionAmt_ID", new Integer(C_CommissionAmt_ID));
+	}
+
+	/**
+	 * Get Commission Amount. Generated Commission Amount
+	 */
+	public int getC_CommissionAmt_ID() {
+		Integer ii = (Integer) get_Value("C_CommissionAmt_ID");
+		if (ii == null)
+			return 0;
+		return ii.intValue();
+	}
+
+	/**
+	 * Set Commission Detail. Supporting information for Commission Amounts
+	 */
+	public void setC_CommissionDetail_ID(int C_CommissionDetail_ID) {
+		if (C_CommissionDetail_ID < 1)
+			throw new IllegalArgumentException(
+					"C_CommissionDetail_ID is mandatory.");
+		set_ValueNoCheck("C_CommissionDetail_ID", new Integer(
+				C_CommissionDetail_ID));
+	}
+
+	/**
+	 * Get Commission Detail. Supporting information for Commission Amounts
+	 */
+	public int getC_CommissionDetail_ID() {
+		Integer ii = (Integer) get_Value("C_CommissionDetail_ID");
+		if (ii == null)
+			return 0;
+		return ii.intValue();
+	}
+
+	/**
+	 * Set Currency. The Currency for this record
+	 */
+	public void setC_Currency_ID(int C_Currency_ID) {
+		if (C_Currency_ID < 1)
+			throw new IllegalArgumentException("C_Currency_ID is mandatory.");
+		set_Value("C_Currency_ID", new Integer(C_Currency_ID));
+	}
+
+	/**
+	 * Get Currency. The Currency for this record
+	 */
+	public int getC_Currency_ID() {
+		Integer ii = (Integer) get_Value("C_Currency_ID");
+		if (ii == null)
+			return 0;
+		return ii.intValue();
+	}
+
+	/**
+	 * Set Invoice Line. Invoice Detail Line
+	 */
+	public void setC_InvoiceLine_ID(int C_InvoiceLine_ID) {
+		if (C_InvoiceLine_ID <= 0)
+			set_ValueNoCheck("C_InvoiceLine_ID", null);
+		else
+			set_ValueNoCheck("C_InvoiceLine_ID", new Integer(C_InvoiceLine_ID));
+	}
+
+	/**
+	 * Get Invoice Line. Invoice Detail Line
+	 */
+	public int getC_InvoiceLine_ID() {
+		Integer ii = (Integer) get_Value("C_InvoiceLine_ID");
+		if (ii == null)
+			return 0;
+		return ii.intValue();
+	}
+
+	/**
+	 * Set Sales Order Line. Sales Order Line
+	 */
+	public void setC_OrderLine_ID(int C_OrderLine_ID) {
+		if (C_OrderLine_ID <= 0)
+			set_ValueNoCheck("C_OrderLine_ID", null);
+		else
+			set_ValueNoCheck("C_OrderLine_ID", new Integer(C_OrderLine_ID));
+	}
+
+	/**
+	 * Get Sales Order Line. Sales Order Line
+	 */
+	public int getC_OrderLine_ID() {
+		Integer ii = (Integer) get_Value("C_OrderLine_ID");
+		if (ii == null)
+			return 0;
+		return ii.intValue();
+	}
+
+	/**
+	 * Set Converted Amount. Converted Amount
+	 */
+	public void setConvertedAmt(BigDecimal ConvertedAmt) {
+		if (ConvertedAmt == null)
+			throw new IllegalArgumentException("ConvertedAmt is mandatory.");
+		set_Value("ConvertedAmt", ConvertedAmt);
+	}
+
+	/**
+	 * Get Converted Amount. Converted Amount
+	 */
+	public BigDecimal getConvertedAmt() {
+		BigDecimal bd = (BigDecimal) get_Value("ConvertedAmt");
+		if (bd == null)
+			return Env.ZERO;
+		return bd;
+	}
+
+	/**
+	 * Set Info. Information
+	 */
+	public void setInfo(String Info) {
+		if (Info != null && Info.length() > 60) {
+			log.warning("Length > 60 - truncated");
+			Info = Info.substring(0, 59);
+		}
+		set_Value("Info", Info);
+	}
+
+	/**
+	 * Get Info. Information
+	 */
+	public String getInfo() {
+		return (String) get_Value("Info");
+	}
+
+	/**
+	 * Set Reference. Reference for this record
+	 */
+	public void setReference(String Reference) {
+		if (Reference != null && Reference.length() > 60) {
+			log.warning("Length > 60 - truncated");
+			Reference = Reference.substring(0, 59);
+		}
+		set_Value("Reference", Reference);
+	}
+
+	/**
+	 * Get Reference. Reference for this record
+	 */
+	public String getReference() {
+		return (String) get_Value("Reference");
+	}
+
+	public KeyNamePair getKeyNamePair() {
+		return new KeyNamePair(get_ID(), getReference());
+	}
+}

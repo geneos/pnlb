@@ -1,0 +1,6 @@
+*** 2006-06-02 18:53:36.468 Compiere Log (CLogConsole) ***
+18:53:36.468 Compiere.startup: Compiere(r) Release 2.5.3b_2006-01-20 - Smart ERP & CRM - (c) 1999-2006 Compiere (r); Implementation: Custom 20060602-1438 - Unsupported
+18:53:36.468 Compiere.startup: C:\chile\install\build\Compiere2 - Java HotSpot(TM) Client VM 1.5.0_05-b05 - Windows XP 5.1 Service Pack 2
+18:53:45.453 Ini.loadProperties: C:\Documents and Settings\fjviejo\Compiere.properties #34
+
+*** 2006-06-02 18:59:47.109 Compiere Log (CLogConsole) ***

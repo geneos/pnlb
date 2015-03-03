@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<database name="PostgreSQL db" build="237" date="2005-09-04 21:06:36">
+	<table name="AD_FieldGroup">
+		<field name="IsTab" type="Yes-No" sqlType="CHAR(1)" ddEquiv="">
+			<attrib name="NotN"/>
+		</field>
+	</table>
+	<table name="AD_Field">
+		<field name="Included_Tab_ID" type="ID" sqlType="decimal(10,0)" ddEquiv="">
+			<attrib name="Reference" value="Table"/>
+			<attrib name="Reference Value" value="AD_Tab"/>
+			<attrib name="Dynamic Validation" value="AD_Tab in Window"/>
+		</field>
+	</table>
+</database>
+

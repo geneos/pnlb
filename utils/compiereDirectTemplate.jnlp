@@ -1,0 +1,44 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<jnlp spec = "1.5+" version = "2.5.3" 
+	codebase = "http://@COMPIERE_APPS_SERVER@/compiereHome" 
+	href = "http://@COMPIERE_APPS_SERVER@/compiereHome/compiereDirect.jnlp">  
+	<information>
+                <!--begin vpj-cd e-evolution 05/11/2005 -->
+		<!--title>Compiere Client 2.5.3 @COMPIERE_APPS_SERVER@ Direct</title-->
+		<!--vendor>ComPiere, Inc.</vendor-->
+		<!--homepage href = "http://www.compiere.org"/-->
+		<!--offline-allowed/-->
+		<!--description>Compiere ERP+CRM (local) - Smart Business Solution for Distribution and Service - globally</description-->
+		<!--description kind = "short">Compiere ERP+CRM (local)</description-->
+		<!--description kind = "one-line">Compiere ERP+CRM</description-->
+		<!--description kind = "tooltip">Compiere ERP+CRM (Local Release)</description-->
+		<!--icon href = "http://@COMPIERE_APPS_SERVER@/C32.gif"/-->
+		<title>Solution Kompiere Libero base Compiere Client 2.5.3 @COMPIERE_APPS_SERVER@ Direct</title>
+		<vendor>ComPiere, Inc. & e-Evolution</vendor>
+		<homepage href = "http://www.e-evolution.com.org"/>
+		<offline-allowed/>
+		<description>Solution Kompiere Libero base Compiere ERP+CRM (local) - Smart Business Solution for Distribution and Service - globally</description>
+		<description kind = "short">Solution Kompiere Libero base Compiere ERP+CRM (local)</description>
+		<description kind = "one-line">Solution Kompiere Libero base Compiere ERP+CRM</description>
+		<description kind = "tooltip">Solution Kompiere Libero base Compiere ERP+CRM (Local Release)</description>
+		<icon href = "http://@COMPIERE_APPS_SERVER@/C32.gif"/>
+                <!--end vpj-cd e-evolution 30/03/2005 -->
+		<shortcut online="false">
+			<desktop/>
+			<menu submenu="Compiere 2.5.3"/>
+		</shortcut>
+	</information>  
+	<resources>
+		<j2se version = "1.5+" href = "http://java.sun.com/products/autodl/j2se" initial-heap-size = "32m" max-heap-size = "512m"/>
+		<jar href = "Compiere.jar" main = "true" download = "eager"/>
+		<jar href = "CompiereCLib.jar" main = "false" download = "eager"/>
+		<!--begin vpj-cd e-evolution 30/03/2005 -->
+		<jar href = "Kompiere.jar" main = "false" download = "eager"/>
+		<!--end vpj-cd e-evolution 30/03/2005 -->
+		<property name="compiereJNLP" value="@COMPIERE_APPS_SERVER@"/> 
+	</resources>  
+	<application-desc main-class = "org.compiere.Compiere"/>  
+	<security>
+		<all-permissions/>  
+	</security>
+</jnlp>

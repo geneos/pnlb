@@ -1,0 +1,14 @@
+<%--
+  - Author:  Jorg Janke
+  - Version: $Id: footer.jspf,v 1.8 2004/11/06 05:34:32 jjanke Exp $
+  - Compiere ERP & CRM Smart Business Solution - Copyright (c) 1999-2004 Jorg Janke
+  - - -
+  - Web Store Footer
+  --%>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="footerTable">
+  <tr>
+    <td class="footerLeft" align="left"><c:out value='${ctx.webParam4}' escapeXml='false'/>&nbsp;</td>
+    <td class="footerCenter"><c:out value='${ctx.webParam5}' escapeXml='false'/>&nbsp;</td>
+    <td class="footerRight" align="right"><c:out value='${ctx.webParam6}' escapeXml='false'/>&nbsp;</td>
+  </tr>
+</table>

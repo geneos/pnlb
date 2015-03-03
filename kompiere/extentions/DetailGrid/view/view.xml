@@ -1,0 +1,13 @@
+<compiereAD>
+<window name = "Field Group">
+<tab name="Field group" tablename="AD_FieldGroup" syncfields="N">
+  <field name="IsTab" columnname="IsTab" isDisplayed="Y" isSameLine="Y" seqNo="60" displayLength="1" defaultValue="" />
+</tab>
+</window>
+<window name = "Window, Tab and Field">
+<tab name="Field" tablename="AD_Field" syncfields="N">
+  <field name="Included_Tab_ID" columnname="Included_Tab_ID" isDisplayed="Y"  displayLength="22" defaultValue="" seqNo="75" isSameLine="Y"/>
+</tab>
+</window>
+</compiereAD>
+

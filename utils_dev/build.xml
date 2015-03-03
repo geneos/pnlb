@@ -1,0 +1,103 @@
+<!-- ================================================ -->
+<!-- Compiere Build                                   -->
+<!-- ================================================ -->
+<!-- $Header: /cvsroot/compiere/utils_dev/build.xml,v 1.29 2005/09/06 02:46:26 jjanke Exp $ -->
+<project name="compiere" default="complete" basedir="../">
+        <description>
+    This buildfile is used to build the Compiere system.
+  </description>
+        <!-- set global properties for this build -->
+        <property environment="env"/>
+        <property name="src" value="src"/>
+        <property name="build.dir" value="build"/>
+        <target name="init" description="initialization target">
+                <echo message="=========== Build Compiere"/>
+                <!-- Create the time stamp -->
+                <tstamp/>
+        </target>
+        <target name="build" depends="init">
+                <ant inheritAll="false" dir="tools"/>
+                <ant inheritAll="false" dir="looks"/>
+                <ant inheritAll="false" dir="dbPort"/>
+                <ant inheritAll="false" dir="print"/>
+                <ant inheritAll="false" dir="base"/>
+                <ant inheritAll="false" dir="extend"/>
+                <ant inheritAll="false" dir="sqlj"/>
+                <ant inheritAll="false" dir="client"/>
+                <!-- begin vpj-cd e-Evolution CMPCS -->
+                <ant inheritAll="false" dir="JasperReports"/>
+                <ant inheritAll="false" dir="kompiere"/>
+                <!-- end vpj-cd e-Evolution CMPCS -->
+                <!-- Zynnia Package -->
+                <ant inheritAll="false" dir="zynnia"/>
+                <ant inheritAll="false" dir="serverRoot"/>
+                <ant inheritAll="false" dir="serverApps"/>
+                <ant inheritAll="false" dir="webStore"/>
+               
+                <ant inheritAll="false" dir="install"/>        
+        </target>
+        <target name="clean">
+                <ant inheritAll="false" dir="tools" target="clean"/>
+                <ant inheritAll="false" dir="looks" target="clean"/>
+                <ant inheritAll="false" dir="print" target="clean"/>
+                <ant inheritAll="false" dir="dbPort" target="clean"/>
+                <ant inheritAll="false" dir="base" target="clean"/>
+                <ant inheritAll="false" dir="extend" target="clean"/>
+                <ant inheritAll="false" dir="client" target="clean"/>
+                <!-- begin vpj-cd e-Evolution CMPCS -->
+                <ant inheritAll="false" dir="JasperReports" target="clean"/>
+                <ant inheritAll="false" dir="kompiere" target="clean"/>
+                <!-- end vpj-cd e-Evolution CMPCS -->
+                <!-- Zynnia Package -->
+                <ant inheritAll="false" dir="zynnia" target="clean"/>
+                <ant inheritAll="false" dir="serverRoot" target="clean"/>
+                <ant inheritAll="false" dir="serverApps" target="clean"/>
+                <ant inheritAll="false" dir="webStore" target="clean"/>
+                <ant inheritAll="false" dir="sqlj" target="clean"/>
+                <ant inheritAll="false" dir="install" target="clean"/>         
+        </target>
+
+        <!-- ================================================ -->
+        <!-- Compiere Local Install                           -->
+        <!-- ================================================ -->
+        <target name="install" depends="" description="Environment dependent">
+                <echo message="=========== Install Compiere"/>
+                <copy todir="${env.COMPIERE_INSTALL}">
+                        <fileset dir="install/build" includes="Compiere_*"/>
+                </copy>
+                <!-- Delete Existing stuff, but not utils + data        -->
+                <delete failonerror="false">
+                        <fileset dir="${env.COMPIERE_HOME}/lib"/>
+                        <fileset dir="${env.COMPIERE_HOME}/jboss"/>
+                </delete>
+                <!-- Unzip Install File                 -->
+                <unzip src="install/build/Compiere_${env.COMPIERE_VERSION_FILE}.zip"
+                        dest="${env.COMPIERE_ROOT}"
+                        overwrite="yes"/>
+                <!-- Run Setup                          -->
+                <ant inheritAll="false" dir="${env.COMPIERE_HOME}" target="setup"/>
+        </target>
+
+        <!-- ================================================ -->
+        <!-- complere                                         -->
+        <!-- ================================================ -->
+        <target name="complete" depends="build, install">
+        </target>
+
+        <!-- ================================================ -->
+        <!-- Transfer Install                                 -->
+        <!-- ================================================ -->
+        <target name="transfer" depends="complete" description="Transfer to Install/Distribution media">
+                <!-- FTP to Assets Download Server                      -->
+                <echo message="=========== ftp to Compiere2/documents/download"/>
+                <ftp server="${server}"
+                                remotedir="Compiere2/documents/download"
+                                userid="compiere"
+                                password="${ftpPassword}"
+                                verbose="yes"
+                                depends="no"
+                                binary="yes">
+                        <fileset dir="install/build" includes="Compiere_*"/>
+                </ftp>
+        </target>
+</project>

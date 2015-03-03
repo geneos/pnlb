@@ -1,0 +1,579 @@
+/******************************************************************************
+ * The contents of this file are subject to the   Compiere License  Version 1.1
+ * ("License"); You may not use this file except in compliance with the License
+ * You may obtain a copy of the License at http://www.compiere.org/license.html
+ * Software distributed under the License is distributed on an  "AS IS"  basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * The Original Code is Compiere ERP & CRM Smart Business Solution. The Initial
+ * Developer of the Original Code is Jorg Janke. Portions created by Jorg Janke
+ * are Copyright (C) 1999-2005 Jorg Janke.
+ * All parts are Copyright (C) 1999-2005 ComPiere, Inc.  All Rights Reserved.
+ * Contributor(s): ______________________________________.
+ *****************************************************************************/
+package org.compiere.model;
+
+import java.lang.reflect.*;
+import java.sql.*;
+import java.util.*;
+import java.util.logging.*;
+import org.compiere.util.*;
+
+/**
+ *	Persistent Table Model
+ *	
+ *  @author Jorg Janke
+ *  @version $Id: M_Table.java,v 1.36 2006/01/03 02:40:05 jjanke Exp $
+ */
+public class M_Table extends X_AD_Table
+{
+	/**
+	 * 	Get M_Table from Cache
+	 *	@param ctx context
+	 *	@param AD_Table_ID id
+	 *	@return M_Table
+	 */
+	public static M_Table get (Properties ctx, int AD_Table_ID)
+	{
+		Integer key = new Integer (AD_Table_ID);
+		M_Table retValue = (M_Table) s_cache.get (key);
+		if (retValue != null)
+			return retValue;
+		retValue = new M_Table (ctx, AD_Table_ID, null);
+		if (retValue.get_ID () != 0)
+			s_cache.put (key, retValue);
+		return retValue;
+	}	//	get
+
+	/**
+	 * 	Get M_Table from Cache
+	 *	@param ctx context
+	 *	@param tableName case insensitive table name
+	 *	@return Table
+	 */
+	public static M_Table get (Properties ctx, String tableName)
+	{
+		if (tableName == null)
+			return null;
+		Iterator it = s_cache.values().iterator();
+		while (it.hasNext())
+		{
+			M_Table retValue = (M_Table)it.next();
+			if (tableName.equalsIgnoreCase(retValue.getTableName()))
+				return retValue;
+		}
+		//
+		M_Table retValue = null;
+		String sql = "SELECT * FROM AD_Table WHERE UPPER(TableName)=?";
+		PreparedStatement pstmt = null;
+		try
+		{
+			pstmt = DB.prepareStatement (sql, null);
+			pstmt.setString(1, tableName.toUpperCase());
+			ResultSet rs = pstmt.executeQuery ();
+			if (rs.next ())
+				retValue = new M_Table (ctx, rs, null);
+			rs.close ();
+			pstmt.close ();
+			pstmt = null;
+		}
+		catch (Exception e)
+		{
+			s_log.log(Level.SEVERE, sql, e);
+		}
+		try
+		{
+			if (pstmt != null)
+				pstmt.close ();
+			pstmt = null;
+		}
+		catch (Exception e)
+		{
+			pstmt = null;
+		}
+		
+		if (retValue != null)
+		{
+			Integer key = new Integer (retValue.getAD_Table_ID());
+			s_cache.put (key, retValue);
+		}
+		return retValue;
+	}	//	get
+	
+	/**
+	 * 	Get Table Name
+	 *	@param ctx context
+	 *	@param AD_Table_ID table
+	 *	@return tavle name
+	 */
+	public static String getTableName (Properties ctx, int AD_Table_ID)
+	{
+		return M_Table.get(ctx, AD_Table_ID).getTableName();
+	}	//	getTableName
+	
+	
+	/**	Cache						*/
+	private static CCache<Integer,M_Table> s_cache = new CCache<Integer,M_Table>("AD_Table", 20);
+	/**	Static Logger	*/
+	private static CLogger	s_log	= CLogger.getCLogger (M_Table.class);
+	
+	/**	Packages for Model Classes	*/
+	private static final String[]	s_packages = new String[] {
+        //begin e-evolution vpj-cd 19 Dic 2005
+                "org.eevolution.model",
+        //end e-evolution vpj-cd 19 Dic 2005
+		"compiere.model",			//	Extensions	
+		"org.compiere.model", "org.compiere.wf", 
+		"org.compiere.print", "org.compiere.impexp"
+	};
+	
+	/**	Special Classes				*/
+	private static final String[]	s_special = new String[] {
+		"AD_Table", "org.compiere.model.M_Table",
+		"AD_Column", "org.compiere.model.M_Column",
+		"AD_Element", "org.compiere.model.M_Element",
+		"AD_Window", "org.compiere.model.M_Window",
+		"AD_Tab", "org.compiere.model.M_Tab",
+		"AD_Field", "org.compiere.model.M_Field",
+		"AD_Registration", "org.compiere.model.M_Registration",
+		"AD_Tree", "org.compiere.model.MTree_Base",
+		"R_Category", "org.compiere.model.MRequestCategory",
+		"GL_Category", "org.compiere.model.MGLCategory",
+		"K_Category", "org.compiere.model.MKCategory",
+		"C_ValidCombination", "org.compiere.model.MAccount",
+		"C_Phase", "org.compiere.model.MProjectTypePhase",
+		"C_Task", "org.compiere.model.MProjectTypeTask"
+	//	AD_Attribute_Value, AD_TreeNode
+	};
+
+	/**
+	 * 	Get Persistency Class for Table
+	 *	@param tableName table name
+	 *	@return class or null
+	 */
+	public static Class getClass (String tableName)
+	{
+		//	Not supported
+		if (tableName == null || tableName.endsWith("_Trl"))
+			return null;
+		
+		//	Import Tables (Name conflict)
+		if (tableName.startsWith("I_"))
+		{
+			Class clazz = getPOclass("org.compiere.model.X_" + tableName);
+			if (clazz != null)
+				return clazz;
+			s_log.warning("No class for table: " + tableName);
+			return null;
+		}
+			
+
+		//	Special Naming
+		for (int i = 0; i < s_special.length; i++)
+		{
+			if (s_special[i++].equals(tableName))
+			{
+				Class clazz = getPOclass(s_special[i]);
+				if (clazz != null)
+					return clazz;
+				break;
+			}
+		}
+		
+		//	Strip table name prefix (e.g. AD_) Customizations are 3/4
+		String className = tableName;
+		int index = className.indexOf('_');
+                //begin e-evolution vpj 01/05/2005 CMPCS
+		//if (index > 0)  
+		if (index > 0 && index < 3 ) 
+                //end e-evolution vpj 01/05/2005 CMPCS	
+		{
+			if (index < 3)		//	AD_, A_
+				 className = className.substring(index+1);
+			else
+			{
+				String prefix = className.substring(0,index);
+				if (prefix.equals("Fact"))		//	keep custom prefix
+					className = className.substring(index+1);
+			}
+		}
+		//	Remove underlines
+		className = Util.replace(className, "_", "");
+	
+		//	Search packages
+		for (int i = 0; i < s_packages.length; i++)
+		{
+			StringBuffer name = new StringBuffer(s_packages[i]).append(".M").append(className);
+			Class clazz = getPOclass(name.toString());
+			if (clazz != null)
+				return clazz;
+		}
+
+		//	Default Extension
+		Class clazz = getPOclass("compiere.model.X_" + tableName);
+		if (clazz != null)
+			return clazz;
+
+		//	Default
+		clazz = getPOclass("org.compiere.model.X_" + tableName);
+		if (clazz != null)
+			return clazz;
+
+		return null;
+	}	//	getClass
+	
+	/**
+	 * 	Get PO class
+	 *	@param className fully qualified class name
+	 *	@return class or null
+	 */
+	private static Class getPOclass (String className)
+	{
+		try
+		{
+			Class clazz = Class.forName(className);
+			//	Make sure that it is a PO class
+			Class superClazz = clazz.getSuperclass();
+			while (superClazz != null)
+			{
+				if (superClazz == PO.class)
+				{
+					s_log.fine("Use: " + className);
+					return clazz;
+				}
+				superClazz = superClazz.getSuperclass();
+			}
+		}
+		catch (Exception e)
+		{
+		}
+		s_log.finest("Not found: " + className);
+		return null;
+	}	//	getPOclass
+
+	
+	/**************************************************************************
+	 * 	Standard Constructor
+	 *	@param ctx context
+	 *	@param AD_Table_ID id
+	 */
+	public M_Table (Properties ctx, int AD_Table_ID, String trxName)
+	{
+		super (ctx, AD_Table_ID, trxName);
+		if (AD_Table_ID == 0)
+		{
+		//	setName (null);
+		//	setTableName (null);
+			setAccessLevel (ACCESSLEVEL_SystemOnly);	// 4
+			setEntityType (ENTITYTYPE_UserMaintained);	// U
+			setIsChangeLog (false);
+			setIsDeleteable (false);
+			setIsHighVolume (false);
+			setIsSecurityEnabled (false);
+			setIsView (false);	// N
+			setReplicationType (REPLICATIONTYPE_Local);
+		}	
+	}	//	M_Table
+
+	/**
+	 * 	Load Constructor
+	 *	@param ctx context
+	 *	@param rs result set
+	 */
+	public M_Table (Properties ctx, ResultSet rs, String trxName)
+	{
+		super(ctx, rs, trxName);
+	}	//	M_Table
+	
+	/**	Columns				*/
+	private M_Column[]	m_columns = null;
+	
+	/**
+	 * 	Get Columns
+	 *	@param requery requery
+	 *	@return array of columns
+	 */
+	public M_Column[] getColumns (boolean requery)
+	{
+		if (m_columns != null && !requery)
+			return m_columns;
+		String sql = "SELECT * FROM AD_Column WHERE AD_Table_ID=? ORDER BY ColumnName";
+		ArrayList<M_Column> list = new ArrayList<M_Column>();
+		PreparedStatement pstmt = null;
+		try
+		{
+			pstmt = DB.prepareStatement (sql, get_TrxName());
+			pstmt.setInt (1, getAD_Table_ID());
+			ResultSet rs = pstmt.executeQuery ();
+			while (rs.next ())
+				list.add (new M_Column (getCtx(), rs, get_TrxName()));
+			rs.close ();
+			pstmt.close ();
+			pstmt = null;
+		}
+		catch (Exception e)
+		{
+			log.log(Level.SEVERE, sql, e);
+		}
+		try
+		{
+			if (pstmt != null)
+				pstmt.close ();
+			pstmt = null;
+		}
+		catch (Exception e)
+		{
+			pstmt = null;
+		}
+		//
+		m_columns = new M_Column[list.size ()];
+		list.toArray (m_columns);
+		return m_columns;
+	}	//	getColumns
+	
+	/**
+	 * 	Get Column
+	 *	@param columnName (case insensitive)
+	 *	@return column if found
+	 */
+	public M_Column getColumn (String columnName)
+	{
+		if (columnName == null || columnName.length() == 0)
+			return null;
+		getColumns(false);
+		//
+		for (int i = 0; i < m_columns.length; i++)
+		{
+			if (columnName.equalsIgnoreCase(m_columns[i].getColumnName()))
+				return m_columns[i];
+		}
+		return null;
+	}	//	getColumn
+	
+	/**************************************************************************
+	 * 	Get PO Class Instance
+	 *	@param Record_ID record
+	 *	@param trxName
+	 *	@return PO for Record or null
+	 */
+	public PO getPO (int Record_ID, String trxName)
+	{
+		String tableName = getTableName();
+		Class clazz = getClass(tableName);
+		if (clazz == null)
+		{
+			log.log(Level.WARNING, "(id) - Class not found for " + tableName);
+			return null;
+		}
+		boolean errorLogged = false;
+		try
+		{
+			Constructor constructor = null;
+			try
+			{
+				constructor = clazz.getDeclaredConstructor(new Class[]{Properties.class, int.class, String.class});
+			}
+			catch (Exception e)
+			{
+				String msg = e.getMessage();
+				if (msg == null)
+					msg = e.toString();
+				log.warning("No transaction Constructor for " + clazz + " (" + msg + ")");
+			}
+			
+			PO po = (PO)constructor.newInstance(new Object[] {getCtx(), new Integer(Record_ID), trxName});
+			return po;
+		}
+		catch (Exception e)
+		{
+			if (e.getCause() != null)
+			{
+				Throwable t = e.getCause();
+				log.log(Level.SEVERE, "(id) - Table=" + tableName + ",Class=" + clazz, t);
+				errorLogged = true;
+				if (t instanceof Exception)
+					log.saveError("Error", (Exception)e.getCause());
+				else
+					log.saveError("Error", "Table=" + tableName + ",Class=" + clazz);
+			}
+			else
+			{
+				log.log(Level.SEVERE, "(id) - Table=" + tableName + ",Class=" + clazz, e);
+				errorLogged = true;
+				log.saveError("Error", "Table=" + tableName + ",Class=" + clazz);
+			}
+		}
+		if (!errorLogged)
+			log.log(Level.SEVERE, "(id) - Not found - Table=" + tableName 
+				+ ", Record_ID=" + Record_ID);
+		return null;
+	}	//	getPO
+	
+	/**
+	 * 	Get PO Class Instance
+	 *	@param rs result set
+	 *	@return PO for Record or null
+	 */
+	public PO getPO (ResultSet rs, String trxName)
+	{
+		String tableName = getTableName();
+		Class clazz = getClass(tableName);
+		if (clazz == null)
+		{
+			log.log(Level.SEVERE, "(rs) - Class not found for " + tableName);
+			return null;
+		}
+		boolean errorLogged = false;
+		try
+		{
+			Constructor constructor = clazz.getDeclaredConstructor(new Class[]{Properties.class, ResultSet.class, String.class});
+			PO po = (PO)constructor.newInstance(new Object[] {getCtx(), rs, trxName});
+			return po;
+		}
+		catch (Exception e)
+		{
+			log.log(Level.SEVERE, "(rs) - Table=" + tableName + ",Class=" + clazz, e);
+			errorLogged = true;
+			log.saveError("Error", "Table=" + tableName + ",Class=" + clazz);
+		}
+		if (!errorLogged)
+			log.log(Level.SEVERE, "(rs) - Not found - Table=" + tableName);
+		return null;
+	}	//	getPO
+
+	/**
+	 * 	Get PO Class Instance
+	 *	@param whereClause where clause
+	 *	@param trxName transaction
+	 *	@return PO for Record or null
+	 */
+	public PO getPO (String whereClause, String trxName)
+	{
+		if (whereClause == null || whereClause.length() == 0)
+			return null;
+		//
+		PO po = null;
+		String sql = "SELECT * FROM " + getTableName() + " WHERE " + whereClause; 
+		PreparedStatement pstmt = null;
+		try
+		{
+			pstmt = DB.prepareStatement (sql, trxName);
+			ResultSet rs = pstmt.executeQuery ();
+			if (rs.next ())
+				po = getPO(rs, trxName);
+			rs.close ();
+			pstmt.close ();
+			pstmt = null;
+		}
+		catch (Exception e)
+		{
+			log.log(Level.SEVERE, sql, e);
+			log.saveError("Error", e);
+		}
+		try
+		{
+			if (pstmt != null)
+				pstmt.close ();
+			pstmt = null;
+		}
+		catch (Exception e)
+		{
+			pstmt = null;
+		}
+		return po;
+	}	//	getPO
+	
+	
+	/**
+	 * 	Before Save
+	 *	@param newRecord new
+	 *	@return true
+	 */
+	protected boolean beforeSave (boolean newRecord)
+	{
+		if (isView() && isDeleteable())
+			setIsDeleteable(false);
+		//
+		return true;
+	}	//	beforeSave
+	
+	/**
+	 * 	After Save
+	 *	@param newRecord new
+	 *	@param success success
+	 *	@return success
+	 */
+	protected boolean afterSave (boolean newRecord, boolean success)
+	{
+		//	Sync Table ID
+		if (newRecord)
+		{
+			MSequence.createTableSequence(getCtx(), getTableName(), get_TrxName());
+		}
+		else
+		{
+			MSequence seq = MSequence.get(getCtx(), getTableName());
+			if (seq == null || seq.get_ID() == 0)
+				MSequence.createTableSequence(getCtx(), getTableName(), get_TrxName());
+			else if (!seq.getName().equals(getTableName()))
+			{
+				seq.setName(getTableName());
+				seq.save();
+			}
+		}	
+		
+		return success;
+	}	//	afterSave
+	
+	/**
+	 * 	Get SQL Create
+	 *	@return create table DDL
+	 */
+	public String getSQLCreate()
+	{
+		StringBuffer sb = new StringBuffer("CREATE TABLE ")
+			.append(getTableName()).append(" (");
+		//
+		boolean hasPK = false;
+		boolean hasParents = false;
+		StringBuffer constraints = new StringBuffer();
+		getColumns(true);
+		for (int i = 0; i < m_columns.length; i++)
+		{
+			if (i > 0)
+				sb.append(", ");
+			M_Column column = m_columns[i];
+			sb.append(column.getSQLDDL());
+			//
+			if (column.isKey())
+				hasPK = true;
+			if (column.isParent())
+				hasParents = true;
+			String constraint = column.getConstraint(getTableName());
+			if (constraint != null && constraint.length() > 0)
+				constraints.append(", ").append(constraint);
+		}
+		//	Multi Column PK 
+		if (!hasPK && hasParents)
+		{
+			StringBuffer cols = new StringBuffer();
+			for (int i = 0; i < m_columns.length; i++)
+			{
+				M_Column column = m_columns[i];
+				if (!column.isParent())
+					continue;
+				if (cols.length() > 0)
+					cols.append(", ");
+				cols.append(column.getColumnName());
+			}
+			sb.append(", CONSTRAINT ")
+				.append(getTableName()).append("_Key PRIMARY KEY (")
+				.append(cols).append(")");
+		}
+
+		sb.append(constraints)
+			.append(")");
+		return sb.toString();
+	}	//	getSQLCreate
+	
+}	//	M_Table

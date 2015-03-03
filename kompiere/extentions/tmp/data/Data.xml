@@ -1,0 +1,359 @@
+<compieredata clientname="System">
+  <!-- Default values. -->
+  <default entitytype="Applications" firstdelete="false">
+  </default>
+  
+  <table tablename="AD_ImpFormat">
+    <row name="Import Loader Format" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name"  />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name"  />
+
+      <column name="AD_Table_ID" lookupcustom="I_ImpFormat" lookupcustom_col="TableName" />
+      <column name="FormatType" lookup_ref_list="AD_ImpFormat FormatType" ref_name="Comma Separated" />
+    </row>
+    <row name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name"  />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name"  />
+
+      <column name="AD_Table_ID" lookupcustom="I_ImpFormat_Row" lookupcustom_col="TableName" />
+      <column name="FormatType" lookup_ref_list="AD_ImpFormat FormatType" ref_name="Comma Separated" />
+    </row>
+  </table>
+  
+  <table tablename="AD_ImpFormat_Row">
+  <!-- Import Loader Format -->
+    <row name="Loader Format Name" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format" />
+      <column name="SeqNo" value="10" class="Integer" />
+      <column name="AD_Column_ID" lookupcustom="Name" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="1" class="Integer" />
+      <column name="EndNo" value="" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+      <column name="DivideBy100" value="N" class="String" />
+      <column name="ConstantValue" value="" class="String" />
+      <column name="Callout" value="" class="String" />
+      <column name="Script" value="" class="String" />
+    </row>
+    <row name="Format Type"  key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format" />
+      <column name="SeqNo" value="20" class="Integer" />
+      <column name="AD_Column_ID" lookupcustom="FormatType_Value" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="2" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+    <row name="Table Name"  key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format" />
+      <column name="SeqNo" value="30" class="Integer" />
+      <column name="AD_Column_ID" lookupcustom="AD_Table_TableName" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="3" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+    <row name="Description"  key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format" />
+      <column name="SeqNo" value="40" class="Integer" />
+      <column name="AD_Column_ID" lookupcustom="Description" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="4" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+    
+  <!-- Import Loader Format Row -->
+    <row name="Sequence"  key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="SeqNo" value="10" class="Integer" />
+      <column name="AD_Column_ID" lookupcustom="SeqNo" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="Number" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="1" class="Integer" />
+      <column name="EndNo" value="" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+      <column name="DivideBy100" value="N" class="String" />
+      <column name="ConstantValue" value="" class="String" />
+      <column name="Callout" value="" class="String" />
+      <column name="Script" value="" class="String" />
+    </row>
+    <row name="Format Name" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="SeqNo" value="20" class="Integer" />
+      <column name="AD_Column_ID" lookupcustom="AD_ImpFormat_Name" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="2" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+    <row name="Field Name" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="SeqNo" value="30" class="Integer" />
+      <column name="AD_Column_ID" lookupcustom="Name" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="3" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+    <row name="Column Name" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="SeqNo" value="40" class="Integer" />
+      <column name="AD_Column_ID" lookupcustom="AD_Column_ColumnName" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="4" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+    <row name="Data Type" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="SeqNo" value="50" class="Integer" />
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="AD_Column_ID" lookupcustom="DataType_Value" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="5" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>  
+    <row name="Data Format" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="SeqNo" value="60" class="Integer" />
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="AD_Column_ID" lookupcustom="DataFormat" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="6" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>  
+    <row name="Start No" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="SeqNo" value="70" class="Integer" />
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="AD_Column_ID" lookupcustom="StartNo" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="Number" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="7" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>  
+    <row name="End No" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="SeqNo" value="80" class="Integer" />
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="AD_Column_ID" lookupcustom="EndNo" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="Number" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="8" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>  
+    <row name="Decimal Point" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="SeqNo" value="90" class="Integer" />
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="AD_Column_ID" lookupcustom="DecimalPoint" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="9" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+    <row name="Divide by 100" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="SeqNo" value="100" class="Integer" />
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="AD_Column_ID" lookupcustom="DivideBy100_Value" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="10" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+    <row name="Constant" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="SeqNo" value="110" class="Integer" />
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="AD_Column_ID" lookupcustom="ConstantValue" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="11" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+    <row name="Callout" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="SeqNo" value="120" class="Integer" />
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="AD_Column_ID" lookupcustom="Callout" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="12" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+    <row name="Script" key1name="AD_ImpFormat_ID" lookupkey1name="Import Loader Format Row" >
+      <column name="AD_Client_ID" lookupvalue="System" />
+      <column name="AD_Org_ID" lookupvalue="*" />
+      <column name="IsActive" class="Boolean" value="true"/>
+      <!--column name="Created" class="Date" value="" /-->
+      <column name="CreatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+      <!--column name="Updated" class="Date" value="" /-->
+      <column name="UpdatedBy" lookupcustom="System" lookupcustom_table="AD_User" lookupcustom_col="Name" />
+
+      <column name="SeqNo" value="130" class="Integer" />
+      <column name="AD_ImpFormat_ID" lookupname="Import Loader Format Row" />
+      <column name="AD_Column_ID" lookupcustom="Script" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <column name="DataType" lookup_ref_list="AD_ImpFormat_Row Type" ref_name="String" />
+      <column name="DataFormat" value="" class="String" />
+      <column name="StartNo" value="13" class="Integer" />
+      <column name="DecimalPoint" value="." class="String" />
+    </row>
+
+  </table>
+
+</compieredata>
+
+<!--
+  <table tablename="">
+    <row name="" key1name="" lookupkey1name="" key2name="" lookupkey2name="" >
+      <column name="" value="" class="" lookupname="name to lookup by" | 
+                                        lookupvalue="Value to lookup" | 
+                                        [lookupcustom="value of custcolumn" lookupcustom_table="Name of Table" lookupcustom_col="Name of column to search by" tableNameMaster="name of Master Table" masterColumn="master column" masterValue="master value"] |
+                                        [lookup_ref_list="" ref_name=""] |
+                                        [lookup_ref_table="" ] 
+                                        >
+
+      class= "String" | "Integer" | "Boolean" - value="true"
+
+      </column>
+      <column name="AD_Column_ID" lookupcustom="Description" lookupcustom_table="AD_Column" lookupcustom_col="ColumnName" tableNameMaster="AD_Table" masterColumn="TableName" masterValue="I_ImpFormat_Row" />
+      <                                         name,                     tableName,                   columnName,           tableNameMaster,            masterColumn,      masterValue >
+
+    </row>
+  <table>
+-->

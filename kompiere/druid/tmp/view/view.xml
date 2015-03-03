@@ -1,0 +1,42 @@
+<compiereAD>
+<window name = "Quality Specifications">
+<tab name="" tablename="QM_Specification" syncfields="N">
+  <field name="" columnname="QM_Specification_ID" isDisplayed="N" isSameLine="" displayLength="14" defaultValue="" />
+  <field name="" columnname="AD_Client_ID" isDisplayed="Y" isSameLine="" displayLength="14" defaultValue="" />
+  <field name="" columnname="AD_Org_ID" isDisplayed="Y" isSameLine="Y" displayLength="14" defaultValue="" />
+  <field name="" columnname="IsActive" isDisplayed="Y" isSameLine="" displayLength="1" defaultValue="" />
+  <field name="" columnname="Created" isDisplayed="N" isSameLine="" displayLength="22" defaultValue="" />
+  <field name="" columnname="CreatedBy" isDisplayed="N" isSameLine="" displayLength="22" defaultValue="" />
+  <field name="" columnname="Updated" isDisplayed="N" isSameLine="" displayLength="22" defaultValue="" />
+  <field name="" columnname="UpdatedBy" isDisplayed="N" isSameLine="" displayLength="22" defaultValue="" />
+  <field name="" columnname="Value" isDisplayed="Y" isSameLine="" displayLength="20" defaultValue="" />
+  <field name="" columnname="Name" isDisplayed="Y" isSameLine=" " displayLength="60" defaultValue="" />
+  <field name="" columnname="Description" isDisplayed="Y" isSameLine="" displayLength="60" defaultValue="" />
+  <field name="" columnname="M_Product_ID" isDisplayed="Y" isSameLine="" displayLength="14" defaultValue="" />
+  <field name="" columnname="MPC_Product_BOM_ID" isDisplayed="Y" isSameLine="" displayLength="14" defaultValue="" />
+  <field name="" columnname="AD_Workflow_ID" isDisplayed="Y" isSameLine="Y" displayLength="14" defaultValue="" />
+  <field name="" columnname="M_AttributeSet_ID" isDisplayed="Y" isSameLine="" displayLength="14" defaultValue="" />
+  <field name="" columnname="ValidFrom" isDisplayed="Y" isSameLine="" displayLength="" defaultValue="22" />
+  <field name="" columnname="ValidTo" isDisplayed="Y" isSameLine="Y" displayLength="" defaultValue="22" />
+</tab>
+<tab name="" tablename="QM_SpecificationLine" syncfields="N">
+  <field name="" columnname="QM_SpecificationLine_ID" isDisplayed="" isSameLine="" displayLength="14" defaultValue="" />
+  <field name="" columnname="AD_Client_ID" isDisplayed="Y" isSameLine="" displayLength="14" defaultValue="" />
+  <field name="" columnname="AD_Org_ID" isDisplayed="Y" isSameLine="" displayLength="14" defaultValue="" />
+  <field name="" columnname="IsActive" isDisplayed="Y" isSameLine="" displayLength="1" defaultValue="" />
+  <field name="" columnname="Created" isDisplayed="" isSameLine="" displayLength="22" defaultValue="" />
+  <field name="" columnname="CreatedBy" isDisplayed="" isSameLine="" displayLength="22" defaultValue="" />
+  <field name="" columnname="Updated" isDisplayed="" isSameLine="" displayLength="22" defaultValue="" />
+  <field name="" columnname="UpdatedBy" isDisplayed="" isSameLine="" displayLength="22" defaultValue="" />
+  <field name="" columnname="SeqNo" isDisplayed="Y" isSameLine="" displayLength="2" defaultValue="" />
+  <field name="" columnname="M_Attribute_ID" isDisplayed="Y" isSameLine="" displayLength="14" defaultValue="" />
+  <field name="" columnname="ValidFrom" isDisplayed="" isSameLine="" displayLength="22" defaultValue="" />
+  <field name="" columnname="ValidTo" isDisplayed="Y" isSameLine="" displayLength="22" defaultValue="" />
+  <field name="" columnname="AndOr" isDisplayed="Y" isSameLine="" displayLength="2" defaultValue="" />
+  <field name="" columnname="Value" isDisplayed="Y" isSameLine="" displayLength="60" defaultValue="" />
+  <field name="" columnname="Operation" isDisplayed="Y" isSameLine="" displayLength="3" defaultValue="" />
+  <field name="" columnname="Value2" isDisplayed="Y" isSameLine="" displayLength="60" defaultValue="" />
+  <field name="" columnname="QM_Specification_ID" isDisplayed="Y" isSameLine="" displayLength="14" defaultValue="" />
+</tab>
+</window>
+</compiereAD>

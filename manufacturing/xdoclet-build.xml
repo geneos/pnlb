@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="_generation_" name="XDoclet Generator">
+<path id="xdoclet.classpath"><pathelement location="C:/Compiere/compiere-all2/manufactoring/lib"/>
+
+<fileset dir="C:/eclipse/plugins/org.jboss.ide.eclipse.xdoclet.core_1.2.130/">
+<include name="*.jar"/>
+</fileset>
+</path>
+<target name="_generation_" depends=""/>
+</project>

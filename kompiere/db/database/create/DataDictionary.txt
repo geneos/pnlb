@@ -1,0 +1,108 @@
+#===============================================================================
+#==   Data Dictionary File for Database : e-Evolution Kompiere (Build 228)
+#==
+#== Format: table, field
+#===============================================================================
+
+#== I_Shipper ==================================================================
+
+'I_Shipper',   'I_Shipper_ID' 
+'I_Shipper',   'M_Shipper_ID' 
+'I_Shipper',   'AD_Client_Value'
+'I_Shipper',   'AD_Client_ID' 
+'I_Shipper',   'AD_Org_Value' 
+'I_Shipper',   'AD_Org_ID'    
+'I_Shipper',   'IsActive_Value'
+'I_Shipper',   'IsActive'     
+'I_Shipper',   'Created'      
+'I_Shipper',   'CreatedBy'    
+'I_Shipper',   'Updated'      
+'I_Shipper',   'UpdatedBy'    
+'I_Shipper',   'Value'        
+'I_Shipper',   'Name'         
+'I_Shipper',   'Description'  
+'I_Shipper',   'I_IsImported' 
+'I_Shipper',   'I_ErrorMsg'   
+'I_Shipper',   'Processing'   
+'I_Shipper',   'Processed'    
+'I_Shipper',   'C_BPartner_Value'
+'I_Shipper',   'C_BPartner_ID'
+'I_Shipper',   'TrackingURL'  
+'I_Shipper',   'Phone'        
+'I_Shipper',   'PrintBillOfLadding_Value'
+'I_Shipper',   'PrintBillOfLadding'
+'I_Shipper',   'PrintCartoonLabels_Value'
+'I_Shipper',   'PrintCartoonLabels'
+
+#== I_ImpFormat ================================================================
+
+'I_ImpFormat', 'I_ImpFormat_ID'
+'I_ImpFormat', 'AD_ImpFormat_ID'
+'I_ImpFormat', 'AD_Client_Value'
+'I_ImpFormat', 'AD_Client_ID' 
+'I_ImpFormat', 'AD_Org_Value' 
+'I_ImpFormat', 'AD_Org_ID'    
+'I_ImpFormat', 'IsActive'     
+'I_ImpFormat', 'Created'      
+'I_ImpFormat', 'CreatedBy'    
+'I_ImpFormat', 'Updated'      
+'I_ImpFormat', 'UpdatedBy'    
+'I_ImpFormat', 'Name'         
+'I_ImpFormat', 'Description'  
+'I_ImpFormat', 'AD_Table_TableName'
+'I_ImpFormat', 'AD_Table_ID'  
+'I_ImpFormat', 'FormatType_Value'
+'I_ImpFormat', 'FormatType'   
+'I_ImpFormat', 'I_IsImported' 
+'I_ImpFormat', 'I_ErrorMsg'   
+'I_ImpFormat', 'Processing'   
+'I_ImpFormat', 'Processed'    
+
+#== I_ImpFormat_Row ============================================================
+
+'I_ImpFormat_Row', 'I_ImpFormat_Row_ID'
+'I_ImpFormat_Row', 'AD_ImpFormat_Row_ID'
+'I_ImpFormat_Row', 'AD_Client_Value'
+'I_ImpFormat_Row', 'AD_Client_ID' 
+'I_ImpFormat_Row', 'AD_Org_Value' 
+'I_ImpFormat_Row', 'AD_Org_ID'    
+'I_ImpFormat_Row', 'IsActive'     
+'I_ImpFormat_Row', 'Created'      
+'I_ImpFormat_Row', 'CreatedBy'    
+'I_ImpFormat_Row', 'Updated'      
+'I_ImpFormat_Row', 'UpdatedBy'    
+'I_ImpFormat_Row', 'AD_ImpFormat_Name'
+'I_ImpFormat_Row', 'AD_ImpFormat_ID'
+'I_ImpFormat_Row', 'SeqNo'        
+'I_ImpFormat_Row', 'Name'         
+'I_ImpFormat_Row', 'AD_Column_ColumnName'
+'I_ImpFormat_Row', 'AD_Column_ID' 
+'I_ImpFormat_Row', 'StartNo'      
+'I_ImpFormat_Row', 'EndNo'        
+'I_ImpFormat_Row', 'DataType_Value'
+'I_ImpFormat_Row', 'DataType'     
+'I_ImpFormat_Row', 'DataFormat'   
+'I_ImpFormat_Row', 'DecimalPoint' 
+'I_ImpFormat_Row', 'DivideBy100_Value'
+'I_ImpFormat_Row', 'DivideBy100'  
+'I_ImpFormat_Row', 'ConstantValue'
+'I_ImpFormat_Row', 'Callout'      
+'I_ImpFormat_Row', 'Script'       
+'I_ImpFormat_Row', 'I_IsImported' 
+'I_ImpFormat_Row', 'I_ErrorMsg'   
+'I_ImpFormat_Row', 'Processing'   
+'I_ImpFormat_Row', 'Processed'    
+
+#== M_Package ==================================================================
+
+'M_Package',   'FreightRule'  
+
+#== AD_Field ===================================================================
+
+'AD_Field',    'Included_Tab_ID'
+
+#== AD_FieldGroup ==============================================================
+
+'AD_FieldGroup', 'IsTab'        
+
+#===============================================================================

@@ -1,0 +1,130 @@
+/******************************************************************************
+ * The contents of this file are subject to the   Compiere License  Version 1.1
+ * ("License"); You may not use this file except in compliance with the License
+ * You may obtain a copy of the License at http://www.compiere.org/license.html
+ * Software distributed under the License is distributed on an  "AS IS"  basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * The Original Code is Compiere ERP & CRM Smart Business Solution. The Initial
+ * Developer of the Original Code is Jorg Janke. Portions created by Jorg Janke
+ * are Copyright (C) 1999-2005 Jorg Janke.
+ * All parts are Copyright (C) 1999-2005 e-Evolution, S.C.  All Rights Reserved.
+ * Contributor(s): Gunther Hoppe & Victor Perez, 21.08.2005 e-evolution
+ *****************************************************************************/
+
+
+package org.compiere.apps;
+
+import java.awt.ItemSelectable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
+import javax.swing.AbstractButton;
+import javax.swing.JTable;
+import javax.swing.JTabbedPane;
+import javax.swing.JComponent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.text.JTextComponent;
+
+import org.compiere.grid.GridController;
+import org.compiere.swing.CPanel;
+
+/**
+ * 
+ * @author Gunther Hoppe, 21.08.2005
+ *
+ */
+public class TabSwitcher extends FocusAdapter implements ActionListener, ListSelectionListener {
+	
+	private APanel panel;
+	private GridController gc;
+	
+	public TabSwitcher(GridController g, APanel p) {
+	
+		panel = p;
+		gc = g;
+	}
+
+	public void valueChanged(ListSelectionEvent e) {
+		
+		if(!e.getValueIsAdjusting()) {
+		
+			performSwitch();
+		}
+	};		
+
+	public void actionPerformed(ActionEvent e) {
+	
+		if(!(e.getSource() instanceof JTextComponent)) {
+			
+			performSwitch();
+		}
+	}
+
+	public void focusGained(FocusEvent e) {
+	
+		performSwitch();
+	}
+
+	private void performSwitch() {
+	
+		//System.out.println(gc);
+		panel.dispatchTabSwitch(gc);
+	}
+	
+	public void addTabSwitchingSupport(JComponent c) {
+
+		if(c instanceof JTable) {
+
+			((JTable)c).getSelectionModel().addListSelectionListener(this);
+		}
+		else if(c instanceof AbstractButton) {
+		
+			((AbstractButton)c).addActionListener(this);
+		}		
+		else if(c instanceof ItemSelectable || c instanceof JTextComponent) {
+			
+			c.addFocusListener(this);
+		}
+        /*else if(c instanceof JTabbedPane) 
+        {
+            for(int i = 0; i < ((JTabbedPane)c).getTabCount(); i++)
+            {  
+                        if(c.getComponent(i) instanceof JComponent) 
+                        {
+                        addTabSwitchingSupport((JComponent) c.getComponent( i ));
+                        } 
+            }           
+        }*/        
+		else {
+			
+			for(int i = 0; i < c.getComponentCount(); i++) 
+			{
+
+				if(c.getComponent(i) instanceof JComponent) {
+					
+					addTabSwitchingSupport((JComponent)c.getComponent(i));
+				}
+				/*if(c.getComponent(i) instanceof org.compiere.grid.ed.VDate) {
+					
+					addTabSwitchingSupport((JComponent)c.getComponent(i));
+				}
+				else if(c.getComponent(i) instanceof org.compiere.grid.ed.VLookup) {
+					
+					addTabSwitchingSupport((JComponent)c.getComponent(i));
+				}
+				else if(c.getComponent(i) instanceof org.compiere.grid.ed.VString) {
+					
+					addTabSwitchingSupport((JComponent)c.getComponent(i));
+				}
+				else if(c.getComponent(i) instanceof org.compiere.grid.ed.VNumber) {
+					
+					addTabSwitchingSupport((JComponent)c.getComponent(i));
+				}*/
+			}
+		}
+	}
+}
