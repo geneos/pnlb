@@ -39,3 +39,4 @@ $RECYCLE.BIN/
 
 #-------- Java -------------
 *.class
+/lib/*.jar
