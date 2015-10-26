@@ -669,41 +669,23 @@ public class MMPCOrder extends X_MPC_Order implements DocAction {
             MPC_Order_BOMLine.setValidFrom(MPC_Product_BOMline[i].getValidFrom());
             MPC_Order_BOMLine.setValidTo(MPC_Product_BOMline[i].getValidTo());
             MPC_Order_BOMLine.setM_Warehouse_ID(getM_Warehouse_ID());
+            
+            
             BigDecimal QtyOrdered = getQtyOrdered();
+            MPC_Order_BOMLine.setQtyRequiered(MPC_Order_BOMLine.explodeQty(getQtyOrdered()));
 
-                if (MPC_Order_BOMLine.isQtyPercentage())
-    	        {
-    	            BigDecimal qty =  MPC_Order_BOMLine.getQtyBatch().multiply(QtyOrdered);
-    	            if( MPC_Order_BOMLine.getComponentType().equals(MPC_Order_BOMLine.COMPONENTTYPE_Packing))
-    	            	MPC_Order_BOMLine.setQtyRequiered(qty.divide(new BigDecimal(100),8,qty.ROUND_UP));
-    	            if (MPC_Order_BOMLine.getComponentType().equals(MPC_Order_BOMLine.COMPONENTTYPE_Component) || MPC_Order_BOMLine.getComponentType().equals(MPC_Order_BOMLine.COMPONENTTYPE_Phantom))
-    	            	MPC_Order_BOMLine.setQtyRequiered(qty.divide(new BigDecimal(100),8,qty.ROUND_UP));
-    	            else if (MPC_Order_BOMLine.getComponentType().equals(MPC_Order_BOMLine.COMPONENTTYPE_Tools))
-    	            	MPC_Order_BOMLine.setQtyRequiered(MPC_Order_BOMLine.getQtyBOM());
+            // Set Scrap of Component
+            BigDecimal Scrap = MPC_Order_BOMLine.getScrap();
 
-    	        }
-    	        else
-    	        {
-    	        	if (MPC_Order_BOMLine.getComponentType().equals(MPC_Order_BOMLine.COMPONENTTYPE_Component) || MPC_Order_BOMLine.getComponentType().equals(MPC_Order_BOMLine.COMPONENTTYPE_Phantom))
-    	        		MPC_Order_BOMLine.setQtyRequiered(MPC_Order_BOMLine.getQtyBOM().multiply(QtyOrdered));
-                        else if (MPC_Order_BOMLine.getComponentType().equals(MPC_Order_BOMLine.COMPONENTTYPE_Packing))
-    	        		MPC_Order_BOMLine.setQtyRequiered(MPC_Order_BOMLine.getQtyBOM().multiply(QtyOrdered));
-    	            else if (MPC_Order_BOMLine.getComponentType().equals(MPC_Order_BOMLine.COMPONENTTYPE_Tools))
-    	            	MPC_Order_BOMLine.setQtyRequiered(MPC_Order_BOMLine.getQtyBOM());
-    	        }
+            if (!Scrap.equals(Env.ZERO))
+            {
+                    Scrap = Scrap.divide(new BigDecimal(100),8,BigDecimal.ROUND_UP);
+                    MPC_Order_BOMLine.setQtyRequiered(MPC_Order_BOMLine.getQtyRequiered().divide( Env.ONE.subtract(Scrap) , 8 ,BigDecimal.ROUND_HALF_UP ));
+            }
 
-    	        // Set Scrap of Component
-    	        BigDecimal Scrap = MPC_Order_BOMLine.getScrap();
+            MPC_Order_BOMLine.save(get_TrxName());
 
-    	        if (!Scrap.equals(Env.ZERO))
-    	        {
-    	        	Scrap = Scrap.divide(new BigDecimal(100),8,BigDecimal.ROUND_UP);
-    	        	MPC_Order_BOMLine.setQtyRequiered(MPC_Order_BOMLine.getQtyRequiered().divide( Env.ONE.subtract(Scrap) , 8 ,BigDecimal.ROUND_HALF_UP ));
-    	        }
-
-                 MPC_Order_BOMLine.save(get_TrxName());
-
-                if(MPC_Order_BOMLine.getComponentType().equals(MMPCProductBOMLine.COMPONENTTYPE_Phantom))
+            if(MPC_Order_BOMLine.getComponentType().equals(MMPCProductBOMLine.COMPONENTTYPE_Phantom))
     		 MPC_Order_BOMLine.setQtyRequiered(Env.ZERO);
 
                  MPC_Order_BOMLine.save(get_TrxName());
@@ -3811,22 +3793,25 @@ private boolean reserveStock (MMPCOrderBOMLine[] lines)
             String productsMayores = "";
             String productsMenores = "";
             for (int i=0 ; i<lines.length ; i++){
+                if ( lines[i].getComponentType().equals(MMPCOrderBOMLine.COMPONENTTYPE_Phantom) )
+                    continue;
                 MProduct producto = new MProduct(getCtx(),lines[i].getM_Product_ID(),get_TrxName());
                 MZYNCATEGORYTOLERANCE pct = MZYNCATEGORYTOLERANCE.getZYNCategoryTolerance(getCtx(), producto.getM_Product_Category_ID(), get_TrxName());
                 if (pct != null){
                     BigDecimal tolerance = pct.getTOLERANCE().divide(  new BigDecimal(100) );
-                    BigDecimal maxQtyTolerance = lines[i].getQtyRequiered().add(lines[i].getQtyRequiered().multiply(tolerance));
-                    BigDecimal minQtyTolerance = lines[i].getQtyRequiered().subtract(lines[i].getQtyRequiered().multiply(tolerance));
+                    BigDecimal qtyRequired = lines[i].explodeQty(getQtyDelivered());
+                    BigDecimal maxQtyTolerance = qtyRequired.add(qtyRequired.multiply(tolerance));
+                    BigDecimal minQtyTolerance = qtyRequired.subtract(qtyRequired.multiply(tolerance));
                     //Sobrepasa limite superior?
                     if ( lines[i].getQtyDelivered().compareTo(maxQtyTolerance) == 1 ){
                         toleranceAccomplishedMayor = false;
-                        productsMayores += producto.getValue() + " - " + producto.getName()+"\n";
+                        productsMayores += producto.getValue() + " - " + producto.getName()+"(Entregado: "+getQtyDelivered()+", Maximo:)"+maxQtyTolerance+"\n";
                     }
                     
                     //No llega a cubrir limite inferior?
                     if ( lines[i].getQtyDelivered().compareTo(minQtyTolerance) == -1 ){
                         toleranceAccomplishedMenor = false;
-                        productsMenores += producto.getValue() + " - " + producto.getName()+"\n";
+                        productsMenores += producto.getValue() + " - " + producto.getName()+"(Entregado: "+getQtyDelivered()+", Minimo:)"+minQtyTolerance+"\n";
                     }
                 }
             }
@@ -4297,4 +4282,5 @@ private boolean reserveStock (MMPCOrderBOMLine[] lines)
             return true;
                     
         }
+
 }	//	MOrder

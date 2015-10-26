@@ -261,4 +261,29 @@ public class MMPCOrderBOMLine extends X_MPC_Order_BOMLine
 	return m_parent;
 	}	//	getParent
 
+    BigDecimal explodeQty(BigDecimal qtyOrdered) {
+        BigDecimal requiredQty = BigDecimal.ZERO;
+        if (isQtyPercentage())
+            {
+                BigDecimal qty =  getQtyBatch().multiply(qtyOrdered);
+                if( getComponentType().equals(COMPONENTTYPE_Packing))
+                    requiredQty = qty.divide(new BigDecimal(100),8,qty.ROUND_UP);
+                if (getComponentType().equals(COMPONENTTYPE_Component) || getComponentType().equals(COMPONENTTYPE_Phantom))
+                    requiredQty = qty.divide(new BigDecimal(100),8,qty.ROUND_UP);
+                else if (getComponentType().equals(COMPONENTTYPE_Tools))
+                   requiredQty = getQtyBOM();
+
+            }
+            else
+            {
+                    if (getComponentType().equals(COMPONENTTYPE_Component) || getComponentType().equals(COMPONENTTYPE_Phantom))
+                            requiredQty = getQtyBOM().multiply(qtyOrdered);
+                    else if (getComponentType().equals(COMPONENTTYPE_Packing))
+                            requiredQty = getQtyBOM().multiply(qtyOrdered);
+                else if (getComponentType().equals(COMPONENTTYPE_Tools))
+                    requiredQty = getQtyBOM();
+            }
+        return requiredQty;
+    }
+
 }

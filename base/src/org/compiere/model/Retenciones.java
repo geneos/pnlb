@@ -138,23 +138,16 @@ public class Retenciones extends CalloutEngine
                             "from C_Invoice inv " + 
                             "inner join C_Invoiceline line on (inv.C_Invoice_ID = line.C_Invoice_ID) " +
                             "where inv.c_invoice_id = ? " + 
-                            "and line.c_tax_id != 1000055 " +
+                            "and ((line.c_tax_id != 1000055 " +
                             "and line.c_tax_id != 1000056 " +
-                            "and line.m_product_id is not null " +
-                            "group by inv.C_Doctype_ID " +
-                            "union " +
-                            "select sum(line.priceactual*line.qtyinvoiced), inv.C_Doctype_ID " +
-                            "from C_Invoice inv " +
-                            "inner join C_Invoiceline line on (inv.C_Invoice_ID = line.C_Invoice_ID) " +
-                            "where inv.c_invoice_id = ? " +
-                            "and line.c_charge_id is not null " +
-                            "and line.c_charge_id not in (select c_charge_id from c_charge where isretganancias = 'N')" +
+                            "and line.m_product_id is not null) or " +
+                            "(line.c_charge_id is not null " +
+                            "and line.c_charge_id not in (select c_charge_id from c_charge where isretganancias = 'N'))) " +
                             "group by inv.C_Doctype_ID ";
 
                             PreparedStatement pstmtInt = DB.prepareStatement(consulta, null);
                             
                             pstmtInt.setLong(1, C_Invoice_ID);
-                            pstmtInt.setLong(2, C_Invoice_ID);
                             
                             ResultSet rsInt = pstmtInt.executeQuery();
                             
@@ -197,8 +190,9 @@ public class Retenciones extends CalloutEngine
                                  
                                 
                                 MSR =  MSR.add(TotalLineas);
-                                flag = true;
+                                
                             }
+                            flag = true;
 
                         }
 

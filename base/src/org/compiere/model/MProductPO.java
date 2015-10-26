@@ -72,6 +72,18 @@ public class MProductPO extends X_M_Product_PO
 	/** Static Logger					*/
 	private static CLogger s_log = CLogger.getCLogger(MProductPO.class);
 
+        public static MProductPO getCurrentOfProduct(Properties ctx, int m_Product_ID, String _TrxName) {
+            MProductPO[] ppos = MProductPO.getOfProduct(ctx, m_Product_ID, _TrxName);
+            for (int i = 0; i < ppos.length; i++)
+            {
+                    if (ppos[i].isCurrentVendor() && ppos[i].getC_BPartner_ID() != 0)
+                    {
+                            return ppos[i];	               	                			
+                    }
+            }
+            return null;
+        }    
+
 	/**
 	 * 	Persistency Constructor
 	 *	@param ctx context

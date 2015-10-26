@@ -577,6 +577,9 @@ public class VCreateFromPayment extends VCreateFrom implements VetoableChangeLis
                         
                         
                 }
+                else {
+                    return false;
+                }
 
 		return true;
 	}   //  saveInvoice
@@ -593,13 +596,32 @@ public class VCreateFromPayment extends VCreateFrom implements VetoableChangeLis
 			if (((Boolean)model.getValueAt(i, 0)).booleanValue())	// Si esta seleccionada
 			{
 				BigDecimal openAmt = (BigDecimal)model.getValueAt(i, 7); // OpenAmt
+                                
 				BigDecimal total = (BigDecimal)model.getValueAt(i, 8); // Total
-				
-				if (openAmt.compareTo(total)==-1)
+				KeyNamePair pp = (KeyNamePair)model.getValueAt(i, 3);
+                                String docNo = pp.getName();
+                                
+                                //Chequeo que los signos sean coherentes
+                                if (openAmt.signum() != 0 && openAmt.signum() != total.signum())
 				{	
-					JOptionPane.showMessageDialog(null, "Existe un registro con Total mayor al importe Abierto.","Error - Verificaci�n de Montos",JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Existe un registro (Nro:"+docNo+") con signo erroneo en el Total (Debe coincidir con el del saldo abierto)","Error - Verificaci�n de Montos",JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
+                                
+                                //Chequeo tope para cantidades positivas
+                                if (openAmt.signum() == 1 && openAmt.compareTo(total)==-1)
+				{	
+					JOptionPane.showMessageDialog(null, "Existe un registro (Nro:"+docNo+") con Total mayor al importe Abierto.","Error - Verificaci�n de Montos",JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+                                
+                                //Chequeo tope para cantidades negativas
+                                if (openAmt.signum() == -1 && openAmt.compareTo(total)==1)
+				{	
+					JOptionPane.showMessageDialog(null, "Existe un registro (Nro:"+docNo+") con Total mayor al importe Abierto.","Error - Verificaci�n de Montos",JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+                                
 			}
 		}
 		return true;

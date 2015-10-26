@@ -66,6 +66,8 @@ import org.compiere.model.MQuery;
 import org.compiere.model.MRole;
 import org.compiere.model.MUOM;
 import org.compiere.model.MBPartner;
+import org.compiere.model.MProduct;
+import org.compiere.model.MProductPO;
 import org.compiere.model.M_Table;
 import org.compiere.plaf.CompierePLAF;
 import org.compiere.swing.CLabel;
@@ -1093,7 +1095,7 @@ public class VMRPDetailed extends CPanel implements FormPanel, ActionListener, V
 
          Object o = fProduct_ID.getValue();
          Integer M_Product_ID = o instanceof Integer ? (Integer)o : new Integer(0);    
-
+         MProduct prod = new MProduct(Env.getCtx(),M_Product_ID,null);
          try
          {
              
@@ -1145,9 +1147,20 @@ public class VMRPDetailed extends CPanel implements FormPanel, ActionListener, V
                  if (rs.getString(14)!=null)
                     fTiempoTransferencia.setText(rs.getString(14).toString());
              }
-			rs.close();
-			pstmt.close();
+            rs.close();
+            pstmt.close();
+            if (prod.isPurchased()) {
+                MProductPO ppo = MProductPO.getCurrentOfProduct(Env.getCtx(), prod.getM_Product_ID(), null);
+                // Overrides Order_Pack, Order_Min and Delivered_Time whit Purchase Planning (if exist)
+                // Like MRP Process
+                if (ppo != null){
+                    fOrdMult.setText(ppo.getOrder_Pack().toString());
+                    fMinOrd.setText(ppo.getOrder_Min().toString());
+                    fLeadtime.setText(String.valueOf(ppo.getDeliveryTime_Promised()));
+                }
+            }
         }
+        
         catch(SQLException ex)
         {
         	Log.log(Level.SEVERE, "No KeyColumn - " + sql , ex);

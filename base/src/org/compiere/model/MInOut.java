@@ -1655,18 +1655,21 @@ public class MInOut extends X_M_InOut implements DocAction
                     //if (product != null && oLine != null)		//	other in VMatch.createMatchRecord
                             //oLine.setQtyReserved(oLine.getQtyReserved().subtract(sLine.getQtyEntered()));
                         
-                    /*
-                    *  16/08/2012 Zynnia. 
-                    *  Modificacion para que si la cantidad entregada supera la que se ordeno, en 
-                    *  reservada no quede un valor negativo, sino ponga valor 0.
-                    * 
-                    */
-                    if (oLine.getQtyReserved().signum()==-1){
-                        oLine.setQtyReserved(BigDecimal.ZERO);
-                    }
 
                     //	Update Sales Order Line
                     if (oLine!=null){
+
+                        /*
+                        *  16/08/2012 Zynnia. 
+                        *  Modificacion para que si la cantidad entregada supera la que se ordeno, en 
+                        *  reservada no quede un valor negativo, sino ponga valor 0.
+                        * 
+                        */
+                        if (oLine.getQtyReserved().signum()==-1){
+                            oLine.setQtyReserved(BigDecimal.ZERO);
+                        }
+                        
+                        
                         /**
                         * BISion - Santiago Ibañez - 19/06/2009
                         * Modificacion realizada para actualizar el ordenado de la OC

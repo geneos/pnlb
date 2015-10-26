@@ -694,6 +694,7 @@ public class CalloutOrder extends CalloutEngine
 		Timestamp orderDate = (Timestamp)mTab.getValue("DateOrdered");
 		pp.setPriceDate(orderDate);
 		//		
+                
 		mTab.setValue("PriceList", pp.getPriceList());
 		mTab.setValue("PriceLimit", pp.getPriceLimit());
 		mTab.setValue("PriceActual", pp.getPriceStd());
@@ -702,7 +703,16 @@ public class CalloutOrder extends CalloutEngine
 		mTab.setValue("Discount", pp.getDiscount());
 		mTab.setValue("C_UOM_ID", new Integer(pp.getC_UOM_ID()));
 		mTab.setValue("QtyOrdered", mTab.getValue("QtyEntered"));
-		Env.setContext(ctx, WindowNo, "EnforcePriceLimit", pp.isEnforcePriceLimit() ? "Y" : "N");
+                
+                MProduct product = MProduct.get (ctx, M_Product_ID.intValue());
+                if (product.getDescription() != null){
+                    if (mTab.getValue("Description") != null)
+                        mTab.setValue("Description", mTab.getValue("Description")+" | "+product.getDescription());
+                    else
+                        mTab.setValue("Description", product.getDescription());
+
+                }
+                Env.setContext(ctx, WindowNo, "EnforcePriceLimit", pp.isEnforcePriceLimit() ? "Y" : "N");
 		Env.setContext(ctx, WindowNo, "DiscountSchema", pp.isDiscountSchema() ? "Y" : "N");
 		
 		//	Check/Update Warehouse Setting
@@ -720,7 +730,6 @@ public class CalloutOrder extends CalloutEngine
 		
 		if ("Y".equals(Env.getContext(ctx, WindowNo, "IsSOTrx")))
 		{
-			MProduct product = MProduct.get (ctx, M_Product_ID.intValue());
 			if (product.isStocked())
 			{
 				int M_Warehouse_ID = Env.getContextAsInt(ctx, WindowNo, "M_Warehouse_ID");

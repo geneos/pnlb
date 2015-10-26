@@ -64,6 +64,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import org.compiere.model.MAttributeSetInstance;
 import org.compiere.model.MLocator;
 import org.compiere.model.MMessage;
 import org.compiere.model.MStorage;
@@ -384,7 +385,7 @@ public class MRP extends SvrProcess
 
                          MMPCOrder order = new MMPCOrder(getCtx(), o.getMPC_Order_ID(),null);               
                          int MPC_MRP_ID = MMPCMRP.MPC_Order(order,null);
-                         MNote note = new MNote (Env.getCtx(),  1000015, o.getPlanner_ID() , MMPCMRP.getTableId(MMPCMRP.Table_Name) , MPC_MRP_ID ,  "Order:" + o.getDocumentNo() + " Release:" + o.getDateStartSchedule() , Msg.getMsg(Env.getCtx(), "MRP-060"),null);
+                         MNote note = new MNote (Env.getCtx(),  1000015, o.getPlanner_ID() , MMPCMRP.getTableId(MMPCMRP.Table_Name) , MPC_MRP_ID ,  "Order:" + o.getDocumentNo() + " Release:" + o.getDateStartSchedule() , Msg.getMsg(Env.getCtx(), "MRP-060"),get_TrxName());
                          note.setDescription("Proceso Generar Plan de Materiales");
                          /*
                          *  03/06/2013 Maria Jesus
@@ -512,7 +513,7 @@ public String runMRP() throws Exception
                        * Modificacion realizada para que muestre aviso de que este pronostico no se tomo en cuenta
                        */
                         MProduct p = new MProduct(getCtx(), rs.getInt("M_Product_ID"), get_TrxName());
-                        MNote nota = new MNote(Env.getCtx(), "MRP-130", Env.getAD_User_ID(Env.getCtx()), null);
+                        MNote nota = new MNote(Env.getCtx(), "MRP-130", Env.getAD_User_ID(Env.getCtx()), get_TrxName());
                         nota.setRecord_ID(rs.getInt("M_FORECASTLINE_ID"));
                         nota.setReference(p.getValue() + " " + p.getName());
                         nota.setDescription("Proceso Generar Plan de Materiales");
@@ -615,7 +616,7 @@ public String runMRP() throws Exception
                     // Creae Notice for Demand due
                     if(DatePromised.compareTo(Today) < 0)
                     {
-                        MNote note = new MNote (Env.getCtx(),  1000013, DemandPlanner_ID, MMPCMRP.getTableId(MMPCMRP.Table_Name), rs.getInt("MPC_MRP_ID") ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-040"),null);
+                        MNote note = new MNote (Env.getCtx(),  1000013, DemandPlanner_ID, MMPCMRP.getTableId(MMPCMRP.Table_Name), rs.getInt("MPC_MRP_ID") ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-040"),get_TrxName());
                         MMPCOrder order = new MMPCOrder(getCtx(), Order_Id, get_TrxName());
                         /*if (Order_Id==0||order.getDocumentNo()==null)
                             System.out.println("Orden de Manufactura cero");*/
@@ -730,32 +731,30 @@ public String runMRP() throws Exception
       }
        
       Trx trx = Trx.get(get_TrxName(), false);
-      if (trx.commit())
-          log.log(Level.SEVERE, "Se commitiaron exitosamente los cambios del Calculate Plan");
-      else
-          log.log(Level.SEVERE, "Hubo un error al commitear los cambios del Calculate Plan");
-        
-        
-      System.out.println("Resultado:" + result.toString());
       
       
-      //Actualizo tabla MStorage volviendo a activo los registros desactivados previos a la corrida
+       //Actualizo tabla MStorage volviendo a activo los registros desactivados previos a la corrida
       String slqUpdate = "UPDATE M_Storage ms SET isactive = 'Y'"
               + " WHERE ms.isactive = 'N' "
               + " AND M_Locator_ID in ( SELECT ml.m_locator_id from M_Locator ml "
                                         + "Inner Join M_Warehouse mw ON(mw.M_Warehouse_ID=ml.M_Warehouse_ID and mw.IsRequiredMRP='Y') )"
               + " AND CREATED >  to_date('2014/01/01', 'yyyy/mm/dd')";
       DB.executeUpdate(slqUpdate,trx.getTrxName());
-
-      if (trx.commit())
-          log.log(Level.SEVERE, "Se actualizaron exitosamente los registros MStorage");
-      else
-          log.log(Level.SEVERE, "Hubo un error al actualizar los registros MStorage");
       
+      if (trx.commit())
+          log.log(Level.SEVERE, "Se commitiaron exitosamente los cambios del Calculate Plan");
+      else {
+          log.log(Level.SEVERE, "Hubo un error al commitear los cambios del Calculate Plan");
+          trx.rollback();
+          throw new Exception("Hubo un error al commitear los cambios del Calculate Plan");
+      }  
+        
+      System.out.println("Resultado:" + result.toString());
       
        }
        catch (Exception e){
            log.log(Level.SEVERE,"RUN MRP", e);
+           throw e;
        }
       return "ok";
 }
@@ -797,7 +796,7 @@ public String runMRP() throws Exception
             else
             {
                 
-            MNote note = new MNote (Env.getCtx(),  1000020, 0 , MMPCMRP.getTableId(MMPCMRP.Table_Name), 0 ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-110"),null);
+            MNote note = new MNote (Env.getCtx(),  1000020, 0 , MMPCMRP.getTableId(MMPCMRP.Table_Name), 0 ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-110"),get_TrxName());
             note.setDescription("Proceso Generar Plan de Materiales");
             /*
              *  03/06/2013 Maria Jesus
@@ -842,7 +841,7 @@ public String runMRP() throws Exception
             }
             else
             {    
-                MNote note = new MNote (Env.getCtx(),  1000021, 0 , MMPCMRP.getTableId(MMPCMRP.Table_Name), 0 ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-120"),null);
+                MNote note = new MNote (Env.getCtx(),  1000021, 0 , MMPCMRP.getTableId(MMPCMRP.Table_Name), 0 ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-120"),get_TrxName());
                 note.setDescription("Proceso Generar Plan de Materiales");
                 /*
                  *  03/06/2013 Maria Jesus
@@ -860,19 +859,15 @@ public String runMRP() throws Exception
     		//m_product = MProduct.get(getCtx(), rLine.getM_Product_ID());
                 if(product.isPurchased())
                 {    
-    		int C_BPartner_ID = 0;
-    		MProductPO[] ppos = MProductPO.getOfProduct(getCtx(), product.getM_Product_ID(), null);
-    		for (int i = 0; i < ppos.length; i++)
-    		{
-    			if (ppos[i].isCurrentVendor() && ppos[i].getC_BPartner_ID() != 0)
-    			{
-    				//C_BPartner_ID = ppos[i].getC_BPartner_ID();
-    				DeliveryTime_Promised = new BigDecimal(ppos[i].getDeliveryTime_Promised());    	                	            
-                                Order_Min = ppos[i].getOrder_Min();
-                                Order_Pack = ppos[i].getOrder_Pack();    	               	                			
-    			}
-    		}
+                    MProductPO ppo = MProductPO.getCurrentOfProduct(getCtx(), product.getM_Product_ID(), get_TrxName());
+                    if (ppo != null) {
+                            //C_BPartner_ID = ppos[i].getC_BPartner_ID();
+                            DeliveryTime_Promised = new BigDecimal(ppo.getDeliveryTime_Promised());    	                	            
+                            Order_Min = ppo.getOrder_Min();
+                            Order_Pack = ppo.getOrder_Pack();    	               	                			
+                    }
                 }
+
     		    		
     		
             /*if (AD_Workflow_ID == 0 )
@@ -1064,9 +1059,9 @@ public String runMRP() throws Exception
                         BigDecimal minRemanenteAntesDemanda = QtyAlmacenadaInicial.add(QtyAntesDemanda).subtract(QtyDemandadaSatisfecha).subtract(minQtyTolerance);
                         //-----> Lo calculo antes del IF para saber si con la cantidad que tengo + voy a tener antes de la demanda me alcanza para cubrir el minimo sin necesidad de posponer demanda
 
-                        //Calculo remanente para toda la demanda y remanente considerando demanda minima (Para fecha POSTERIOR a demanda)
-                        BigDecimal remanenteDespuesDemanda = QtyAlmacenadaInicial.add(QtyDespuesDemanda).subtract(QtyDemandadaSatisfecha).subtract(QtyGrossReqs);
-                        BigDecimal minRemanenteDespuesDemanda = QtyAlmacenadaInicial.add(QtyDespuesDemanda).subtract(QtyDemandadaSatisfecha).subtract(minQtyTolerance);
+                        //Calculo remanente para toda la demanda y remanente considerando demanda minima (Para fecha POSTERIOR y ANTERIOR a demanda)
+                        BigDecimal remanenteDespuesDemanda = QtyAlmacenadaInicial.add(QtyAntesDemanda).add(QtyDespuesDemanda).subtract(QtyDemandadaSatisfecha).subtract(QtyGrossReqs);
+                        BigDecimal minRemanenteDespuesDemanda = QtyAlmacenadaInicial.add(QtyAntesDemanda).add(QtyDespuesDemanda).subtract(QtyDemandadaSatisfecha).subtract(minQtyTolerance);
                         
                         
                         if (QtyNetReqs.compareTo(Env.ZERO) >= 0 || minQtyNetReqs.compareTo(Env.ZERO) >= 0){
@@ -1087,7 +1082,7 @@ public String runMRP() throws Exception
                                 if (remanenteAntesDemanda.compareTo(Env.ZERO) < 0 && minRemanenteAntesDemanda.compareTo(Env.ZERO) >= 0){
                                     //Calculo cuanto llego a cubrir (Lo que necesito - lo que me falta = lo que realmente tengo)
                                     qtyUsed = QtyGrossReqs.add(remanenteAntesDemanda);
-                                    MNote nota = new MNote(Env.getCtx(), "MRP-TOLERANCE-02", Env.getAD_User_ID(Env.getCtx()), null);
+                                    MNote nota = new MNote(Env.getCtx(), "MRP-TOLERANCE-02", Env.getAD_User_ID(Env.getCtx()), get_TrxName());
                                     nota.setDescription("Proceso Generar Plan de Materiales");
                                     nota.setRecord_ID(0);
                                     nota.setAD_Table_ID(MMPCMRP.getTableId(MMPCMRP.Table_Name));
@@ -1184,15 +1179,38 @@ public String runMRP() throws Exception
                                 if (Order_Policy.equals(MMPCProductPlanning.ORDER_POLICY_PeriodOrderQuantity)){
                                     try{
                                         //Vector demandas = this.getDemandasReprogramar(M_Product_ID, QtyAlmacenadaInicial, QtyGrossReqs, QtyAntesDemanda, QtyDespuesDemanda, DemandDateStartSchedule);
-                                        //generarAvisosPosponerDemanda(product, demandas);                                        
-                                        
+                                        //generarAvisosPosponerDemanda(product, demandas); 
+                                        MNote nota = new MNote(Env.getCtx(), "Posponer Demanda", Env.getAD_User_ID(Env.getCtx()), get_TrxName());
+                                        nota.setDescription("Proceso Generar Plan de Materiales");
+                                        nota.setRecord_ID(0);
+                                        nota.setAD_Table_ID(MMPCMRP.getTableId(MMPCMRP.Table_Name));
+                                        //¿Que tipo de demanda es? ¿Pronostico u OM?
+                                        if (MPC_Order_ID==0){
+                                            nota.setTextMsg("Existe un pronostico para el producto "+product.getValue()+" - "+product.getName()+" que puede ser satisfecho con suministros posteriores a la fecha prometida: "+getFechaFromTimeStamp(DatePromised));
+                                            nota.setAD_Table_ID(MForecastLine.getTableId(MForecastLine.Table_Name));
+                                            nota.setRecord_ID(0);
+                                        }
+                                        else{
+                                            String orders = "";
+                                            for (int i=0; i<parentOrders.size(); i++){
+                                                MMPCOrder order = new MMPCOrder(getCtx(), (Integer)parentOrders.get(i), get_TrxName());
+                                                orders += order.getDocumentNo()+" ";
+                                                
+                                            }
+                                            //Obtengo la OM
+                                            nota.setTextMsg("La/s orden/es de manufactura nro: "+orders+"requiere/n del "+product.getValue()+" - "+product.getName()+".\nEste requerimiento puede ser satisfecho con suministros posteriores al "+getFechaFromTimeStamp(DatePromised));
+                                            nota.setRecord_ID(MPC_Order_ID);
+                                            nota.setAD_Table_ID(MMPCOrder.getTableId(MMPCOrder.Table_Name));
+                                        }
+                                        nota.setReference(product.getValue() + " " + product.getName());
+                                        nota.save();
                                     }
                                     catch(Exception e){
                                         System.out.println("No se pudo crear el aviso de Posponer demanda");
                                     }
                                 }
                                 else{
-                                    MNote nota = new MNote(Env.getCtx(), "Posponer Demanda", Env.getAD_User_ID(Env.getCtx()), null);
+                                    MNote nota = new MNote(Env.getCtx(), "Posponer Demanda", Env.getAD_User_ID(Env.getCtx()), get_TrxName());
                                     nota.setDescription("Proceso Generar Plan de Materiales");
                                     nota.setRecord_ID(0);
                                     nota.setAD_Table_ID(MMPCMRP.getTableId(MMPCMRP.Table_Name));
@@ -1233,6 +1251,8 @@ public String runMRP() throws Exception
                                 QtyGrossReqs = Env.ZERO;
                                 //No mando a comprar/fabricar nada porque se supone que va haber.
                             }
+                            // Entonces me alcanza con lo que ya tengo!
+                            
                             return;
                         }
                         //NO ALCANZA - manda a comprar/fabricar
@@ -1243,7 +1263,7 @@ public String runMRP() throws Exception
                                 //ACA VA LA PARTE DE DEMANDA SATISFECHA EN PARTE CON SUMINISTROS POSTERIORES
                                 if (!Order_Policy.equals(MMPCProductPlanning.ORDER_POLICY_PeriodOrderQuantity)){
                                     try{
-                                        MNote nota = new MNote(Env.getCtx(), "Posponer Demanda", Env.getAD_User_ID(Env.getCtx()), null);
+                                        MNote nota = new MNote(Env.getCtx(), "Posponer Demanda", Env.getAD_User_ID(Env.getCtx()), get_TrxName());
                                         nota.setDescription("Proceso Generar Plan de Materiales");
                                         nota.setRecord_ID(0);
                                         nota.setAD_Table_ID(MMPCMRP.getTableId(MMPCMRP.Table_Name));
@@ -1337,7 +1357,7 @@ public String runMRP() throws Exception
                                                         if (M_PriceList_ID==0) 
                                                         {
                                                         	log.info("No default pricelist has been retrieved");
-                                                        	MNote note = new MNote(Env.getCtx(), 1000018, SupplyPlanner_ID,MMPCMRP.getTableId(MMPCMRP.Table_Name), MPC_MPR_ID,product.getValue() + " " + product.getName(),Msg.getMsg(Env.getCtx(), "MRP-140"),null);
+                                                        	MNote note = new MNote(Env.getCtx(), 1000018, SupplyPlanner_ID,MMPCMRP.getTableId(MMPCMRP.Table_Name), MPC_MPR_ID,product.getValue() + " " + product.getName(),Msg.getMsg(Env.getCtx(), "MRP-140"),get_TrxName());
                                                                 note.setDescription("Proceso Generar Plan de Materiales");
                                                         	/*
                                                                  *  03/06/2013 Maria Jesus
@@ -1364,7 +1384,7 @@ public String runMRP() throws Exception
 
                                                         if (!req.save())
                                                         {
-                                                            MNote note = new MNote (Env.getCtx(),  1000018, SupplyPlanner_ID , MRequisition.getTableId(MRequisition.Table_Name), req.getM_Requisition_ID() ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-090"),null);
+                                                            MNote note = new MNote (Env.getCtx(),  1000018, SupplyPlanner_ID , MRequisition.getTableId(MRequisition.Table_Name), req.getM_Requisition_ID() ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-090"),get_TrxName());
                                                             note.setTextMsg("Error en la creación de la requisicion del producto: "+product.getValue()+" en la Req. nro: "+req.getDocumentNo());
                                                             note.setDescription("Proceso Generar Plan de Materiales");
                                                             note.setAD_Table_ID(MRequisition.getTableId(MRequisition.Table_Name));
@@ -1389,7 +1409,7 @@ public String runMRP() throws Exception
                                                             reqline.setQty(QtyPlanned);
                                                             if (!reqline.save())
                                                             {
-                                                                MNote note = new MNote (Env.getCtx(),  1000018, SupplyPlanner_ID , MRequisitionLine.getTableId(MRequisitionLine.Table_Name), reqline.getM_RequisitionLine_ID() ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-090"),null);
+                                                                MNote note = new MNote (Env.getCtx(),  1000018, SupplyPlanner_ID , MRequisitionLine.getTableId(MRequisitionLine.Table_Name), reqline.getM_RequisitionLine_ID() ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-090"),get_TrxName());
                                                                 note.setTextMsg("Error en la creación de la linea de la requisicion del producto: "+product.getValue()+" en la Req. nro: "+req.getDocumentNo());
                                                                 note.setDescription("Proceso Generar Plan de Materiales");
                                                                 note.setAD_Table_ID(MRequisition.getTableId(MRequisition.Table_Name));
@@ -1406,7 +1426,7 @@ public String runMRP() throws Exception
 
                                                             //Me fijo si tengo que crear Nota de Maximo excedido
                                                             if (crearNotaMax){
-                                                                MNote note = new MNote (Env.getCtx(),  1000018, SupplyPlanner_ID , MMPCMRP.getTableId(MMPCMRP.Table_Name), MPC_MPR_ID ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-090"),null);
+                                                                MNote note = new MNote (Env.getCtx(),  1000018, SupplyPlanner_ID , MMPCMRP.getTableId(MMPCMRP.Table_Name), MPC_MPR_ID ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-090"),get_TrxName());
                                                                 note.setTextMsg("La cantidad pedida de "+product.getValue()+" en la Req. nro: "+req.getDocumentNo()+"\nsupera el máximo especificado en la planificacion de dicho producto.");
                                                                 note.setDescription("Proceso Generar Plan de Materiales");
                                                                 note.setAD_Table_ID(MRequisition.getTableId(MRequisition.Table_Name));
@@ -1422,7 +1442,7 @@ public String runMRP() throws Exception
                                                             }
                                                             //Chequeo si debo crear Nota por cantidad < minimo
                                                             else if (crearNotaMin){
-                                                                MNote note = new MNote (Env.getCtx(),  1000017, SupplyPlanner_ID , MMPCMRP.getTableId(MMPCMRP.Table_Name), MPC_MPR_ID ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-080"),null);
+                                                                MNote note = new MNote (Env.getCtx(),  1000017, SupplyPlanner_ID , MMPCMRP.getTableId(MMPCMRP.Table_Name), MPC_MPR_ID ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-080"),get_TrxName());
                                                                 note.setTextMsg("La requisicion "+req.getDocumentNo()+" para el producto "+product.getValue()+" ha sido creada por la cantidad mínima.");
                                                                 note.setDescription("Proceso Generar Plan de Materiales");
                                                                 note.setAD_Table_ID(MRequisition.getTableId(MRequisition.Table_Name));
@@ -1452,7 +1472,7 @@ public String runMRP() throws Exception
                                                                     mrp.setDateStartSchedule(TimeUtil.addDays(DemandDateStartSchedule, (DeliveryTime_Promised.add(TransfertTime)).negate().intValue()));
                                                                     mrp.setDateFinishSchedule(DemandDateStartSchedule);
                                                                     if(!mrp.save(get_TrxName())){
-                                                                        MNote note = new MNote (Env.getCtx(),  1000017, SupplyPlanner_ID , MMPCMRP.getTableId(MMPCMRP.Table_Name), MPC_MPR_ID ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-080"),null);
+                                                                        MNote note = new MNote (Env.getCtx(),  1000017, SupplyPlanner_ID , MMPCMRP.getTableId(MMPCMRP.Table_Name), MPC_MPR_ID ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-080"),get_TrxName());
                                                                         note.setTextMsg("Error en la actualizacion del registro MRP_MRP para la requisicion "+req.getDocumentNo()+" para el producto "+product.getValue());
                                                                         note.setDescription("Proceso Generar Plan de Materiales");
                                                                         note.setAD_Table_ID(MMPCMRP.getTableId(MMPCMRP.Table_Name));
@@ -1528,7 +1548,7 @@ public String runMRP() throws Exception
                                                         order.setDocStatus(order.DOCSTATUS_Drafted);
                                                         order.setDocAction(order.DOCSTATUS_Completed);
                                                         if(!order.save()){
-                                                            MNote note = new MNote (Env.getCtx(),  1000018, SupplyPlanner_ID , MMPCOrder.getTableId(MMPCOrder.Table_Name), order.getMPC_Order_ID() ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-090"),null);
+                                                            MNote note = new MNote (Env.getCtx(),  1000018, SupplyPlanner_ID , MMPCOrder.getTableId(MMPCOrder.Table_Name), order.getMPC_Order_ID() ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-090"),get_TrxName());
                                                             note.setTextMsg("Error en la creación de la Orden de Manufactura del producto: "+product.getValue()+" en la Req. nro: "+order.getDocumentNo());
                                                             note.setDescription("Proceso Generar Plan de Materiales");
                                                             note.setAD_Table_ID(MMPCOrder.getTableId(MMPCOrder.Table_Name));
@@ -1595,7 +1615,7 @@ public String runMRP() throws Exception
                                                             }
                                                             //Me fijo si tengo que crear Nota de Maximo excedido
                                                             if (crearNotaMax){
-                                                                MNote note = new MNote (Env.getCtx(),  1000018, SupplyPlanner_ID , MMPCMRP.getTableId(MMPCMRP.Table_Name), MPC_MPR_ID ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-090"),null);
+                                                                MNote note = new MNote (Env.getCtx(),  1000018, SupplyPlanner_ID , MMPCMRP.getTableId(MMPCMRP.Table_Name), MPC_MPR_ID ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-090"),get_TrxName());
                                                                 note.setTextMsg("La cantidad pedida de "+product.getValue()+" en la Orden nro: "+order.getDocumentNo()+"\nsupera el máximo especificado en la planificacion de dicho producto.");
                                                                 note.setDescription("Proceso Generar Plan de Materiales");
                                                                 note.setAD_Table_ID(MMPCOrder.getTableId(MMPCOrder.Table_Name));
@@ -1610,7 +1630,7 @@ public String runMRP() throws Exception
                                                             }
                                                             //Chequeo si debo crear Nota por cantidad < minimo
                                                             else if (crearNotaMin){
-                                                                MNote note = new MNote (Env.getCtx(),  1000017, SupplyPlanner_ID , MMPCMRP.getTableId(MMPCMRP.Table_Name) , MPC_MPR_ID ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-080"),null);
+                                                                MNote note = new MNote (Env.getCtx(),  1000017, SupplyPlanner_ID , MMPCMRP.getTableId(MMPCMRP.Table_Name) , MPC_MPR_ID ,  product.getValue() + " " + product.getName()  , Msg.getMsg(Env.getCtx(), "MRP-080"),get_TrxName());
                                                                 note.setTextMsg("La Orden "+order.getDocumentNo()+" para el producto "+product.getValue()+" ha sido creada por la cantidad mínima.");
                                                                 note.setDescription("Proceso Generar Plan de Materiales");
                                                                 note.setAD_Table_ID(MMPCOrder.getTableId(MMPCOrder.Table_Name));
@@ -1723,7 +1743,7 @@ public String runMRP() throws Exception
     private void generarAvisosPosponerDemanda(MProduct product, Vector demandas){
         Enumeration e = demandas.elements();
         while (e.hasMoreElements()){
-            MNote nota = new MNote(Env.getCtx(), "Posponer Demanda", Env.getAD_User_ID(Env.getCtx()), null);
+            MNote nota = new MNote(Env.getCtx(), "Posponer Demanda", Env.getAD_User_ID(Env.getCtx()), get_TrxName());
             nota.setDescription("Proceso Generar Plan de Materiales");
             nota.setRecord_ID(0);
             nota.setAD_Table_ID(MMPCMRP.getTableId(MMPCMRP.Table_Name));
@@ -1903,7 +1923,7 @@ public String runMRP() throws Exception
 
             try {
 
-                PreparedStatement pstmtobl = DB.prepareStatement(sql,null);
+                PreparedStatement pstmtobl = DB.prepareStatement(sql,get_TrxName());
                 ResultSet rsobl = pstmtobl.executeQuery();
                 BigDecimal total = Env.ZERO;
                 
@@ -2010,7 +2030,7 @@ public String runMRP() throws Exception
             MWarehouse wh = MWarehouse.get(Env.getCtx(), 1000032);
             
             //Obtengo la ubicacion por defecto del almacen
-            MLocator locator = new MLocator(Env.getCtx(),wh.getDefaultLocator().getM_Locator_ID(),null);
+            MLocator locator = new MLocator(Env.getCtx(),wh.getDefaultLocator().getM_Locator_ID(),get_TrxName());
             
             String sqlUpdate = " update m_storage set qtyreserved = "+reservadoGlobal+
             " where "+
@@ -2084,7 +2104,7 @@ public String runMRP() throws Exception
 
             try {
 
-                PreparedStatement pstmtobl = DB.prepareStatement(sql,null);
+                PreparedStatement pstmtobl = DB.prepareStatement(sql,get_TrxName());
                 ResultSet rsobl = pstmtobl.executeQuery();
                 BigDecimal total = Env.ZERO;
                 
@@ -2321,6 +2341,21 @@ public String runMRP() throws Exception
         
         
     }
+    
+     private void enviarNotaFalloObtenerOrdenPartida(String trx, int m_attributesetinstance_id, int mpc_order_id, int tableId, int recordId) throws SQLException {
+        //MNote note = new MNote (Env.getCtx(), comprobante + " no se ha podido eliminar. Numero: "+ numeroComp, Env.getAD_User_ID(Env.getCtx()), trx);
+        MMPCOrder order = new MMPCOrder(Env.getCtx(),mpc_order_id,get_TrxName());
+        MAttributeSetInstance asi = new MAttributeSetInstance(Env.getCtx(),m_attributesetinstance_id,get_TrxName());
+        MNote note = new MNote (Env.getCtx(), "MRP-131", Env.getAD_User_ID(Env.getCtx()), trx);
+        note.setTextMsg("No se creo puntero para la orden: "+order+ ". No existe orden de manufactura asociada a la partida: "+asi);
+        note.setDescription("Proceso Generar Plan de Materiales");
+        note.setAD_Table_ID(tableId);
+        note.setRecord_ID(recordId);
+        if (!note.save(trx)){
+            log.log(Level.SEVERE, "No se pudo guardar la Nota: " + note.getDescription());
+        }
+    }
+    
     private void enviarNotaFalloDelete(String trx, String comprobante, String numeroComp, int tableId, int recordId) throws SQLException {
         //MNote note = new MNote (Env.getCtx(), comprobante + " no se ha podido eliminar. Numero: "+ numeroComp, Env.getAD_User_ID(Env.getCtx()), trx);
         MNote note = new MNote (Env.getCtx(), "MRP-INTERRUPTION-003", Env.getAD_User_ID(Env.getCtx()), trx);
@@ -2367,9 +2402,9 @@ public String runMRP() throws Exception
             if (rs.next() ){
                 retValue = rs.getInt(1);
             }
-            else
-                throw new Exception("Error no existe MPC Order con la partida "+m_attributesetinstance_id);
-
+            else{
+                enviarNotaFalloObtenerOrdenPartida(trxname, m_attributesetinstance_id, parentMPCOrderID, MMPCOrder.getTableId(MMPCOrder.Table_Name),parentMPCOrderID);
+            }
             psTrx.close();
             rs.close();
         }

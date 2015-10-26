@@ -2823,7 +2823,7 @@ public class MPayment extends X_C_Payment
 						setDocAction(DOCACTION_None);
 					}
 				else
-					{ m_processMsg = "@No se puede Eiminar - Exista un cheque que no se encuentra en Cartera@";
+					{ 
 					  setDocAction(DOCACTION_Close);
 					  return false;
 					}
@@ -2867,7 +2867,7 @@ public class MPayment extends X_C_Payment
 							setDocAction(DOCACTION_None);
 						}
 					else
-						{ m_processMsg = "@No se puede Eiminar - Exista un cheque que no se encuentra Emitido@";
+						{ 
 						  setDocAction(DOCACTION_Close);
 						  return false;
 						}
@@ -3106,13 +3106,13 @@ public class MPayment extends X_C_Payment
 	private void deleteValoresCobranza()
 	{
 		// Eliminar Valores de la Cobranza
-		List<MPAYMENTVALORES> lVal = getValoresCobranza();
+		/*List<MPAYMENTVALORES> lVal = getValoresCobranza();
 		if (lVal!=null)
 			for (int i=0; i<lVal.size(); i++)
 	    	{
 				MPAYMENTVALORES payval = (MPAYMENTVALORES)lVal.get(i);
 	    		payval.delete(true);
-	    	}
+	    	}*/
 	}
 
 /*	private void deleteRetencionesCobranza()
@@ -3601,7 +3601,6 @@ public class MPayment extends X_C_Payment
 		if (!MPeriod.isOpen(getCtx(), getDateAcct(), dt.getDocBaseType()))
 		{
 			m_processMsg = "@PeriodClosed@";
-			setDocAction(DOCACTION_Close);
 			return false;
 		}
 
@@ -3610,9 +3609,12 @@ public class MPayment extends X_C_Payment
 		for (int i=0; i<chRecib.size(); i++)
                 {
                         MPAYMENTVALORES payval = (MPAYMENTVALORES)chRecib.get(i);
-                        if (!payval.getEstado().equals(MPAYMENTVALORES.CARTERA))
-                                return false;
+                        if (!payval.getEstado().equals(MPAYMENTVALORES.CARTERA)){
+                            m_processMsg = "@Existe un cheque ("+payval.getNroCheque()+") que no se encuentra En Cartera@";    
+                            return false;
+                        }
                 }
+                
                 
                 
                 /*
@@ -3622,8 +3624,10 @@ public class MPayment extends X_C_Payment
                 
                 try {
                     
-                    if(MMOVIMIENTOCONCILIACION.isConcCompleteForPayment(getC_Payment_ID()))
+                    if(MMOVIMIENTOCONCILIACION.isConcCompleteForPayment(getC_Payment_ID())){
+                            m_processMsg = "@La Cobranza ya fue conciliada@";
                             return false;
+                    }
                     
                 } catch (SQLException ex) {
                     Logger.getLogger(MPayment.class.getName()).log(Level.SEVERE, null, ex);
@@ -3647,7 +3651,6 @@ public class MPayment extends X_C_Payment
 		if (!MPeriod.isOpen(getCtx(), getDateAcct(), dt.getDocBaseType()))
 		{
 			m_processMsg = "@PeriodClosed@";
-			setDocAction(DOCACTION_Close);
 			return false;
 		}
 
@@ -3656,8 +3659,10 @@ public class MPayment extends X_C_Payment
 		for (int i=0; i<chProp.size(); i++)
                 {
                         MVALORPAGO payval = (MVALORPAGO)chProp.get(i);
-                        if (!payval.getEstado().equals(MVALORPAGO.EMITIDO)&!payval.getEstado().equals(MVALORPAGO.IMPRESO))
-                                return false;
+                        if (!payval.getEstado().equals(MVALORPAGO.EMITIDO)&!payval.getEstado().equals(MVALORPAGO.IMPRESO)){
+                            m_processMsg = "@Existe un cheque ("+payval.getNroCheque()+") que no se encuentra Emitido@";    
+                            return false;
+                        }
                 }
 
                 /*
@@ -3667,9 +3672,10 @@ public class MPayment extends X_C_Payment
                 
                 try {
                     
-                    if(MMOVIMIENTOCONCILIACION.isConcCompleteForPayment(getC_Payment_ID()))
+                    if(MMOVIMIENTOCONCILIACION.isConcCompleteForPayment(getC_Payment_ID())){
+                            m_processMsg = "@El Pago ya fue conciliado@";    
                             return false;
-                    
+                    }
                 } catch (SQLException ex) {
                     Logger.getLogger(MPayment.class.getName()).log(Level.SEVERE, null, ex);
                 }

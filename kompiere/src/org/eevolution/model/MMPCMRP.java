@@ -1056,8 +1056,8 @@ public class MMPCMRP extends X_MPC_MRP
                 4/12/2014
                 Solo se deben incluir los STORAGE activos
                 */
-                String sql = "SELECT distinct(mw.M_Warehouse_ID),bomQtyOnHandActive (ms.M_Product_ID ,ml.M_Warehouse_ID,0) AS OnHand FROM M_Storage ms Inner Join M_Locator ml on (ms.M_Locator_Id = ml.M_Locator_Id) Inner Join M_Warehouse mw ON(mw.M_Warehouse_ID=ml.M_Warehouse_ID) WHERE  mw.IsRequiredMRP='Y' AND ms.isactive = 'Y' AND  ms.AD_Org_ID = " + AD_Org_ID + " AND ms.M_Product_ID=" + M_Product_ID;
-                
+                //String sql = "SELECT distinct(mw.M_Warehouse_ID),bomQtyOnHandActive (ms.M_Product_ID ,ml.M_Warehouse_ID,0) AS OnHand FROM M_Storage ms Inner Join M_Locator ml on (ms.M_Locator_Id = ml.M_Locator_Id) Inner Join M_Warehouse mw ON(mw.M_Warehouse_ID=ml.M_Warehouse_ID) WHERE  mw.IsRequiredMRP='Y' AND ms.isactive = 'Y' AND  ms.AD_Org_ID = " + AD_Org_ID + " AND ms.M_Product_ID=" + M_Product_ID;
+                String sql = "SELECT distinct(mw.M_Warehouse_ID),ms.M_Product_ID ,ml.M_Warehouse_ID FROM M_Storage ms Inner Join M_Locator ml on (ms.M_Locator_Id = ml.M_Locator_Id) Inner Join M_Warehouse mw ON(mw.M_Warehouse_ID=ml.M_Warehouse_ID) WHERE  mw.IsRequiredMRP='Y' AND ms.isactive = 'Y' AND  ms.AD_Org_ID = " + AD_Org_ID + " AND ms.M_Product_ID=" + M_Product_ID;
                 
                 
                 
@@ -1078,8 +1078,10 @@ public class MMPCMRP extends X_MPC_MRP
                         ResultSet rs = pstmt.executeQuery ();
                         while (rs.next())
                         {
+                            
+                            
                            //OnHand = rs.getBigDecimal("OnHand");
-                           OnHand = OnHand.add(rs.getBigDecimal("OnHand"));
+                           OnHand = OnHand.add(bomQtyActive (rs.getInt(2) ,rs.getInt(3),trxName));
                            
                         }
                         rs.close();
@@ -1231,6 +1233,149 @@ public class MMPCMRP extends X_MPC_MRP
       //System.out.println("Elapsed milliseconds: " + difference);
       return difference / 6750000;        
    }
+        
+        
+    private static final BigDecimal UNLIMITED = new BigDecimal((double)99999.0);
+        
+    static BigDecimal bomQtyActive (int p_M_Product_ID, 
+		int p_M_Warehouse_ID, String trxName) 
+		throws SQLException
+	{
+		//	Check Parameters
+		int M_Warehouse_ID = p_M_Warehouse_ID;
+                
+                
+		
+		if (M_Warehouse_ID == 0)
+			return Env.ZERO;
+		
+		//	Check, if product exists and if it is stocked
+		boolean isBOM = false;
+		String ProductType = null;
+		boolean isStocked = false;
+		
+                String sql = "SELECT IsBOM, ProductType, IsStocked "
+			+ "FROM M_Product "
+			+ "WHERE M_Product_ID=" + p_M_Product_ID;
+		
+                PreparedStatement pstmt = DB.prepareStatement(sql, trxName);
+                
+		ResultSet rs = pstmt.executeQuery();
+		if (rs.next())
+		{
+			isBOM = "Y".equals(rs.getString(1));
+			ProductType = rs.getString(2);
+			isStocked = "Y".equals(rs.getString(3));
+		}
+                
+		rs.close();
+		pstmt.close();
+		
+                //	No Product
+		if (ProductType == null)
+			return Env.ZERO;
+		//	Unlimited capacity if no item
+		if (!isBOM && (!ProductType.equals("I") || !isStocked))
+			return UNLIMITED;
+		//	Get Qty
+		if (isStocked)
+			return getStorageQtyActive(p_M_Product_ID, M_Warehouse_ID, trxName);
+		
+		//	Go through BOM
+		BigDecimal quantity = UNLIMITED;
+		BigDecimal productQuantity = null;
+		sql = "SELECT b.M_ProductBOM_ID, b.BOMQty, p.IsBOM, p.IsStocked, p.ProductType "
+			+ "FROM M_Product_BOM b, M_Product p "
+			+ "WHERE b.M_ProductBOM_ID=p.M_Product_ID"
+			+ " AND b.M_Product_ID=?";
+                
+		pstmt = DB.prepareStatement(sql,trxName);
+		pstmt.setInt(1, p_M_Product_ID);
+		rs = pstmt.executeQuery();
+		while (rs.next())
+		{
+			int M_ProductBOM_ID = rs.getInt(1);
+			BigDecimal bomQty = rs.getBigDecimal(2);
+			isBOM = "Y".equals(rs.getString(3));
+			isStocked = "Y".equals(rs.getString(4)); 
+			ProductType = rs.getString(5);
+			
+			//	Stocked Items "leaf node"
+			if (ProductType.equals("I") && isStocked)
+			{
+				//	Get ProductQty
+				productQuantity = getStorageQtyActive(M_ProductBOM_ID, M_Warehouse_ID, trxName);
+				//	Get Rounding Precision
+				int uomPrecision = getUOMPrecision(M_ProductBOM_ID, trxName);
+				//	How much can we make with this product
+				productQuantity = productQuantity.setScale(uomPrecision)
+					.divide(bomQty, uomPrecision, BigDecimal.ROUND_HALF_UP);
+				//	How much can we make overall
+				if (productQuantity.compareTo(quantity) < 0)
+					quantity = productQuantity;
+			}
+			else if (isBOM)	//	Another BOM
+			{
+				productQuantity = bomQtyActive (M_ProductBOM_ID, M_Warehouse_ID, trxName);
+				//	How much can we make overall
+				if (productQuantity.compareTo(quantity) < 0)
+					quantity = productQuantity;
+			}
+		}
+		rs.close();
+		pstmt.close();
+		
+		if (quantity.signum() != 0)
+		{
+			int uomPrecision = getUOMPrecision(p_M_Product_ID, trxName);
+			return quantity.setScale(uomPrecision, BigDecimal.ROUND_HALF_UP);
+		}
+		return Env.ZERO;
+	}	//	bomQtyOnHand
+	     
+    	static BigDecimal getStorageQtyActive (int p_M_Product_ID, 
+		int M_Warehouse_ID, String trxName)
+		throws SQLException
+	{
+		BigDecimal quantity = null;
+		String sql = "SELECT SUM(qtyonhand) "
+			+ "FROM M_Storage s "
+			+ "WHERE M_Product_ID=?";
+		sql += " AND s.isactive = 'Y'";
+                sql += " AND EXISTS (SELECT * FROM M_Locator l WHERE s.M_Locator_ID=l.M_Locator_ID"
+				+ " AND l.M_Warehouse_ID=?)";
+		PreparedStatement pstmt = DB.prepareStatement(sql,trxName);
+		pstmt.setInt(1, p_M_Product_ID);
+		pstmt.setInt(2, M_Warehouse_ID);
+		ResultSet rs = pstmt.executeQuery();
+		if (rs.next())
+			quantity = rs.getBigDecimal(1);
+		rs.close();
+		pstmt.close();
+		//	Not found
+		if (quantity == null)
+			return Env.ZERO;
+		return quantity;
+	}	//	getStorageQty
+        
+	static int getUOMPrecision (int p_M_Product_ID, String trxName) throws SQLException
+	{
+		int precision = 0;
+		String sql = "SELECT u.StdPrecision "
+			+ "FROM C_UOM u"
+			+ " INNER JOIN M_Product p ON (u.C_UOM_ID=p.C_UOM_ID) "
+			+ "WHERE p.M_Product_ID=?";
+		PreparedStatement pstmt = DB.prepareStatement(sql,trxName);
+		pstmt.setInt(1, p_M_Product_ID);
+		ResultSet rs = pstmt.executeQuery();
+		if (rs.next())
+			precision = rs.getInt(1);
+		rs.close();
+		pstmt.close();
+		return precision;
+	}	//	getStdPrecision
+        
+	
 	
         
 }	//	MPC_MRP

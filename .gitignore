@@ -40,3 +40,5 @@ $RECYCLE.BIN/
 #-------- Java -------------
 *.class
 /lib/*.jar
+/utils_dev/*.sh
+/version/
