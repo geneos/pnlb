@@ -3152,7 +3152,7 @@ public class MPayment extends X_C_Payment
             
 		log.info(toString());
 
-		if (isReceipt()){
+		if (isReceipt() && verificarAnularCobranza()){
                     
                     /*
                     * GENEOS - Pablo Velazquez
@@ -3178,11 +3178,6 @@ public class MPayment extends X_C_Payment
                     */ 
                     
                     try {
-                        if(MMOVIMIENTOCONCILIACION.isConcCompleteForPayment(getC_Payment_ID())){
-                            m_processMsg = "@La cobranza ya fue conciliada@";
-                            setDocAction(DOCACTION_Close);
-                            return false;
-                        }
                             
                         MMOVIMIENTOCONCILIACION.deleteMov(getC_Payment_ID());
 

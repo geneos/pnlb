@@ -156,7 +156,7 @@ public class GenerateLibroIvaCompras extends SvrProcess {
                     }
                     while (rs3.next()) {
                         if (doctype.getDocBaseType().equals(MDocType.DOCBASETYPE_APInvoice)) {
-                            if (rs3.getLong(2) == 1000052 || rs3.getLong(2) == 1000053 || rs3.getLong(2) == 1000054) {
+                            if (rs3.getLong(2) == 5000001 || rs3.getLong(2) == 1000052 || rs3.getLong(2) == 1000053 || rs3.getLong(2) == 1000054) {
                                 iva_parcial = iva_parcial.add(rs3.getBigDecimal(1).multiply(invoice.getCotizacion()));
                                 impuesto_iva = impuesto_iva.add(rs3.getBigDecimal(3).multiply(invoice.getCotizacion()));
                             } else if (rs3.getLong(2) == 1000055 || rs3.getLong(2) == 1000057 || rs3.getLong(2) == 1000056) {
@@ -165,7 +165,7 @@ public class GenerateLibroIvaCompras extends SvrProcess {
                                 impuesto_iva = impuesto_iva.add(rs3.getBigDecimal(3).multiply(invoice.getCotizacion()));
                             }
                         } else if (doctype.getDocBaseType().equals(MDocType.DOCBASETYPE_APCreditMemo)) {
-                            if (rs3.getLong(2) == 1000052 || rs3.getLong(2) == 1000053 || rs3.getLong(2) == 1000054) {
+                            if (rs3.getLong(2) == 5000001 || rs3.getLong(2) == 1000052 || rs3.getLong(2) == 1000053 || rs3.getLong(2) == 1000054) {
                                 iva_parcial = iva_parcial.subtract(rs3.getBigDecimal(1).multiply(invoice.getCotizacion()));
                                 impuesto_iva = impuesto_iva.subtract(rs3.getBigDecimal(3).multiply(invoice.getCotizacion()));
                             } else if (rs3.getLong(2) == 1000055 || rs3.getLong(2) == 1000057 || rs3.getLong(2) == 1000056) {
@@ -401,7 +401,7 @@ public class GenerateLibroIvaCompras extends SvrProcess {
                 while (rs3.next()) {
                     if (doctype.getDocBaseType().equals(MDocType.DOCBASETYPE_APInvoice)) {
                         //if (rs3.getLong(2) == 1000052 || rs3.getLong(2) == 1000053 || rs3.getLong(2) == 1000054 || rs3.getLong(2) == ID_IVANG) {
-                        if (rs3.getLong(2) == 1000052 || rs3.getLong(2) == 1000053 || rs3.getLong(2) == 1000054) {
+                        if (rs3.getLong(2) == 5000001 || rs3.getLong(2) == 1000052 || rs3.getLong(2) == 1000053 || rs3.getLong(2) == 1000054) {
                             iva_parcial = iva_parcial.add(rs3.getBigDecimal(1).multiply(invoice.getCotizacion()));
                             impuesto_iva = impuesto_iva.add(rs3.getBigDecimal(3).multiply(invoice.getCotizacion()));
                         } else if (rs3.getLong(2) == 1000055 || rs3.getLong(2) == 1000057 || rs3.getLong(2) == 1000056) {
@@ -411,7 +411,7 @@ public class GenerateLibroIvaCompras extends SvrProcess {
                         }
                     } else if (doctype.getDocBaseType().equals(MDocType.DOCBASETYPE_APCreditMemo)) {
                         //if (rs3.getLong(2) == 1000052 || rs3.getLong(2) == 1000053 || rs3.getLong(2) == 1000054 || rs3.getLong(2) == ID_IVANG) {
-                        if (rs3.getLong(2) == 1000052 || rs3.getLong(2) == 1000053 || rs3.getLong(2) == 1000054) {
+                        if (rs3.getLong(2) == 5000001 || rs3.getLong(2) == 1000052 || rs3.getLong(2) == 1000053 || rs3.getLong(2) == 1000054) {
                             iva_parcial = iva_parcial.subtract(rs3.getBigDecimal(1).multiply(invoice.getCotizacion()));
                             impuesto_iva = impuesto_iva.subtract(rs3.getBigDecimal(3).multiply(invoice.getCotizacion()));
                         } else if (rs3.getLong(2) == 1000055 || rs3.getLong(2) == 1000057 || rs3.getLong(2) == 1000056) {

@@ -6,30 +6,31 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.process.SvrProcess;
 import org.compiere.util.DB;
 
-public class RemitoSalidaTxtAndreani extends SvrProcess {
-
+public class SolicitudEntradaTxtAndreani extends SvrProcess {
+	
+    private final String c01 = "c01";
+    private final String c02 = "c02";
+    private final String c03 = "c03";
+    private final String c04 = "c04";
+    private final String c05 = "c05";
+    private final String c06 = "c06";
+    private final String c07 = "c07";
+    private final String c08 = "c08";
+    private final String c09 = "c09";
     
-    private String p_fecha = "";
-    private String p_fecha_to = "";
+    
+    private String p_fecha = null;
+    private String p_fecha_to = null;
 
     private final String nombreArchivo = "PCLT01PF";
-    
-    // Id del tipo de movimiento.
-    private BigDecimal C_DocType_ID;
-    
-    // Identificación de origen y destino
-    private String company;
+
+    private BigDecimal MPC_Order_ID = null;
     
     /**
      * Prepare - e.g., get Parameters.
@@ -42,11 +43,8 @@ public class RemitoSalidaTxtAndreani extends SvrProcess {
                 p_fecha = para[i].getInfo();
                 p_fecha_to = para[i].getInfo_To();
             }
-            else if (name.equals("C_DocType_ID")) {
-                C_DocType_ID = ((BigDecimal)para[i].getParameter());
-            }
-            else if (name.equals("company")) {
-                company = para[i].getInfo();
+            else if (name.equals("MPC_Order_ID")) {
+                MPC_Order_ID = ((BigDecimal)para[i].getParameter());
             }
             else {
                 log.log(Level.SEVERE, "Unknown Parameter: " + name);
@@ -57,6 +55,8 @@ public class RemitoSalidaTxtAndreani extends SvrProcess {
 
     }
 
+
+
     /**
      * Perrform process.
      * 
@@ -66,28 +66,27 @@ public class RemitoSalidaTxtAndreani extends SvrProcess {
      */
     protected String doIt() throws Exception {
             
-        String sql = "select prod.Value, masi.created , masi.guaranteedate, masi.lot, mov.description "
-            + "from M_Movement mov "
-            + "inner join M_MovementLine movline "
-                + "on (movline.M_Movement_ID = mov.M_Movement_ID) "
-            + "inner join M_AttributeSetInstance masi "
-                + "on (masi.M_AttributeSetInstance_ID = movline.M_AttributeSetInstance_ID) "
-            + "inner join M_Product prod "
-                + "on (prod.M_Product_ID = movline.M_Product_ID) "
-            + "where  mov.MOVEMENTDATE  >=  to_date('" + p_fecha + "', 'dd/mm/yyyy') ";
+        String sql = "select o.documentno,p.Value, obl.qtyrequired"
+            + "from mpc_order_bomline obl "
+            + "inner join mpc_order o "
+                + "on (o.mpc_order_id = obl.mpc_order_id) "
+            + "inner join M_Product p "
+                + "on (p.M_Product_ID = obl.M_Product_ID) "
+            + "where  o.docstatus =  'CO'";
         
-        if(p_fecha_to != "")        
-            sql += "and mov.MOVEMENTDATE  <=  to_date('" + p_fecha_to + "', 'dd/mm/yyyy') ";
-        
-        sql += "and mov.C_DOCTYPE_ID = " + C_DocType_ID;
+        if(p_fecha != null)        
+            sql += "and order.datestartschedule  >=  to_date('" + p_fecha + "', 'dd/mm/yyyy') ";
+        if(p_fecha_to != null)        
+            sql += "and order.datestartschedule  <=  to_date('" + p_fecha_to + "', 'dd/mm/yyyy') ";
+        if(MPC_Order_ID != null) 
+            sql += "and order.MPC_Order_ID = " + MPC_Order_ID;
 
         PreparedStatement ps = DB.prepareStatement(sql, null);
         ResultSet rs = ps.executeQuery();
 
         String prod_txt = "";
-        String crea_txt = "";
-        String venc_txt = "";
-        String lote_txt = "";
+        String ord_txt = "";
+        String qty_txt = "";
         
         FileWriter fw = null;
 	PrintWriter pw = null;
@@ -101,56 +100,20 @@ public class RemitoSalidaTxtAndreani extends SvrProcess {
                 + ".csv");
         
             bw = new BufferedWriter(fw);
-            pw = new PrintWriter(bw);
-
-            String [] crea_date = null;
-            String [] venc_date = null;
-            String crea_dd = "";
-            String crea_mm = "";
-            String crea_yy = "";
-            String venc_dd = "";
-            String venc_mm = "";
-            String venc_yy = "";
-            String desc = "";
-            
+            pw = new PrintWriter(bw);      
 
             while (rs.next()) {
 
-                    prod_txt = rs.getString(1);
-                    
-                    crea_txt = rs.getDate(2).toString();
-                    crea_date = crea_txt.split("-");
-                    crea_dd = crea_date[2];
-                    crea_mm = crea_date[1];
-                    crea_yy = crea_date[0].substring(0,4);
+                    ord_txt = rs.getString(1) != null ? rs.getString(1) : "";
+                    prod_txt = rs.getString(2) != null ? rs.getString(2) : "";
+                    qty_txt = rs.getString(3) != null ? rs.getString(3) : "";
 
-                    venc_txt = rs.getDate(3).toString();
-                    venc_date = venc_txt.split("-");
-                    venc_dd = venc_date[2];
-                    venc_mm = venc_date[1];
-                    venc_yy = venc_date[0].substring(0,4);
-
-                    System.out.println(venc_date[1]);
-                    System.out.println(venc_date[2]);
-                    lote_txt = rs.getString(4) != null ? rs.getString(4) : "";
-                    desc = rs.getString(5) != null ? rs.getString(5) : "";
-                    
-                    
-                    if(desc.length()>25)
-                        desc = desc.substring(0, 24);
-                    
-                    prod_txt = completeWhitZeros(prod_txt,15);
-                    
-                    pw.print(company+";"+prod_txt+";"+lote_txt+";"+"CUA"+";"+"DIS"
-                    +";"+venc_yy+venc_mm+venc_dd
-                    +";"+crea_yy+crea_mm+crea_dd
-                    +";"+ desc);
+                    pw.print(c01+";"+c02+";"+c03+";"+c04+";"+c05+";"+c06+";"+c07+";"+c08+";"+c09
+                    +";"+ord_txt+prod_txt+qty_txt);
                     pw.println();
                     
             }
             pw.close();
-
-        
         } catch (java.io.IOException ioex) {
                 System.out.println("se presento el error: " + ioex.toString());
                 rs.close();
@@ -170,8 +133,6 @@ public class RemitoSalidaTxtAndreani extends SvrProcess {
 
                 }
         }        
-        
-        
         
         rs.close();
         ps.close();
@@ -208,7 +169,6 @@ public class RemitoSalidaTxtAndreani extends SvrProcess {
     }
 
 
-
     /**
      * Completa con espacios en blanco los campos que devuelve vacia la consulta
      * o que no se tienen en cuenta
@@ -220,21 +180,6 @@ public class RemitoSalidaTxtAndreani extends SvrProcess {
             String valorRelleno = "";
             for (int i = 0; i < cantidad; i++) {
                     valorRelleno = valorRelleno + " ";
-            }
-            return valorRelleno;
-    }
-    
-    /**
-     * Completa con espacios en blanco los campos que devuelve vacia la consulta
-     * o que no se tienen en cuenta
-     * 
-     * @param cantidad
-     * @return
-     */
-    public String completeWhitZeros(String palabra,int cantidad) {
-            String valorRelleno = palabra;
-            for (int i = 0; i < cantidad - palabra.length(); i++) {
-                    valorRelleno = "0" + valorRelleno;
             }
             return valorRelleno;
     }

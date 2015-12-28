@@ -1007,7 +1007,7 @@ public class MInOut extends X_M_InOut implements DocAction
 	protected boolean beforeSave (boolean newRecord)
 	{
 		//	Warehouse Org
-
+                System.out.println("Concha de tu madre");
 
 		if (newRecord)
 		{
@@ -1038,135 +1038,138 @@ public class MInOut extends X_M_InOut implements DocAction
 
         	if(documentNo != null && !documentNo.equals(""))
             {
-                /*
-                 *      Si el numero es definido por el sistema automaticamente le asigna <>
-                 *      en este caso se debe reformatear para anexarle los ceros y aumentar
-                 *      el numerador a mano ya que el sistema pierde la referencia automatica.
-                 */
+                //Si el documento es una devolucion entonces el formato es 00000
+                if (getC_DocType_ID() != 5000046){
+                    /*
+                     *      Si el numero es definido por el sistema automaticamente le asigna <>
+                     *      en este caso se debe reformatear para anexarle los ceros y aumentar
+                     *      el numerador a mano ya que el sistema pierde la referencia automatica.
+                     */
 
-                if(documentNo.indexOf("<") != -1)
-                {
-                    documentNo = documentNo.substring(1,documentNo.length()-1);
-                    MDocType docType = MDocType.get(getCtx(), this.getC_DocType_ID());
-                    MSequence seq = new MSequence(getCtx(),docType.getDocNoSequence_ID(), null);
-                    int next = seq.getCurrentNext();
-                    seq.setCurrentNext(next + 1);
-                    seq.save(get_TrxName());
+                    if(documentNo.indexOf("<") != -1)
+                    {
+                        documentNo = documentNo.substring(1,documentNo.length()-1);
+                        MDocType docType = MDocType.get(getCtx(), this.getC_DocType_ID());
+                        MSequence seq = new MSequence(getCtx(),docType.getDocNoSequence_ID(), null);
+                        int next = seq.getCurrentNext();
+                        seq.setCurrentNext(next + 1);
+                        seq.save(get_TrxName());
 
-                }
+                    }
 
-                int indexOf = documentNo.indexOf("-");
+                    int indexOf = documentNo.indexOf("-");
 
-                String prefijo = "";
-                String nro = "";
+                    String prefijo = "";
+                    String nro = "";
 
-                if(indexOf == -1)
-                {
-                    MDocType docType = MDocType.get(getCtx(), this.getC_DocType_ID());
-                    MSequence seq = new MSequence(getCtx(),docType.getDocNoSequence_ID(), null);
-                    prefijo = seq.getPrefix();
-                    nro = documentNo;
+                    if(indexOf == -1)
+                    {
+                        MDocType docType = MDocType.get(getCtx(), this.getC_DocType_ID());
+                        MSequence seq = new MSequence(getCtx(),docType.getDocNoSequence_ID(), null);
+                        prefijo = seq.getPrefix();
+                        nro = documentNo;
 
-                }
-                else
-                {
-                    prefijo = this.getDocumentNo().substring(0,indexOf);
-                    nro = this.getDocumentNo().substring(indexOf+1,this.getDocumentNo().length());
-                }
+                    }
+                    else
+                    {
+                        prefijo = this.getDocumentNo().substring(0,indexOf);
+                        nro = this.getDocumentNo().substring(indexOf+1,this.getDocumentNo().length());
+                    }
 
-                if(nro == "" || nro == null)
-                {
-                    JOptionPane.showMessageDialog(null,"Numero de Documento Invalido", "Error", JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-
-                if(prefijo == "" || prefijo == null)
-                {
-                    JOptionPane.showMessageDialog(null,"Numero de Documento Invalido", "Error", JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-
-
-
-                switch (prefijo.length()) {
-
-                  case 1:
-                        prefijo = "000" + prefijo;
-                        break;
-                  case 2:
-                        prefijo = "00" + prefijo;
-                        break;
-                  case 3:
-                        prefijo = "0" + prefijo;
-                        break;
-                  case 4:
-                        break;
-
-                  default:
+                    if(nro == "" || nro == null)
+                    {
                         JOptionPane.showMessageDialog(null,"Numero de Documento Invalido", "Error", JOptionPane.ERROR_MESSAGE);
                         return false;
+                    }
 
-                }
-
-
-
-                switch (nro.length()) {
-                  case 1:
-                        nro = "0000000" + nro;
-                        break;
-                  case 2:
-                        nro = "000000" + nro;
-                        break;
-                  case 3:
-                        nro = "00000" + nro;
-                        break;
-                  case 4:
-                        nro = "0000" + nro;
-                        break;
-                  case 5:
-                        nro = "000" + nro;
-                        break;
-                  case 6:
-                        nro = "00" + nro;
-                        break;
-                  case 7:
-                        nro = "0" + nro;
-                        break;
-                  case 8:
-                        break;
-                  default:
+                    if(prefijo == "" || prefijo == null)
+                    {
                         JOptionPane.showMessageDialog(null,"Numero de Documento Invalido", "Error", JOptionPane.ERROR_MESSAGE);
                         return false;
-                }
+                    }
 
-                String val = prefijo + "-" + nro;
 
-                if (ValueFormat.validFormat(val,"0000-00000000"))
-                {
-                	try
-    				{	String query = "select M_InOut_ID, C_DocType_ID from M_InOut where DocumentNo = ?";
 
-    					PreparedStatement pstmt = DB.prepareStatement(query, null);
-    					pstmt.setString(1, val);
-    					ResultSet rs = pstmt.executeQuery();
+                    switch (prefijo.length()) {
 
-    					if (rs.next() && (getM_InOut_ID() != rs.getInt(1)) && (getC_DocType_ID() == rs.getInt(2)))
-    					{
-    						JOptionPane.showMessageDialog(null,"El Nro de Documento ingresado ya existe para este tipo de documento.","Error - Nro. Documento duplicado", JOptionPane.ERROR_MESSAGE);
-    						return false;
-    					}
+                      case 1:
+                            prefijo = "000" + prefijo;
+                            break;
+                      case 2:
+                            prefijo = "00" + prefijo;
+                            break;
+                      case 3:
+                            prefijo = "0" + prefijo;
+                            break;
+                      case 4:
+                            break;
 
-    					rs.close();
-    					pstmt.close();
-    				}
-    				catch (Exception n){}
+                      default:
+                            JOptionPane.showMessageDialog(null,"Numero de Documento Invalido", "Error", JOptionPane.ERROR_MESSAGE);
+                            return false;
 
-                	this.setDocumentNo(val);
-                }
-                else
-                {
-                	JOptionPane.showMessageDialog(null,"Numero de Documento Invalido", "Error", JOptionPane.ERROR_MESSAGE);
-                    return false;
+                    }
+
+
+
+                    switch (nro.length()) {
+                      case 1:
+                            nro = "0000000" + nro;
+                            break;
+                      case 2:
+                            nro = "000000" + nro;
+                            break;
+                      case 3:
+                            nro = "00000" + nro;
+                            break;
+                      case 4:
+                            nro = "0000" + nro;
+                            break;
+                      case 5:
+                            nro = "000" + nro;
+                            break;
+                      case 6:
+                            nro = "00" + nro;
+                            break;
+                      case 7:
+                            nro = "0" + nro;
+                            break;
+                      case 8:
+                            break;
+                      default:
+                            JOptionPane.showMessageDialog(null,"Numero de Documento Invalido", "Error", JOptionPane.ERROR_MESSAGE);
+                            return false;
+                    }
+
+                    String val = prefijo + "-" + nro;
+
+                    if (ValueFormat.validFormat(val,"0000-00000000"))
+                    {
+                            try
+                                    {	String query = "select M_InOut_ID, C_DocType_ID from M_InOut where DocumentNo = ?";
+
+                                            PreparedStatement pstmt = DB.prepareStatement(query, null);
+                                            pstmt.setString(1, val);
+                                            ResultSet rs = pstmt.executeQuery();
+
+                                            if (rs.next() && (getM_InOut_ID() != rs.getInt(1)) && (getC_DocType_ID() == rs.getInt(2)))
+                                            {
+                                                    JOptionPane.showMessageDialog(null,"El Nro de Documento ingresado ya existe para este tipo de documento.","Error - Nro. Documento duplicado", JOptionPane.ERROR_MESSAGE);
+                                                    return false;
+                                            }
+
+                                            rs.close();
+                                            pstmt.close();
+                                    }
+                                    catch (Exception n){}
+
+                            this.setDocumentNo(val);
+                    }
+                    else
+                    {
+                            JOptionPane.showMessageDialog(null,"Numero de Documento Invalido", "Error", JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
                 }
 
             }
@@ -1462,12 +1465,20 @@ public class MInOut extends X_M_InOut implements DocAction
                     MInOutLine sLine = lines[lineIndex];
                     MProduct product = sLine.getProduct();
                     
-                    // Validación de cantidad negativa en la devolución
+                    // Validación de cantidad negativa en la devolución aproveedor
                     if (getC_DocType_ID() == 5000020 && (sLine.getQtyEntered().compareTo(Env.ZERO) >= 0))
                     {
                         JOptionPane.showMessageDialog(null, "La cantidad en una devolución debe ser negativa.", "Salvando", JOptionPane.INFORMATION_MESSAGE);
                         return DocAction.STATUS_Invalid;
-                    }                       
+                    }
+                    
+                    
+                    // Validación de cantidad negativa en la devolución de producto terminado
+                    if (getC_DocType_ID() == 5000046 && (sLine.getQtyEntered().compareTo(Env.ZERO) >= 0))
+                    {
+                        JOptionPane.showMessageDialog(null, "La cantidad en una devolución debe ser negativa.", "Salvando", JOptionPane.INFORMATION_MESSAGE);
+                        return DocAction.STATUS_Invalid;
+                    }
 
                     //	Qty & Type
                     String MovementType = getMovementType();

@@ -121,8 +121,15 @@ public class CalloutInOut extends CalloutEngine
 				
 
 				//	DocumentNo
-				if (rs.getString("IsDocNoControlled").equals("Y"))
-					mTab.setValue("DocumentNo", "<" + rs.getString("CurrentNext") + ">");
+				if (rs.getString("IsDocNoControlled").equals("Y")){
+                                        if (C_DocType_ID != 5000046)
+                                            mTab.setValue("DocumentNo", "<" + rs.getString("CurrentNext") + ">");
+                                        else {
+                                            mTab.setValue("DocumentNo", "PENDIENTE");
+                                            mTab.setValue("DeliveryViaRule", "S");
+                                        }
+
+                                }
 			}
 			rs.close();
 			pstmt.close();

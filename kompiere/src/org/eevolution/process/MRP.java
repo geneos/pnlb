@@ -1944,7 +1944,7 @@ public String runMRP() throws Exception
         
 
    private boolean updateBomlines(int M_Product_ID, String trxName) throws Exception{
-
+      
             BigDecimal reservadoGlobal = BigDecimal.ZERO;
             
             //Obtengo todas las Lineas de formulas en las que el producto es el M_Product_ID dado
