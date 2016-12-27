@@ -32,30 +32,19 @@ public class GenerateRefrescarConciliacion extends SvrProcess{
 
     protected String doIt() throws Exception{
 
-    	 MCONCILIACIONBANCARIA concBancaria = new MCONCILIACIONBANCARIA(Env.getCtx(),getRecord_ID(),null);
-
-	 	//BigDecimal saldoInicial = concBancaria.getSaldoInicial();
-	 	//BigDecimal movConciliados = concBancaria.getSaldoConciliado();
-	 	//BigDecimal saldoCierre = concBancaria.getSaldoCierre();
-	 	//BigDecimal saldoAConciliar = concBancaria.getSaldoAConciliar();
-
-        // Actualizar Movimientos Anulados
+    	MCONCILIACIONBANCARIA concBancaria = new MCONCILIACIONBANCARIA(Env.getCtx(),getRecord_ID(),null);
 
         // Actualizar Movimientos Pendientes
         actualizarPendientes(concBancaria);
 
-//		saldoAConciliar = saldoCierre.add(movConciliados).subtract(saldoInicial);
-//		concBancaria.setSaldoInicial(saldoInicial);
-//		concBancaria.setSaldoConciliado(movConciliados);
-//		concBancaria.setSaldoAConciliar(saldoAConciliar);
-//		concBancaria.setSaldoCierre(saldoCierre);
-
-		concBancaria.setSaldoPendiente(concBancaria.getSaldoPendiente(true));
-		concBancaria.save();
+        concBancaria.refrescarSaldos();
+        concBancaria.save();
 
         // Actualizar Movimientos Posteriores
         if (concBancaria.deleteMovPosteriores())
-			MCONCILIACIONBANCARIA.completarMovPosteriores(concBancaria);
+            MCONCILIACIONBANCARIA.completarMovPosteriores(concBancaria);
+        
+        concBancaria.save();
 
         return "success";
     }

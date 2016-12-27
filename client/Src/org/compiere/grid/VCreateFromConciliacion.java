@@ -568,10 +568,7 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
             }
         }   //  for all rows
 
-        concBancaria.setSaldoInicial(saldoInicial);
-        concBancaria.setSaldoConciliado(movConciliados);
-        concBancaria.setSaldoAConciliar(saldoInicial, movConciliados, saldoCierre);
-        concBancaria.setSaldoPendiente(movPendientes);
+        concBancaria.refrescarSaldos();
         concBancaria.save();
 
         tsTo = (Timestamp)p_mTab.getValue("TODATE");

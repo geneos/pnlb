@@ -72,7 +72,9 @@ public class MPeriod extends X_C_Period
 			+ "WHERE C_Year_ID IN "
 				+ "(SELECT C_Year_ID FROM C_Year WHERE C_Calendar_ID= "
 					+ "(SELECT C_Calendar_ID FROM AD_ClientInfo WHERE AD_Client_ID=?))"
-			+ " AND ? BETWEEN TRUNC(StartDate) AND TRUNC(EndDate)"
+			//+ " AND ? BETWEEN TRUNC(StartDate) AND TRUNC(EndDate)"
+                        // Moficicacion para que tome fechas limite
+                        + " AND TRUNC(?) BETWEEN TRUNC(StartDate) AND TRUNC(EndDate)"
 			+ " AND PeriodType='S'";
 		try
 		{

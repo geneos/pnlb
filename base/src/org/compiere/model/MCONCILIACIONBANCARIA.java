@@ -762,7 +762,7 @@ public class MCONCILIACIONBANCARIA extends X_C_CONCILIACIONBANCARIA implements D
 		return null;
 	}	// getMovPosteriores
 
-	public BigDecimal getSaldoPendiente(boolean force) {
+	public BigDecimal getSaldoPendiente() {
 		try	{
 
 			String sql = "SELECT COALESCE(sum(IMPORTE),0) " +
@@ -785,6 +785,31 @@ public class MCONCILIACIONBANCARIA extends X_C_CONCILIACIONBANCARIA implements D
 		}
 		return Env.ZERO;
 	}
+        
+        public BigDecimal getSaldoConciliado() {
+		try	{
+
+			String sql = "SELECT COALESCE(sum(IMPORTE),0) " +
+						"FROM C_MOVIMIENTOCONCILIACION " +
+						"WHERE C_CONCILIACIONBANCARIA_ID = ? AND IsActive = 'Y' AND CONCILIADO = 'Y'";
+
+			PreparedStatement pstmt = DB.prepareStatement(sql, null);
+			pstmt.setLong(1, getC_ConciliacionBancaria_ID());
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+                            return rs.getBigDecimal(1);
+			}
+
+		}
+		catch (SQLException e){
+			e.printStackTrace();
+			return Env.ZERO;
+		}
+		return Env.ZERO;
+	}
+
 
 	public static int N = 1;
 	public static int C = 2;
@@ -1553,6 +1578,22 @@ public class MCONCILIACIONBANCARIA extends X_C_CONCILIACIONBANCARIA implements D
                     set_Value("AMOUNTINICIAL", AmountInicial);
                 }
 	}
+
+    public void refrescarSaldos() {
+        BigDecimal saldoInicial = getSaldoInicial();
+        BigDecimal saldoCierre = getSaldoCierre();
+        BigDecimal saldoPendiente = getSaldoPendiente();
+        BigDecimal saldoConciliado = getSaldoConciliado();
+        
+        
+        setSaldoPendiente(saldoPendiente);
+        setSaldoConciliado(saldoConciliado);
+        setSaldoAConciliar(saldoInicial, saldoConciliado, saldoCierre);
+        
+        BigDecimal saldoContable = saldoCierre.add(saldoPendiente);
+        setSaldoContable(saldoContable);
+        
+    }
 
 
  }	//	MBankStatement
