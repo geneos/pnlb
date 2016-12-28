@@ -263,7 +263,8 @@ public abstract class Doc {
 		Doc doc = null;
 		StringBuffer sql = new StringBuffer("SELECT * FROM ")
 			.append(TableName)
-			.append(" WHERE ").append(TableName).append("_ID=? AND Processed='Y'");
+			.append(" WHERE ").append(TableName).append("_ID=? AND Processed='Y'")
+                        .append(" AND ").append("DocStatus in ('CL','CO')");
 		PreparedStatement pstmt = null;
 		try
 		{
