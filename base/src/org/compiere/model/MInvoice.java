@@ -2579,12 +2579,9 @@ public class MInvoice extends X_C_Invoice implements DocAction
 		if (acct.getC_Currency_ID()==getC_Currency_ID())
 			setCotizacion(BigDecimal.ONE);
 		else
-			setCotizacion(TasaCambio.rate(getC_Currency_ID(), acct.getC_Currency_ID(), getDateInvoiced(), getC_ConversionType_ID(), getAD_Client_ID(), getAD_Org_ID()));
+                        // GENEOS - Pablo Velazquez: Toma cotizacion segun fecha de contabilidad
+			setCotizacion(TasaCambio.rate(getC_Currency_ID(), acct.getC_Currency_ID(), getDateAcct(), getC_ConversionType_ID(), getAD_Client_ID(), getAD_Org_ID()));
 
-                // Puede ser que no lo estuviera grabando
-                System.out.println("Graba cotización");
-                this.save(get_TrxName());
-                
 		m_processMsg = info.toString().trim();
 		setProcessed(true);
 		setDocAction(DOCACTION_Close);
