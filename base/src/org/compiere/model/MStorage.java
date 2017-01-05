@@ -289,6 +289,51 @@ public class MStorage extends X_M_Storage
 		list.toArray(retValue);
 		return retValue;
 	}	//	getAll
+        
+        /**
+	 * 	Get all Available Storages for Locator
+	 *	@param ctx context
+	 *	@param M_Product_ID product
+	 *	@param M_Locator_ID locator
+	 *	@return existing or null
+	 */
+	public static MStorage[] getAll (Properties ctx, 
+		int M_Locator_ID, String trxName)
+	{
+		ArrayList<MStorage> list = new ArrayList<MStorage>();
+		String sql = "SELECT * FROM M_Storage "
+			+ "WHERE AND M_Locator_ID=?"
+			+ " AND QtyOnHand > 0 "
+			+ "ORDER BY M_AttributeSetInstance_ID";
+		PreparedStatement pstmt = null;
+		try
+		{
+			pstmt = DB.prepareStatement (sql, trxName);
+			pstmt.setInt (1, M_Locator_ID);
+			ResultSet rs = pstmt.executeQuery ();
+			while (rs.next ())
+				list.add(new MStorage (ctx, rs, trxName));
+			rs.close ();
+			pstmt.close ();
+			pstmt = null;
+		}
+		catch (SQLException ex)
+		{
+			s_log.log(Level.SEVERE, sql, ex);
+		}
+		try
+		{
+			if (pstmt != null)
+				pstmt.close ();
+		}
+		catch (SQLException ex1)
+		{
+		}
+		pstmt = null;
+		MStorage[] retValue = new MStorage[list.size()];
+		list.toArray(retValue);
+		return retValue;
+	}	//	getAll
 
 	
 	/**
@@ -987,6 +1032,14 @@ public class MStorage extends X_M_Storage
             Logger.getLogger(MStorage.class.getName()).log(Level.SEVERE, null, ex);
         }
         return BigDecimal.ZERO;
+    }
+
+    public BigDecimal getQtyAvailable() {
+        BigDecimal qtyAvailable = getQtyOnHand().subtract(getQtyReserved());
+        if (qtyAvailable.signum() == -1)
+            return BigDecimal.ZERO;
+        else
+            return qtyAvailable;
     }
 
 }	//	MStorage
