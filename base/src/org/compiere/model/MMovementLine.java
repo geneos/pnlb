@@ -107,7 +107,7 @@ public class MMovementLine extends X_M_MovementLine
 		//	Set Line No
 		if (getLine() == 0)
 		{
-			String sql = "SELECT COALESCE(MAX(Line),0)+10 AS DefaultValue FROM C_M_MovementLine WHERE M_Movement_ID=?";
+			String sql = "SELECT COALESCE(MAX(Line),0)+10 AS DefaultValue FROM M_MovementLine WHERE M_Movement_ID=?";
 			int ii = DB.getSQLValue (get_TrxName(), sql, getM_Movement_ID());
 			setLine (ii);
 		}
@@ -153,7 +153,7 @@ public class MMovementLine extends X_M_MovementLine
                     int qty = 0;
 
                     try {
-                        PreparedStatement pstmt1 = DB.prepareStatement(sql,null);
+                        PreparedStatement pstmt1 = DB.prepareStatement(sql,get_TrxName());
                         ResultSet rs1 = pstmt1.executeQuery();
 
                         while(rs1.next())
@@ -193,7 +193,7 @@ public class MMovementLine extends X_M_MovementLine
                     BigDecimal qty = Env.ZERO;
 
                     try {
-                        PreparedStatement pstmt1 = DB.prepareStatement(sql,null);
+                        PreparedStatement pstmt1 = DB.prepareStatement(sql,get_TrxName());
                         ResultSet rs1 = pstmt1.executeQuery();
 
                         if(rs1.next())

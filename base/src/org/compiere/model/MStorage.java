@@ -302,9 +302,9 @@ public class MStorage extends X_M_Storage
 	{
 		ArrayList<MStorage> list = new ArrayList<MStorage>();
 		String sql = "SELECT * FROM M_Storage "
-			+ "WHERE AND M_Locator_ID=?"
-			+ " AND QtyOnHand > 0 "
-			+ "ORDER BY M_AttributeSetInstance_ID";
+			+ "WHERE M_Locator_ID=?"
+			+ " AND QtyOnHand > 0 AND M_AttributeSetInstance_ID <> 0"
+			+ " ORDER BY M_AttributeSetInstance_ID";
 		PreparedStatement pstmt = null;
 		try
 		{

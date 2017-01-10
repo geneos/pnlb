@@ -19,6 +19,7 @@ import java.math.*;
 
 import org.compiere.model.MLocator;
 import org.compiere.model.MMovementLine;
+import org.compiere.model.MProduct;
 import org.compiere.model.MStorage;
 import org.compiere.process.*;
 import org.compiere.util.*;
@@ -71,23 +72,26 @@ public class GENLocatorInventoryMove extends SvrProcess {
         newMov.save();
         for (int i= 0 ; i < storages.length ; i++){
             BigDecimal qtyAvailable = storages[i].getQtyAvailable();
-            if (qtyAvailable.signum() == 1){
-                MMovementLine aLine = new MMovementLine(newMov);
-                aLine.setM_Product_ID(storages[i].getM_Product_ID());
-                aLine.setM_Locator_ID(p_M_Locator_ID);
-                aLine.setM_LocatorTo_ID(p_M_Locator_ID_To);
-                aLine.setM_AttributeSetInstance_ID(storages[i].getM_AttributeSetInstance_ID());
-                aLine.setMovementQty(qtyAvailable);
-                if (!aLine.save())
-                    log.warning("Error al guardar la linea :"+aLine);
+            MProduct aux = new MProduct(getCtx(),storages[i].getM_Product_ID(),get_TrxName());
+            if (aux.get_ID() != 0) {
+                if (qtyAvailable.signum() == 1){
+                    MMovementLine aLine = new MMovementLine(newMov);
+                    aLine.setM_Product_ID(storages[i].getM_Product_ID());
+                    aLine.setM_Locator_ID(p_M_Locator_ID);
+                    aLine.setM_LocatorTo_ID(p_M_Locator_ID_To);
+                    aLine.setM_AttributeSetInstance_ID(storages[i].getM_AttributeSetInstance_ID());
+                    aLine.setMovementQty(qtyAvailable);
+                    if (!aLine.save())
+                        log.warning("Error al guardar la linea :"+aLine);
+                }
             }
                 
         }
-        if (newMov.processIt(DocAction.ACTION_Complete))
+        if (!newMov.processIt(DocAction.ACTION_Complete))
             throw new Exception("Error al completar el movimiento: "+newMov.getProcessMsg());
         
-        if (newMov.save()){
-            throw new Exception("Error al guardar el movimiento, por favor revisar los logs: "+newMov);
+        if (!newMov.save()){
+            throw new Exception("Error al guardar el movimiento, por favor revisar los logs: "+newMov.getProcessMsg());
         }
         return Msg.translate(Env.getCtx(), "Se creo movimiento: "+newMov.getDocumentInfo());
         
