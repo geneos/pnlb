@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import org.compiere.model.*;
 import org.compiere.util.DB;
@@ -434,31 +435,37 @@ public class Doc_Payment extends Doc {
                 if (fl != null && AD_Org_ID != 0)
                     fl.setAD_Org_ID(AD_Org_ID);
                 
-            }
-
-            MAccount acct = getAccountPRetenIB(mPay.getC_JURISDICCION_ID(), as);
-            if (acct == null) {
-                acct = getAccount(Doc.ACCTTYPE_WithholdingPaymentIB, as);
-            }
-            
-            BigDecimal montoRetIBRound = mPay.getRetencionIB().divide(mPay.getCotizacion(), BigDecimal.ROUND_HALF_UP);
-
+            }    
+                
             /*
-             *  Zynnia - 04/06/2012
-             *  Agregado para que no genere registros en caso de retenciones con valor 0.
-             *  JF
-             * 
+             * GENEOS - Pablo Velazquez
+             * Modificacion para que se cree una linea por cada retencion IB del pago
+             * Ticket 1085
              */
-            
-            if (!montoRetIBRound.equals(Env.ZERO)){
-                
-                if (moneda != null) {                    
-                     montoRetIBRound = montoRetIBRound.setScale(moneda.getStdPrecision(),BigDecimal.ROUND_HALF_UP);
+            List<PO> retenciones = mPay.getRetenciones();
+            for (int r = 0 ; r<retenciones.size() ; r++) {
+                MPAYMENTRET aPaymentRet = (MPAYMENTRET) retenciones.get(r);
+                BigDecimal montoRetIBRound = aPaymentRet.getIMPORTE().divide(mPay.getCotizacion(), BigDecimal.ROUND_HALF_UP);
+
+                //Las retenciones no deben ser con monto 0
+                if (!montoRetIBRound.equals(Env.ZERO)){
+                    
+                    if (moneda != null) {                    
+                        montoRetIBRound = montoRetIBRound.setScale(moneda.getStdPrecision(),BigDecimal.ROUND_HALF_UP);
+                    }
+                    
+                    // La cuenta depende de la jurisdiccion de la retencion
+                    int C_JURISDICCION_ID = Retenciones.getJurisdiccion(aPaymentRet.getC_DocType_ID());
+                    MAccount acct = getAccountPRetenIB(C_JURISDICCION_ID, as);
+                    if (acct == null) {
+                        acct = getAccount(Doc.ACCTTYPE_WithholdingPaymentIB, as);
+                    }      
+
+                    fl = fact.createLine(null, acct, m_rate, getC_Currency_ID(), null, montoRetIBRound);
+                    if (fl != null && AD_Org_ID != 0) 
+                        fl.setAD_Org_ID(AD_Org_ID);
                 }
-                
-                fl = fact.createLine(null, acct, m_rate, getC_Currency_ID(), null, montoRetIBRound);
-                if (fl != null && AD_Org_ID != 0) 
-                    fl.setAD_Org_ID(AD_Org_ID);
+               
                 
             }
             
