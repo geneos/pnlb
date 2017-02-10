@@ -445,6 +445,8 @@ public class Doc_Payment extends Doc {
             List<PO> retenciones = mPay.getRetenciones();
             for (int r = 0 ; r<retenciones.size() ; r++) {
                 MPAYMENTRET aPaymentRet = (MPAYMENTRET) retenciones.get(r);
+                if ( !aPaymentRet.getTIPO_RET().equals(MPAYMENTRET.TIPO_RET_IB) )
+                    continue;
                 BigDecimal montoRetIBRound = aPaymentRet.getIMPORTE().divide(mPay.getCotizacion(), BigDecimal.ROUND_HALF_UP);
 
                 //Las retenciones no deben ser con monto 0
