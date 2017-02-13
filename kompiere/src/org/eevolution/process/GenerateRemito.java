@@ -2,8 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.eevolution.process;
+
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
@@ -29,18 +29,19 @@ import org.compiere.util.*;
 import org.eevolution.tools.DateTimeUtil;
 import org.eevolution.tools.Numero2Letras;
 import org.eevolution.tools.UtilProcess;
+
 /**
  *
  * @author Bision
  */
-public class GenerateRemito extends SvrProcess{
+public class GenerateRemito extends SvrProcess {
 
-	int p_instance;        
-        int m_print_format_id;
-        int m_table_id;
+    int p_instance;
+    int m_print_format_id;
+    int m_table_id;
 
-     protected String doIt() throws Exception{
-        
+    protected String doIt() throws Exception {
+
         /*
          *  Se imprime informe estandar o especial segun si es devolucion o no
          * 
@@ -57,27 +58,25 @@ public class GenerateRemito extends SvrProcess{
 
         MQuery query = new MQuery("RV_M_INOUT_HEADER_CO");
         query.addRestriction("M_InOut_ID", MQuery.EQUAL, getRecord_ID());
-        info = new PrintInfo("RV_M_INOUT_HEADER_CO",m_table_id, getRecord_ID());
+        info = new PrintInfo("RV_M_INOUT_HEADER_CO", m_table_id, getRecord_ID());
         re = new ReportEngine(Env.getCtx(), format, query, info);
 
-        new Viewer(re);                
+        new Viewer(re);
 
         return "success";
-        
+
     }
 
-    
     protected void prepare() {
         p_instance = getAD_PInstance_ID();
-                 
+
         m_print_format_id = 1000967;
         m_table_id = 1000262;
-        
-        MInOut inout = new MInOut(Env.getCtx(),getRecord_ID(),null);
-        if (inout.getC_DocType_ID() == 5000046){
+
+        MInOut inout = new MInOut(Env.getCtx(), getRecord_ID(), null);
+        if (inout.isReturn()) {
             m_print_format_id = 5000156;
             m_table_id = 5000067;
         }
     }
-
 }
