@@ -34,325 +34,364 @@ import org.compiere.util.Msg;
  */
 public class MZYNMODELCOLUMN extends X_ZYN_MODEL_COLUMN {
 
-	private String completeColumName = "";
+    private String completeColumName = "";
 
-	/**	
-	 * 	Default Constructor
-	 *	@param ctx context
-	 *	@param M_Product_Costing_ID id
-	 */
-	public MZYNMODELCOLUMN(Properties ctx, int ZYN_MODEL_COLUMN_ID, String trxName) {
-		super(ctx, ZYN_MODEL_COLUMN_ID, trxName);
+    /**	
+     * 	Default Constructor
+     *	@param ctx context
+     *	@param M_Product_Costing_ID id
+     */
+    public MZYNMODELCOLUMN(Properties ctx, int ZYN_MODEL_COLUMN_ID, String trxName) {
+        super(ctx, ZYN_MODEL_COLUMN_ID, trxName);
 
-	}
+    }
 
-	/**
-	 * 	Load Constructor
-	 *	@param ctx context
-	 *	@param rs result set
-	 */
-	public MZYNMODELCOLUMN(Properties ctx, ResultSet rs, String trxName) {
-		super(ctx, rs, trxName);
-	}
+    /**
+     * 	Load Constructor
+     *	@param ctx context
+     *	@param rs result set
+     */
+    public MZYNMODELCOLUMN(Properties ctx, ResultSet rs, String trxName) {
+        super(ctx, rs, trxName);
+    }
 
-	public static List getColumnParameterIDs(int table) {
-		String sql = "SELECT zyn_model_column_id FROM zyn_model_column "
-				+ "WHERE zyn_model_table_id = ? AND isparameter = 'Y' AND isactive = 'Y'";
+    public static List getColumnParameterIDs(int table) {
+        String sql = "SELECT zyn_model_column_id FROM zyn_model_column "
+                + "WHERE zyn_model_table_id = ? AND isparameter = 'Y' AND isactive = 'Y'";
 
-		ArrayList<String> ret = new ArrayList<String>();
-		CLogger log = CLogger.getCLogger(MZYNMODELCOLUMN.class);
-		PreparedStatement pstmtobl = null;
-		ResultSet rsobl = null;
-		try {
-			pstmtobl = DB.prepareStatement(sql, null);
-			pstmtobl.setInt(1, table);
-			rsobl = pstmtobl.executeQuery();
-			while (rsobl.next()) {
-				ret.add(rsobl.getString(1));
-			}
-			rsobl.close();
-			pstmtobl.close();
-		} catch (Exception ex) {
-			CLogger.getCLogger(MZYNMODELCOLUMN.class).log(Level.SEVERE, "Error getColumnParameterIDs", ex);
-		} finally {
-			if (rsobl != null) {
-				try {
-					rsobl.close();
-				} catch (SQLException ex) {
-					log.log(Level.SEVERE, null, ex);
-				}
-			}
+        ArrayList<String> ret = new ArrayList<String>();
+        CLogger log = CLogger.getCLogger(MZYNMODELCOLUMN.class);
+        PreparedStatement pstmtobl = null;
+        ResultSet rsobl = null;
+        try {
+            pstmtobl = DB.prepareStatement(sql, null);
+            pstmtobl.setInt(1, table);
+            rsobl = pstmtobl.executeQuery();
+            while (rsobl.next()) {
+                ret.add(rsobl.getString(1));
+            }
+            rsobl.close();
+            pstmtobl.close();
+        } catch (Exception ex) {
+            CLogger.getCLogger(MZYNMODELCOLUMN.class).log(Level.SEVERE, "Error getColumnParameterIDs", ex);
+        } finally {
+            if (rsobl != null) {
+                try {
+                    rsobl.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
 
-			if (pstmtobl != null) {
-				try {
-					pstmtobl.close();
-				} catch (SQLException ex) {
-					log.log(Level.SEVERE, null, ex);
-				}
-				pstmtobl = null;
-			}
-		}
-		return ret;
-	}
+            if (pstmtobl != null) {
+                try {
+                    pstmtobl.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+                pstmtobl = null;
+            }
+        }
+        return ret;
+    }
 
-	public String getAD_TABLE_NAME() {
-		String sql = "SELECT ad_table_name FROM zyn_model_table WHERE zyn_model_table_id = ?";
-		String name = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
+    public String getAD_TABLE_NAME() {
+        String sql = "SELECT ad_table_name FROM zyn_model_table WHERE zyn_model_table_id = ?";
+        String name = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
 
-			pstmt = DB.prepareStatement(sql, null);
-			pstmt.setInt(1, this.getZYN_MODEL_TABLE_ID());
-			rs = pstmt.executeQuery();
-			if (rs.next()) {
-				name = rs.getString(1);
-			}
-		} catch (Exception ex) {
-			log.log(Level.SEVERE, null, ex);
+            pstmt = DB.prepareStatement(sql, null);
+            pstmt.setInt(1, this.getZYN_MODEL_TABLE_ID());
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                name = rs.getString(1);
+            }
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, null, ex);
 
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException ex) {
-					log.log(Level.SEVERE, null, ex);
-				}
-			}
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException ex) {
-					log.log(Level.SEVERE, null, ex);
-				}
-				pstmt = null;
-			}
-		}
-		return name;
-	}
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+                pstmt = null;
+            }
+        }
+        return name;
+    }
 
-	public String getCompleteNameForQuery() {
-		if (completeColumName.equals("")) {
-			if(isPARAMETER() && getZYN_PARAMETER_REF_ID() > 0) {
-				MZYNMODELCOLUMN zModelColumn = new MZYNMODELCOLUMN(Env.getCtx(), getZYN_PARAMETER_REF_ID(), null);
-				completeColumName = zModelColumn.getCompleteNameForQuery();
-			} else {	
-				StringBuilder sqlQueryBuilder = new StringBuilder();
-				sqlQueryBuilder.append(getAD_TABLE_NAME());
-				sqlQueryBuilder.append(".").append(getAD_COLUMN_NAME());
-				completeColumName = sqlQueryBuilder.toString();
-			}
-		}
-		return completeColumName;
-	}
-	
-	public String getCompleteColumnNameReferenced() {
-		String sql = "SELECT ad_table_name FROM zyn_model_table WHERE zyn_model_table_id = ?";
-		String name = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
+    public String getCompleteNameForQuery() {
+        if (completeColumName.equals("")) {
+            if (isPARAMETER() && getZYN_PARAMETER_REF_ID() > 0) {
+                MZYNMODELCOLUMN zModelColumn = new MZYNMODELCOLUMN(Env.getCtx(), getZYN_PARAMETER_REF_ID(), null);
+                completeColumName = zModelColumn.getCompleteNameForQuery();
+            } else {
+                StringBuilder sqlQueryBuilder = new StringBuilder();
+                sqlQueryBuilder.append(getAD_TABLE_NAME());
+                sqlQueryBuilder.append(".").append(getAD_COLUMN_NAME());
+                completeColumName = sqlQueryBuilder.toString();
+            }
+        }
+        return completeColumName;
+    }
 
-			pstmt = DB.prepareStatement(sql, null);
-			pstmt.setInt(1, this.getZYN_MODEL_TABLE_ID());
-			rs = pstmt.executeQuery();
-			if (rs.next()) {
-				name = rs.getString(1);
-			}
-		} catch (Exception ex) {
-			log.log(Level.SEVERE, null, ex);
+    public String getCompleteColumnNameReferenced() {
+        String sql = "SELECT ad_table_name FROM zyn_model_table WHERE zyn_model_table_id = ?";
+        String name = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
 
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException ex) {
-					log.log(Level.SEVERE, null, ex);
-				}
-			}
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException ex) {
-					log.log(Level.SEVERE, null, ex);
-				}
-				pstmt = null;
-			}
-		}
-		return name;
-	}
-	
+            pstmt = DB.prepareStatement(sql, null);
+            pstmt.setInt(1, this.getZYN_MODEL_TABLE_ID());
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                name = rs.getString(1);
+            }
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, null, ex);
 
-	/**
-	 * 	Before Save
-	 *	@param newRecord new
-	 *	@return true or false
-	 */
-	protected boolean beforeSave(boolean newRecord) {
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+                pstmt = null;
+            }
+        }
+        return name;
+    }
 
-		/*
-		 *  Valido solo si la columna es considerada como parámetro de lo
-		 *  contrario lo omito.
-		 *
-		 */
-		if (this.isPARAMETER()) {
+    /**
+     * 	Before Save
+     *	@param newRecord new
+     *	@return true or false
+     */
+    protected boolean beforeSave(boolean newRecord) {
+       
+        /*
+         * Se actualiza nombre de la columna para posterior armado de query
+         */
+        String sql = "SELECT columnname FROM ad_column WHERE ad_column_id = ?";
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            pstmt = DB.prepareStatement(sql, null);
+            pstmt.setInt(1, getAD_Column_ID());
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                setAD_COLUMN_NAME(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            log.log(Level.SEVERE, sql, e);
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+                pstmt = null;
+            }
+        }
 
-			/*
-			 *  Valida el tipo de parámetro con el campo de modo que se eviten
-			 *  errores por incompatibilidades.
-			 *
-			 *  Los que tengan un tipo de parámetro con identificador deben
-			 *  tener campos cuyo nombre tenga sufijo _ID
-			 *
-			 */
-			int parameterTypeId = this.getZYN_PARAMETER_TYPE_ID();
-			X_ZYN_PARAMETER_TYPE parameterType = new X_ZYN_PARAMETER_TYPE(this.getCtx(), parameterTypeId, null);
+        /*
+         *  Valido solo si la columna es considerada como parámetro de lo
+         *  contrario lo omito.
+         *
+         */
+        if (this.isPARAMETER()) {
 
-			/**
-			 * Es el caso en el que el parametro no exista
-			 */
-			if (parameterTypeId <= 0) {
-				log.saveError("FillMandatory", Msg.getElement(getCtx(), "ZYN_PARAMETER_TYPE_ID"));
-				System.out.println("no seleccionaste parámetro");
-				return false;
-			}
+            /*
+             *  Valida el tipo de parámetro con el campo de modo que se eviten
+             *  errores por incompatibilidades.
+             *
+             *  Los que tengan un tipo de parámetro con identificador deben
+             *  tener campos cuyo nombre tenga sufijo _ID
+             *
+             */
+            int parameterTypeId = this.getZYN_PARAMETER_TYPE_ID();
+            X_ZYN_PARAMETER_TYPE parameterType = new X_ZYN_PARAMETER_TYPE(this.getCtx(), parameterTypeId, null);
 
-			if (parameterType.isPARAMETERIDENTIFIER()) {
-				int columnModelId = this.getZYN_MODEL_COLUMN_ID();
-				X_ZYN_MODEL_COLUMN columnModel = new X_ZYN_MODEL_COLUMN(this.getCtx(), columnModelId, null);
-				int columnId = columnModel.getAD_Column_ID();
-				X_AD_Column column = new X_AD_Column(this.getCtx(), columnId, null);
+            /**
+             * Es el caso en el que el parametro no exista
+             */
+            if (parameterTypeId <= 0) {
+                log.saveError("FillMandatory", Msg.getElement(getCtx(), "ZYN_PARAMETER_TYPE_ID"));
+                System.out.println("no seleccionaste parámetro");
+                return false;
+            }
 
-				/*
-                                 *  La verificación no debe ser column.isKey() ya que cualquier campo clave
-                                 *  extranjera que queremos tomar como buscador _ID no sería considerado
-                                 *  ya que no es clave en la tabla sino clave extranjera.
-                                 * 
-                                 *  Debemos de considerar el campo AD_Reference_ID dela columna.
-                                 * 
-                                 *  Zynnia 27/05/2012
-                                 *  JF
-                                 * 
-                                 * 
-                                 */
-                                
-                                int refID = column.getAD_Reference_ID();
-                                
-                                if(refID == 30 ||       // 30 = Search
-                                        refID == 13 ||  // 13 = ID
-                                        refID == 17 ||  // 17 = List
-                                        refID == 18 ||  // 18 = Table
-                                        refID == 19)    // 19 = Table Direct
-					
-                                    return true;
-				else
-                                    return false;
-                                
-			}
+            if (parameterType.isPARAMETERIDENTIFIER()) {
+                int columnModelId = this.getZYN_MODEL_COLUMN_ID();
+                X_ZYN_MODEL_COLUMN columnModel = new X_ZYN_MODEL_COLUMN(this.getCtx(), columnModelId, null);
+                int columnId = columnModel.getAD_Column_ID();
+                X_AD_Column column = new X_AD_Column(this.getCtx(), columnId, null);
 
-			/*
-			 *  Valida el tipo de parámetro con el campo de modo que se eviten
-			 *  errores por incompatibilidades.
-			 *
-			 *  Valida si el campo es tipo fecha
-			 *
-			 */
-			if (parameterType.getName().contains("Fecha")) {
-				int columnModelId = this.getZYN_MODEL_COLUMN_ID();
-				X_ZYN_MODEL_COLUMN columnModel = new X_ZYN_MODEL_COLUMN(this.getCtx(), columnModelId, null);
-				int columnId = columnModel.getAD_Column_ID();
-				X_AD_Column column = new X_AD_Column(this.getCtx(), columnId, null);
-                                
-                                int refID = column.getAD_Reference_ID();
-                                
-                                if(refID == 15 ||       // 15 = Date
-                                        refID == 16)    // 16 = Date + Time
+                /*
+                 *  La verificación no debe ser column.isKey() ya que cualquier campo clave
+                 *  extranjera que queremos tomar como buscador _ID no sería considerado
+                 *  ya que no es clave en la tabla sino clave extranjera.
+                 * 
+                 *  Debemos de considerar el campo AD_Reference_ID dela columna.
+                 * 
+                 *  Zynnia 27/05/2012
+                 *  JF
+                 * 
+                 * 
+                 */
 
-                                    return true;
-				else
-                                    return false;
-                                
-			}
+                int refID = column.getAD_Reference_ID();
 
-			/*
-			 *  Valida el tipo de parámetro con el campo de modo que se eviten
-			 *  errores por incompatibilidades.
-			 *
-			 *  Valida si el campo es tipo texto
-			 *
-			 */
-			if (parameterType.getName().contains("Texto")) {
-				int columnModelId = this.getZYN_MODEL_COLUMN_ID();
-				X_ZYN_MODEL_COLUMN columnModel = new X_ZYN_MODEL_COLUMN(this.getCtx(), columnModelId, null);
-				int columnId = columnModel.getAD_Column_ID();
-				X_AD_Column column = new X_AD_Column(this.getCtx(), columnId, null);
+                if (refID == 30 || // 30 = Search
+                        refID == 13 || // 13 = ID
+                        refID == 17 || // 17 = List
+                        refID == 18 || // 18 = Table
+                        refID == 19) // 19 = Table Direct
+                {
+                    return true;
+                } else {
+                    return false;
+                }
 
-                                int refID = column.getAD_Reference_ID();
-                                
-                                if(refID == 10 ||       // 10 = String
-                                        refID == 14 ||  // 14 = Text
-                                        refID == 34 ||  // 34 = Memo
-                                        refID == 36 ||  // 36 = Text Long
-                                        refID == 17)    // 17 = List
+            }
 
-                                    return true;
-				else
-                                    return false;
-                                
-			}
+            /*
+             *  Valida el tipo de parámetro con el campo de modo que se eviten
+             *  errores por incompatibilidades.
+             *
+             *  Valida si el campo es tipo fecha
+             *
+             */
+            if (parameterType.getName().contains("Fecha")) {
+                int columnModelId = this.getZYN_MODEL_COLUMN_ID();
+                X_ZYN_MODEL_COLUMN columnModel = new X_ZYN_MODEL_COLUMN(this.getCtx(), columnModelId, null);
+                int columnId = columnModel.getAD_Column_ID();
+                X_AD_Column column = new X_AD_Column(this.getCtx(), columnId, null);
 
-			/*
-			 *  Valida el tipo de parámetro con el campo de modo que se eviten
-			 *  errores por incompatibilidades.
-			 *
-			 *  Valida si el campo es tipo Lista Fija
-			 *
-			 */
-			if (parameterType.getName().contains("Lista Fija")) {
-				int columnModelId = this.getZYN_MODEL_COLUMN_ID();
-				X_ZYN_MODEL_COLUMN columnModel = new X_ZYN_MODEL_COLUMN(this.getCtx(), columnModelId, null);
-				int columnId = columnModel.getAD_Column_ID();
-				X_AD_Column column = new X_AD_Column(this.getCtx(), columnId, null);
+                int refID = column.getAD_Reference_ID();
 
-                                int refID = column.getAD_Reference_ID();
-                                
-                                if(refID == 17)    // 17 = List					
-                                    return true;
-				else
-                                    return false;
-			}
+                if (refID == 15 || // 15 = Date
+                        refID == 16) // 16 = Date + Time
+                {
+                    return true;
+                } else {
+                    return false;
+                }
+
+            }
+
+            /*
+             *  Valida el tipo de parámetro con el campo de modo que se eviten
+             *  errores por incompatibilidades.
+             *
+             *  Valida si el campo es tipo texto
+             *
+             */
+            if (parameterType.getName().contains("Texto")) {
+                int columnModelId = this.getZYN_MODEL_COLUMN_ID();
+                X_ZYN_MODEL_COLUMN columnModel = new X_ZYN_MODEL_COLUMN(this.getCtx(), columnModelId, null);
+                int columnId = columnModel.getAD_Column_ID();
+                X_AD_Column column = new X_AD_Column(this.getCtx(), columnId, null);
+
+                int refID = column.getAD_Reference_ID();
+
+                if (refID == 10 || // 10 = String
+                        refID == 14 || // 14 = Text
+                        refID == 34 || // 34 = Memo
+                        refID == 36 || // 36 = Text Long
+                        refID == 17) // 17 = List
+                {
+                    return true;
+                } else {
+                    return false;
+                }
+
+            }
+
+            /*
+             *  Valida el tipo de parámetro con el campo de modo que se eviten
+             *  errores por incompatibilidades.
+             *
+             *  Valida si el campo es tipo Lista Fija
+             *
+             */
+            if (parameterType.getName().contains("Lista Fija")) {
+                int columnModelId = this.getZYN_MODEL_COLUMN_ID();
+                X_ZYN_MODEL_COLUMN columnModel = new X_ZYN_MODEL_COLUMN(this.getCtx(), columnModelId, null);
+                int columnId = columnModel.getAD_Column_ID();
+                X_AD_Column column = new X_AD_Column(this.getCtx(), columnId, null);
+
+                int refID = column.getAD_Reference_ID();
+
+                if (refID == 17) // 17 = List					
+                {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
 
 
-			/*
-			 *  Valida el tipo de parámetro con el campo de modo que se eviten
-			 *  errores por incompatibilidades.
-			 *
-			 *  Valida si el campo es tipo cantidad (numérico)
-			 *
-                         *  Verificar comportamiento ára campos enteros (Integer - Number)
-                         * 
-			 */
-			if (parameterType.getName().contains("Cantidad")) {
-				int columnModelId = this.getZYN_MODEL_COLUMN_ID();
-				X_ZYN_MODEL_COLUMN columnModel = new X_ZYN_MODEL_COLUMN(this.getCtx(), columnModelId, null);
-				int columnId = columnModel.getAD_Column_ID();
-				X_AD_Column column = new X_AD_Column(this.getCtx(), columnId, null);
+            /*
+             *  Valida el tipo de parámetro con el campo de modo que se eviten
+             *  errores por incompatibilidades.
+             *
+             *  Valida si el campo es tipo cantidad (numérico)
+             *
+             *  Verificar comportamiento ára campos enteros (Integer - Number)
+             * 
+             */
+            if (parameterType.getName().contains("Cantidad")) {
+                int columnModelId = this.getZYN_MODEL_COLUMN_ID();
+                X_ZYN_MODEL_COLUMN columnModel = new X_ZYN_MODEL_COLUMN(this.getCtx(), columnModelId, null);
+                int columnId = columnModel.getAD_Column_ID();
+                X_AD_Column column = new X_AD_Column(this.getCtx(), columnId, null);
 
-                                int refID = column.getAD_Reference_ID();
-                                
-                                if(refID == 29 ||       // 29 = Quantity
-                                        refID == 22 ||  // 22 = Number
-                                        refID == 11 ||  // 11 = Integer
-                                        refID == 12 ||  // 12 = Ammount
-                                        refID == 37)    // 37 = Cost + Price
+                int refID = column.getAD_Reference_ID();
 
-                                    return true;
-				else
-                                    return false;
-			}
-			return true;
-		}
-		return true;
-	}
+                if (refID == 29 || // 29 = Quantity
+                        refID == 22 || // 22 = Number
+                        refID == 11 || // 11 = Integer
+                        refID == 12 || // 12 = Ammount
+                        refID == 37) // 37 = Cost + Price
+                {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return true;
+    }
 }	//	ZynModelColumn
 

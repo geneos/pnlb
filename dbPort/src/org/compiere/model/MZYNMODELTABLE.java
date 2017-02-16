@@ -14,8 +14,6 @@
  *****************************************************************************/
 package org.compiere.model;
 
-
-
 import java.util.Properties;
 import org.compiere.util.DB;
 import java.sql.*;
@@ -31,134 +29,141 @@ import java.util.logging.Level;
  */
 public class MZYNMODELTABLE extends X_ZYN_MODEL_TABLE {
 
-	/**	
-	 * 	Default Constructor
-	 *	@param ctx context
-	 *	@param M_Product_Costing_ID id
-	 */
-	public MZYNMODELTABLE(Properties ctx, int ZYN_MODEL_TABLE_ID, String trxName) {
-		super(ctx, ZYN_MODEL_TABLE_ID, trxName);
+    /**	
+     * 	Default Constructor
+     *	@param ctx context
+     *	@param M_Product_Costing_ID id
+     */
+    public MZYNMODELTABLE(Properties ctx, int ZYN_MODEL_TABLE_ID, String trxName) {
+        super(ctx, ZYN_MODEL_TABLE_ID, trxName);
 
-	}
+    }
 
-	/**
-	 * 	Load Constructor
-	 *	@param ctx context
-	 *	@param rs result set
-	 */
-	public MZYNMODELTABLE(Properties ctx, ResultSet rs, String trxName) {
-		super(ctx, rs, trxName);
-	}
+    /**
+     * 	Load Constructor
+     *	@param ctx context
+     *	@param rs result set
+     */
+    public MZYNMODELTABLE(Properties ctx, ResultSet rs, String trxName) {
+        super(ctx, rs, trxName);
+    }
 
-	/**
-	 * 	Before Save
-	 *	@param newRecord new
-	 *	@return true
-	 */
-	
-	protected boolean beforeSave(boolean newRecord) {
-		//	New Address invalidates verification
-		/*
-        boolean newStateMain = this.isMAIN();
-		int zynModelID = this.getZYN_MODEL_ID();
-		int zynModelTableID = this.getZYN_MODEL_TABLE_ID();
+    /**
+     * 	Before Save
+     *	@param newRecord new
+     *	@return true
+     */
+    protected boolean beforeSave(boolean newRecord) {
+        
+        /*
+         * Se actualiza nombre de la tabla para posterior armado de query
+         */
+        String sql = "SELECT tablename FROM ad_table WHERE ad_table_id = ?";
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            pstmt = DB.prepareStatement(sql, null);
+            pstmt.setInt(1, getAD_Table_ID());
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                setAD_TABLE_NAME(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            log.log(Level.SEVERE, sql, e);
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+                pstmt = null;
+            }
+        }
+        return true;
+    }	//	beforeSave
 
-		log.log(Level.INFO, "zynModelID {0} zynModelTableID {1}", new Object[]{zynModelID, zynModelTableID});
-		String sql = "SELECT COUNT(zyn_model_table_id) FROM zyn_model_table "
-				   + "WHERE main = 'Y' AND zyn_model_id = ? AND zyn_model_table_id <> ?";
-		int cant = this.getCantTablasWith(sql, zynModelID, zynModelTableID);
+    private int getCantTablasWith(String sql, int zynModelID, int zynModelTableID) {
+        log.log(Level.INFO, "sql {0}", sql);
+        int returnValue = 0;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            pstmt = DB.prepareStatement(sql, null);
+            pstmt.setInt(1, zynModelID);
+            pstmt.setInt(2, zynModelTableID);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                returnValue = rs.getInt(1);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (SQLException e) {
+            log.log(Level.SEVERE, sql, e);
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+                pstmt = null;
+            }
+        }
+        return returnValue;
+    }
 
-		if (newStateMain && cant > 0) {
-			if (ADialog.ask(0, null, "WarningOnlyOneMain")) {
-				sql = "UPDATE zyn_model_table SET main = 'N' WHERE zyn_model_id = ?";
-				Object[] params = {zynModelID};
-				DB.executeUpdate(sql, params, false, null);
-				return true;
-			}
-			return false;
-		} else if (!newStateMain && cant <= 0) {
-			//log.saveError("ErrorSaveMain", Msg.getElement(getCtx(), "FieldLength"));
-			log.saveError("ErrorSaveMain", "");
-			return false;
-		}
-        */
-		return true;
-	}	//	beforeSave
+    public ArrayList<String> getKeyFields() {
+        String sql = "SELECT col.name "
+                + "FROM ad_column col "
+                + "WHERE col.iskey = 'Y' AND col.ad_table_id = ?";
+        ArrayList<String> ret = new ArrayList<String>();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
 
-    
-	private int getCantTablasWith(String sql, int zynModelID, int zynModelTableID) {
-		log.log(Level.INFO, "sql {0}", sql);
-		int returnValue = 0;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			pstmt = DB.prepareStatement(sql, null);
-			pstmt.setInt(1, zynModelID);
-			pstmt.setInt(2, zynModelTableID);
-			rs = pstmt.executeQuery();
-			if (rs.next()) {
-				returnValue = rs.getInt(1);
-			}
-			rs.close();
-			pstmt.close();
-		} catch (SQLException e) {
-			log.log(Level.SEVERE, sql, e);
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException ex) {
-					log.log(Level.SEVERE, null, ex);
-				}
-			}
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException ex) {
-					log.log(Level.SEVERE, null, ex);
-				}
-				pstmt = null;
-			}
-		}
-		return returnValue;
-	}
+            pstmt = DB.prepareStatement(sql, null);
+            pstmt.setInt(1, this.getZYN_MODEL_TABLE_ID());
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                ret.add(rs.getString(1));
+            }
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, null, ex);
 
-	public ArrayList<String> getKeyFields() {
-		String sql = "SELECT col.name "
-				   + "FROM ad_column col "
-				   + "WHERE col.iskey = 'Y' AND col.ad_table_id = ?";
-		ArrayList<String> ret = new ArrayList<String>();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-
-			pstmt = DB.prepareStatement(sql, null);
-			pstmt.setInt(1, this.getZYN_MODEL_TABLE_ID());
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				ret.add(rs.getString(1));
-			}
-		} catch (Exception ex) {
-			log.log(Level.SEVERE, null, ex);
-
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException ex) {
-					log.log(Level.SEVERE, null, ex);
-				}
-			}
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException ex) {
-					log.log(Level.SEVERE, null, ex);
-				}
-				pstmt = null;
-			}
-		}
-		return ret;
-	}
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException ex) {
+                    log.log(Level.SEVERE, null, ex);
+                }
+                pstmt = null;
+            }
+        }
+        return ret;
+    }
 }	//	ZynModelTable
 
