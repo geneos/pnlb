@@ -1,0 +1,3 @@
+Version 20170223
+ - Fix error en columnas y tablas al agregar entidades a los modelos de reporte dinamicos
+

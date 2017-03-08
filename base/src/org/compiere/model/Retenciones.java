@@ -682,6 +682,8 @@ public class Retenciones extends CalloutEngine {
             MCurrency moneda = MCurrency.get(Env.getCtx(), payment.getC_Currency_ID());
             tPayamt = payment.getPayAmt().multiply(payment.getCotizacion());
 
+            
+            //CREO QUE ESTO ESTA MAL! AL redondear aca luego no da la cuenta cuando vuelvo a pasarlo a moneda original
             if (moneda != null) {
                 tPayamt = tPayamt.setScale(moneda.getStdPrecision(), BigDecimal.ROUND_HALF_UP);
             }
@@ -1100,7 +1102,8 @@ public class Retenciones extends CalloutEngine {
 
             // Cambio a cálculo con BigDecimal
 
-
+            //cRETENCIONIB = new BigDecimal(1387.02);
+            //cRETENCIONGAN = new BigDecimal(983.23);
             BigDecimal neto = (tPayamt.divide(payment.getCotizacion(), moneda.getStdPrecision(), BigDecimal.ROUND_HALF_UP));
             neto = neto.subtract((cRETENCIONIVA.divide(payment.getCotizacion(), moneda.getStdPrecision(), BigDecimal.ROUND_HALF_UP)));
             neto = neto.subtract((cRETENCIONIB.divide(payment.getCotizacion(), moneda.getStdPrecision(), BigDecimal.ROUND_HALF_UP)));

@@ -396,24 +396,13 @@ public class Doc_Payment extends Doc {
             /**
              * FIN
              */
+            
             // Retenciones CR
-            /**
-             * AGREGADO POR BISion 20/11/08 DANIEL GINI - CONTABILIDAD A RETENCIONES
-             *
-             * INICIO
-             */
-            
-            // Zynnia - 31/05/2012
-            // Modificación para pasar el valor de la retención en la moneda del pago getC_Currency_ID()
-            
-            /**
-             * AGREGADO POR BISion 20/11/08 DANIEL GINI - CONTABILIDAD A RETENCIONES
-             *
-             * INICIO
-             */
-            
+      
+            // Moneda del pago
             MCurrency moneda = MCurrency.get (Env.getCtx(), mPay.getC_Currency_ID());                
-            
+     
+            //Monto retenciones 
             BigDecimal montoRetRound = mPay.getRetencionGanancias().divide(mPay.getCotizacion(), BigDecimal.ROUND_HALF_UP);
             
             
