@@ -832,7 +832,8 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        if (detalle.length() > 3000)
+            detalle = detalle.substring(0, 2999);
         return detalle;
     }
 

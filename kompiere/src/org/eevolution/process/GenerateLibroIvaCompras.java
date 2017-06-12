@@ -34,6 +34,7 @@ public class GenerateLibroIvaCompras extends SvrProcess {
 
     //Máximo que permite la base de datos para los campos String
     private static int N = 30;
+    private final int C_DOCTYPE_ID_Payment = 1000138;
     private int p_PInstance_ID;
     private Timestamp fromDate;
     private Timestamp toDate;
@@ -346,7 +347,10 @@ public class GenerateLibroIvaCompras extends SvrProcess {
                 STATUS = rs.getString(16);
                 DATETRX = rs.getDate(5);
                 PERCEPCIONIB = rs.getBigDecimal(14);
-                if (PERCEPCIONIB.equals(BigDecimal.ZERO)) {
+                //Esto deberia ser solo si es factura!
+                long C_DOCTYPE_ID = rs.getLong(6);
+
+                if (PERCEPCIONIB.equals(BigDecimal.ZERO) && C_DOCTYPE_ID != C_DOCTYPE_ID_Payment ) {
                     pstmt3 = DB.prepareStatement(sqlQuery3, null);
                     pstmt3.setLong(1, rs.getLong(7));
                     ResultSet rs3 = pstmt3.executeQuery();

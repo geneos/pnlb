@@ -1,5 +1,6 @@
 package org.compiere.model;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -63,106 +64,104 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
     }
 
     protected boolean afterSave(boolean newRecord, boolean success) {
-        //	Actualiza la cobranza
-        if (success) {
-            
-            MZYNDYNAMICMOVFONDOS dynMovFondos = MZYNDYNAMICMOVFONDOS.get(Env.getCtx(), getTipo());
-            
-            if(dynMovFondos == null) {
-            
-                if (TIPO_EmiCheque.equals(getTipo()) && newRecord) {
-                    //Now in MMOVIMIENTOFONDOS.completeIt()
-                    /*
-                    int key = getC_BankAccount_ID();
 
-                    String nextNroCheque = getNroCheque();
-                    int nroCheque = Integer.valueOf(nextNroCheque).intValue() + 1;
-                    nextNroCheque = String.valueOf(nroCheque);
+        if (!success) {
+            return false;
+        }
 
-                    DB.executeUpdate("UPDATE C_BankAccountDoc SET CURRENTNEXT = '" + nextNroCheque + "' WHERE C_BankAccount_ID = " + key, null);*/
-                }	//TIPO_EmiCheque
+        MZYNDYNAMICMOVFONDOS dynMovFondos = MZYNDYNAMICMOVFONDOS.get(Env.getCtx(), getTipo());
 
-                if (TIPO_CambioCheque.equals(getTipo())) {
-                    MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
-                    ArrayList<MMOVIMIENTOFONDOSDEB> deb = mov.getC_MOVIMIENTOFONDOS_DEB_ID();
-                    if (deb != null) {
-                        for (int i = 0; i < deb.size(); i++) {
-                            deb.get(0).setCuitFirmante(getCuitFirm());
-                            deb.get(0).save();
-                        }
-                    } //deb!=null
-                }	//TIPO_CambioCheque
+        if (dynMovFondos == null) {
 
+            if (TIPO_EmiCheque.equals(getTipo()) && newRecord) {
+                //Now in MMOVIMIENTOFONDOS.completeIt()
                 /*
-                if (newRecord && (MMOVIMIENTOFONDOS.TIPO_DepositoPendiente.equals(getTipo())
-                                || dynMovFondos.isDEB_CUENTA_BANCO()
-                                || dynMovFondos.isCRE_CUENTA_BANCO()) && debitar) {
-                */
-                if (newRecord && MMOVIMIENTOFONDOS.TIPO_DepositoPendiente.equals(getTipo()) && debitar) {
-                    MMOVIMIENTOFONDOSDEB deb = new MMOVIMIENTOFONDOSDEB(getCtx(), 0, get_TrxName());
-
-                    deb.setC_MOVIMIENTOFONDOS_ID(getC_MOVIMIENTOFONDOS_ID());
-                    deb.setC_BankAccount_ID(getC_BankAccount_ID());
-                    deb.setDEBITO(getCREDITO());
-                    deb.setC_AcctSchema_ID(getC_AcctSchema_ID());
-                    deb.setMV_DEBITO_ACCT(getMV_CREDITO_ACCT());
-                    deb.setAcreditar(false);
-
-                    if (!deb.save(get_TrxName())) {
-                        JOptionPane.showMessageDialog(null, "No se pudo Registrar Débito", "Información", JOptionPane.INFORMATION_MESSAGE);
-                        return false;
-                    }
-                }            
+                int key = getC_BankAccount_ID();
                 
-            } else {
-            
-                if (dynMovFondos.isCRE_CHEQUE_PROPIO() && newRecord) {
-                    
-                    //Now in MMOVIMIENTOFONDOS.completeIt()
-                    /*
-                    int key = getC_BankAccount_ID();
+                String nextNroCheque = getNroCheque();
+                int nroCheque = Integer.valueOf(nextNroCheque).intValue() + 1;
+                nextNroCheque = String.valueOf(nroCheque);
+                
+                DB.executeUpdate("UPDATE C_BankAccountDoc SET CURRENTNEXT = '" + nextNroCheque + "' WHERE C_BankAccount_ID = " + key, null);*/
+            }	//TIPO_EmiCheque
 
-                    String nextNroCheque = getNroCheque();
-                    int nroCheque = Integer.valueOf(nextNroCheque).intValue() + 1;
-                    nextNroCheque = String.valueOf(nroCheque);
-
-                    DB.executeUpdate("UPDATE C_BankAccountDoc SET CURRENTNEXT = '" + nextNroCheque + "' WHERE C_BankAccount_ID = " + key, null);*/
-                }	//TIPO_EmiCheque
-
-                if (dynMovFondos.isCRE_CHEQUE_RECI()) {
-                    MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
-                    ArrayList<MMOVIMIENTOFONDOSDEB> deb = mov.getC_MOVIMIENTOFONDOS_DEB_ID();
-                    if (deb != null) {
-                        for (int i = 0; i < deb.size(); i++) {
-                            deb.get(0).setCuitFirmante(getCuitFirm());
-                            deb.get(0).save();
-                        }
-                    } //deb!=null
-                }	//TIPO_CambioCheque
-
-                /*
-                if (newRecord && (MMOVIMIENTOFONDOS.TIPO_DepositoPendiente.equals(getTipo())
-                                || dynMovFondos.isDEB_CUENTA_BANCO()
-                                || dynMovFondos.isCRE_CUENTA_BANCO()) && debitar) {
-                */
-                if (newRecord && dynMovFondos.isDEB_DEPOSITO_PEND() && debitar) {
-                    MMOVIMIENTOFONDOSDEB deb = new MMOVIMIENTOFONDOSDEB(getCtx(), 0, get_TrxName());
-
-                    deb.setC_MOVIMIENTOFONDOS_ID(getC_MOVIMIENTOFONDOS_ID());
-                    deb.setC_BankAccount_ID(getC_BankAccount_ID());
-                    deb.setDEBITO(getCREDITO());
-                    deb.setC_AcctSchema_ID(getC_AcctSchema_ID());
-                    deb.setMV_DEBITO_ACCT(getMV_CREDITO_ACCT());
-                    deb.setAcreditar(false);
-
-                    if (!deb.save(get_TrxName())) {
-                        JOptionPane.showMessageDialog(null, "No se pudo Registrar Débito", "Información", JOptionPane.INFORMATION_MESSAGE);
-                        return false;
+            if (TIPO_CambioCheque.equals(getTipo())) {
+                MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
+                ArrayList<MMOVIMIENTOFONDOSDEB> deb = mov.getC_MOVIMIENTOFONDOS_DEB_ID();
+                if (deb != null) {
+                    for (int i = 0; i < deb.size(); i++) {
+                        deb.get(0).setCuitFirmante(getCuitFirm());
+                        deb.get(0).save();
                     }
-                }            
-            
+                } //deb!=null
+            }	//TIPO_CambioCheque
+
+            /*
+            if (newRecord && (MMOVIMIENTOFONDOS.TIPO_DepositoPendiente.equals(getTipo())
+            || dynMovFondos.isDEB_CUENTA_BANCO()
+            || dynMovFondos.isCRE_CUENTA_BANCO()) && debitar) {
+             */
+            if (newRecord && MMOVIMIENTOFONDOS.TIPO_DepositoPendiente.equals(getTipo()) && debitar) {
+                MMOVIMIENTOFONDOSDEB deb = new MMOVIMIENTOFONDOSDEB(getCtx(), 0, get_TrxName());
+
+                deb.setC_MOVIMIENTOFONDOS_ID(getC_MOVIMIENTOFONDOS_ID());
+                deb.setC_BankAccount_ID(getC_BankAccount_ID());
+                deb.setDEBITO(getCREDITO());
+                deb.setC_AcctSchema_ID(getC_AcctSchema_ID());
+                deb.setMV_DEBITO_ACCT(getMV_CREDITO_ACCT());
+                deb.setAcreditar(false);
+
+                if (!deb.save(get_TrxName())) {
+                    JOptionPane.showMessageDialog(null, "No se pudo Registrar Débito", "Información", JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
             }
-            
+
+        } else {
+
+            if (dynMovFondos.isCRE_CHEQUE_PROPIO() && newRecord) {
+                //Now in MMOVIMIENTOFONDOS.completeIt()
+                    /*
+                int key = getC_BankAccount_ID();
+                
+                String nextNroCheque = getNroCheque();
+                int nroCheque = Integer.valueOf(nextNroCheque).intValue() + 1;
+                nextNroCheque = String.valueOf(nroCheque);
+                
+                DB.executeUpdate("UPDATE C_BankAccountDoc SET CURRENTNEXT = '" + nextNroCheque + "' WHERE C_BankAccount_ID = " + key, null);*/
+            }	//TIPO_EmiCheque
+
+            if (dynMovFondos.isCRE_CHEQUE_RECI()) {
+                MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
+                ArrayList<MMOVIMIENTOFONDOSDEB> deb = mov.getC_MOVIMIENTOFONDOS_DEB_ID();
+                if (deb != null) {
+                    for (int i = 0; i < deb.size(); i++) {
+                        deb.get(0).setCuitFirmante(getCuitFirm());
+                        deb.get(0).save();
+                    }
+                } //deb!=null
+            }	//TIPO_CambioCheque
+
+            /*
+            if (newRecord && (MMOVIMIENTOFONDOS.TIPO_DepositoPendiente.equals(getTipo())
+            || dynMovFondos.isDEB_CUENTA_BANCO()
+            || dynMovFondos.isCRE_CUENTA_BANCO()) && debitar) {
+             */
+            if (newRecord && dynMovFondos.isDEB_DEPOSITO_PEND() && debitar) {
+                MMOVIMIENTOFONDOSDEB deb = new MMOVIMIENTOFONDOSDEB(getCtx(), 0, get_TrxName());
+
+                deb.setC_MOVIMIENTOFONDOS_ID(getC_MOVIMIENTOFONDOS_ID());
+                deb.setC_BankAccount_ID(getC_BankAccount_ID());
+                deb.setDEBITO(getCREDITO());
+                deb.setC_AcctSchema_ID(getC_AcctSchema_ID());
+                deb.setMV_DEBITO_ACCT(getMV_CREDITO_ACCT());
+                deb.setAcreditar(false);
+
+                if (!deb.save(get_TrxName())) {
+                    JOptionPane.showMessageDialog(null, "No se pudo Registrar Débito", "Información", JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+            }
 
         }
 
@@ -184,11 +183,11 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
     public boolean beforeSave(boolean newRecord) {
 
         if (isSaveForce() == false) {
-            
+
             MZYNDYNAMICMOVFONDOS dynMovFondos = MZYNDYNAMICMOVFONDOS.get(Env.getCtx(), getTipo());
-            
-            if(dynMovFondos == null){
-                
+
+            if (dynMovFondos == null) {
+
                 if (TIPO_EmiCheque.equals(getTipo())) {
 
                     //			Verificación Parámetros
@@ -197,8 +196,8 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                         return false;
                     }
                     /*if ((getNroCheque() == null) || (new Integer(getNroCheque()) == 0)) {
-                        JOptionPane.showMessageDialog(null, "Ingrese Nro de Cheque", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
-                        return false;
+                    JOptionPane.showMessageDialog(null, "Ingrese Nro de Cheque", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
+                    return false;
                     }*/
                     if ((getTipoCheque() == null) || (getTipoCheque().equals(""))) {
                         JOptionPane.showMessageDialog(null, "Ingrese Tipo de Cheque", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
@@ -254,25 +253,25 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                             return false;
                         }
                     }
-                    
+
                     /*
                     try {
-                        String query = "select C_VALORPAGO_ID from C_VALORPAGO where NROCHEQUE = '" + getNroCheque() + "'";
-
-                        PreparedStatement pstmt = DB.prepareStatement(query, null);
-                        ResultSet rs = pstmt.executeQuery();
-
-                        if (rs.next() && (getC_VALORPAGO_ID() != rs.getInt(1))) {
-                            JOptionPane.showMessageDialog(null, "El Nro de Cheque ingresado ya existe.", "Error - Verificación", JOptionPane.ERROR_MESSAGE);
-                            return false;
-                        }
-
-                        rs.close();
-                        pstmt.close();
+                    String query = "select C_VALORPAGO_ID from C_VALORPAGO where NROCHEQUE = '" + getNroCheque() + "'";
+                    
+                    PreparedStatement pstmt = DB.prepareStatement(query, null);
+                    ResultSet rs = pstmt.executeQuery();
+                    
+                    if (rs.next() && (getC_VALORPAGO_ID() != rs.getInt(1))) {
+                    JOptionPane.showMessageDialog(null, "El Nro de Cheque ingresado ya existe.", "Error - Verificación", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                    }
+                    
+                    rs.close();
+                    pstmt.close();
                     } catch (Exception n) {
                     }
-                    *
-                    */
+                     *
+                     */
 
                     //	Lógica
                     //TODO PASAR A CONSTANTE
@@ -294,11 +293,11 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                 }
 
                 if (TIPO_DepCheque.equals(getTipo())) {
-    //				if ((getBank()==null) || (getBank().equals("")))
-    //				{
-    //					JOptionPane.showMessageDialog(null,"Ingrese Banco","Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
-    //					return false;
-    //				}
+                    //				if ((getBank()==null) || (getBank().equals("")))
+                    //				{
+                    //					JOptionPane.showMessageDialog(null,"Ingrese Banco","Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
+                    //					return false;
+                    //				}
                     if (getC_PAYMENTVALORES_ID() == 0) {
                         JOptionPane.showMessageDialog(null, "Ingrese Nro de Cheque de Tercero", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
                         return false;
@@ -314,7 +313,7 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                         ResultSet rs = pstmt.executeQuery();
                         //TODO PASAR A CONSTANTE
                         if (rs.next()) {
-    //						if ((!rs.getString(1).equals("Q")) || (!rs.getString(2).equals("C")) || (!rs.getString(3).equals(getBank())))
+                            //						if ((!rs.getString(1).equals("Q")) || (!rs.getString(2).equals("C")) || (!rs.getString(3).equals(getBank())))
                             if ((!rs.getString(1).equals("Q")) || (!rs.getString(2).equals("C"))) {
                                 JOptionPane.showMessageDialog(null, "El Nro de Cheque seleccionado es Incorrecto.", "Error - Verificación", JOptionPane.ERROR_MESSAGE);
                                 return false;
@@ -339,10 +338,21 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                     return true;
                 }
 
+                // Transferencia entre cuentas 
+                if (MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias.equals(getTipo())) {
+                    MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
 
-                
+                    if (mov.getDocStatus().equals(mov.DOCSTATUS_Drafted)
+                            || mov.getDocStatus().equals(mov.DOCSTATUS_InProgress)) {
+
+                        setConvertido(mov.getC_Currency_ID(), mov.getCotizacion());
+                    }
+                }
+
+
+
             } else {
-                
+
                 if (dynMovFondos.isCRE_CHEQUE_PROPIO()) {
 
                     //			Verificación Parámetros
@@ -351,8 +361,8 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                         return false;
                     }
                     /*if ((getNroCheque() == null) || (new Integer(getNroCheque()) == 0)) {
-                        JOptionPane.showMessageDialog(null, "Ingrese Nro de Cheque", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
-                        return false;
+                    JOptionPane.showMessageDialog(null, "Ingrese Nro de Cheque", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
+                    return false;
                     }*/
                     if ((getTipoCheque() == null) || (getTipoCheque().equals(""))) {
                         JOptionPane.showMessageDialog(null, "Ingrese Tipo de Cheque", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
@@ -445,11 +455,11 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                 }
 
                 if (dynMovFondos.isCRE_CHEQUE_DEPO()) {
-    //				if ((getBank()==null) || (getBank().equals("")))
-    //				{
-    //					JOptionPane.showMessageDialog(null,"Ingrese Banco","Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
-    //					return false;
-    //				}
+                    //				if ((getBank()==null) || (getBank().equals("")))
+                    //				{
+                    //					JOptionPane.showMessageDialog(null,"Ingrese Banco","Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
+                    //					return false;
+                    //				}
                     if (getC_PAYMENTVALORES_ID() == 0) {
                         JOptionPane.showMessageDialog(null, "Ingrese Nro de Cheque de Tercero", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
                         return false;
@@ -465,7 +475,7 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                         ResultSet rs = pstmt.executeQuery();
                         //TODO PASAR A CONSTANTE
                         if (rs.next()) {
-    //						if ((!rs.getString(1).equals("Q")) || (!rs.getString(2).equals("C")) || (!rs.getString(3).equals(getBank())))
+                            //						if ((!rs.getString(1).equals("Q")) || (!rs.getString(2).equals("C")) || (!rs.getString(3).equals(getBank())))
                             if ((!rs.getString(1).equals("Q")) || (!rs.getString(2).equals("C"))) {
                                 JOptionPane.showMessageDialog(null, "El Nro de Cheque seleccionado es Incorrecto.", "Error - Verificación", JOptionPane.ERROR_MESSAGE);
                                 return false;
@@ -490,9 +500,9 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                     return true;
                 }
 
-                
+
             }
-            
+
         } else // saveForse = true
         {
             setSaveForce(false);
@@ -515,5 +525,18 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
 
     public void setDebitar(boolean debitar) {
         this.debitar = debitar;
+    }
+
+    public void setConvertido(int c_Currency_ID, BigDecimal cotizacion) {
+        //Si es extranjera y la cuenta actual es extranjera
+        MBankAccount ba = new MBankAccount(getCtx(), getC_BankAccount_ID(), get_TrxName());
+
+        if (c_Currency_ID != 118
+                && ba.getC_Currency_ID() != 118) {
+            //Actualizo Convertido segun cotizacion
+            setConvertido(getCREDITO().multiply(cotizacion));
+        } else {
+            setConvertido(getCREDITO());
+        }
     }
 }

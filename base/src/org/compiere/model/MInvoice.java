@@ -2741,11 +2741,14 @@ public class MInvoice extends X_C_Invoice implements DocAction {
         //	Desasociar Orden de Venta, decremento por l�nea la cantidad facturada
         for (int i = 0; i < getLines().length; i++) {	//	Anular remito de cada linea asociada, generalmente es s�lo uno.
             MInvoiceLine invoiceLine = getLines()[i];
-            MOrderLine oLine = new MOrderLine(getCtx(), invoiceLine.getC_OrderLine_ID(), get_TrxName());
-            oLine.setQtyInvoiced(oLine.getQtyInvoiced().subtract(invoiceLine.getQtyInvoiced()));
-            invoiceLine.setC_OrderLine_ID(0);
-            if (!invoiceLine.save(get_TrxName()) || !oLine.save(get_TrxName())) {
-                return false;
+            //Solo se revierte si tiene una orden asociada
+            if ( invoiceLine.getC_OrderLine_ID() != 0) {
+                MOrderLine oLine = new MOrderLine(getCtx(), invoiceLine.getC_OrderLine_ID(), get_TrxName());
+                oLine.setQtyInvoiced(oLine.getQtyInvoiced().subtract(invoiceLine.getQtyInvoiced()));
+                invoiceLine.setC_OrderLine_ID(0);
+                if (!invoiceLine.save(get_TrxName()) || !oLine.save(get_TrxName())) {
+                    return false;
+                }
             }
         }
         setC_Order_ID(0);

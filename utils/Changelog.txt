@@ -1,3 +1,12 @@
-Version 20170223
+# Version 20170223
  - Fix error en columnas y tablas al agregar entidades a los modelos de reporte dinamicos
+ - Fix Error al intentar anular una factura la cual contenga una de sus lineas sin asociar con una orden.
+ - Fix Error en Reporte Mayor cuando la descripcion es muy larga. Se ajusto a un maximo de 3000. Ticket:(1101)
+# Version 20170518
+ - Fix Error en Libro IVA Compras. El reporte arrojaba montos de IVA erroneos al azar.
+ - Fix Partidas en ajuste de inventarios: (1115)
+ - Se agrega funcionalidad de Movimiento: Transferencia entre cuentas bancarias en dolares: (1094)
+ - Se agrega soporte de cuentas en dolares a las conciliaciones: (1091)
+# Version xxxxxxxx
+- Validacion de IMPUESTO al dar de alta un nuevo Regimen de Retencion (Arrojaba nullPointer Exception)
 

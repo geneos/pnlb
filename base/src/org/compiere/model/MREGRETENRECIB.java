@@ -23,7 +23,7 @@ import org.compiere.util.*;
 
 
 /**
- *	Régime de Percepciones Recibidas
+ *	Rï¿½gime de Percepciones Recibidas
  *	
  *  @author Daniel Gini
  */
@@ -97,16 +97,21 @@ public class MREGRETENRECIB extends X_C_REGRETEN_RECIB
 	
 	protected boolean beforeSave(boolean newRecord)
 	{		
+                    if (getIMPUESTO() == null){
+                        JOptionPane.showMessageDialog(null,"Ingrese IMPUESTO","Error - Falta ParÃ¡metro", JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }	
+						
 		if (getIMPUESTO().equals(RETEN_IIBB))
 		{	if ((getJURISDICCION()==null) || (getJURISDICCION().equals(0)))
 			{
-				JOptionPane.showMessageDialog(null,"Ingrese Jurisdicción","Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,"Ingrese JurisdicciÃ³n","Error - Falta ParÃ¡metro", JOptionPane.ERROR_MESSAGE);
 				return false;
-			}
+			                 }
 			else
 				if ((getCODIGO().equals(0)) || (getCODIGO()==null))
 				{
-					JOptionPane.showMessageDialog(null,"Ingrese Código de Jurisdicción","Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,"Ingrese CÃ³digo de Jurisdicciï¿½n","Error - Falta ParÃ¡metro", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
 				else
@@ -120,7 +125,7 @@ public class MREGRETENRECIB extends X_C_REGRETEN_RECIB
 		{	if (getIMPUESTO().equals(RETEN_IVA))
 				if (getREGIMENIVA()==null || getREGIMENIVA().equals(""))
 				{
-					JOptionPane.showMessageDialog(null,"Ingrese Régimen para IVA","Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,"Ingrese Regimen para IVA","Error - Falta ParÃ¡metro", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
 				else
@@ -134,7 +139,7 @@ public class MREGRETENRECIB extends X_C_REGRETEN_RECIB
 				if (getIMPUESTO().equals(RETEN_GAN))
 					if (getREGIMENGANANCIAS()==null || getREGIMENGANANCIAS().equals(""))
 					{	
-						JOptionPane.showMessageDialog(null,"Ingrese Régimen para Ganancias","Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null,"Ingrese Regimen para Ganancias","Error - Falta ParÃ¡metro", JOptionPane.ERROR_MESSAGE);
 						return false;
 					}
 					else
@@ -148,7 +153,7 @@ public class MREGRETENRECIB extends X_C_REGRETEN_RECIB
 				{	if (getIMPUESTO().equals(RETEN_SUSS))
 						if (getREGIMENSUSS()==null || getREGIMENSUSS().equals(""))
 						{	
-							JOptionPane.showMessageDialog(null,"Ingrese Régimen para SUSS","Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null,"Ingrese Regimen para SUSS","Error - Falta ParÃ¡metro", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}
 						else

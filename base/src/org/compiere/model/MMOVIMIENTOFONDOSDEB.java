@@ -1,5 +1,6 @@
 package org.compiere.model;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Calendar;
@@ -65,16 +66,19 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
     private String COMUN = "C";
 
     protected boolean afterSave(boolean newRecord, boolean success) {
+        if (!success) {
+            return false;
+        }
         MZYNDYNAMICMOVFONDOS dynMovFondos = MZYNDYNAMICMOVFONDOS.get(Env.getCtx(), getTipo());
         /*
         if (success && newRecord && (MMOVIMIENTOFONDOS.TIPO_DepositoPendiente.equals(getTipo())
-                                     || dynMovFondos.isDEB_CUENTA_BANCO()
-                                     || dynMovFondos.isCRE_CUENTA_BANCO()) && acreditar) {
-        */
-        
-        if(dynMovFondos == null) {
-        
-            if (success && newRecord && MMOVIMIENTOFONDOS.TIPO_DepositoPendiente.equals(getTipo()) && acreditar) {
+        || dynMovFondos.isDEB_CUENTA_BANCO()
+        || dynMovFondos.isCRE_CUENTA_BANCO()) && acreditar) {
+         */
+
+        if (dynMovFondos == null) {
+
+            if (newRecord && MMOVIMIENTOFONDOS.TIPO_DepositoPendiente.equals(getTipo()) && acreditar) {
                 MMOVIMIENTOFONDOSCRE cred = new MMOVIMIENTOFONDOSCRE(getCtx(), 0, get_TrxName());
 
                 cred.setC_MOVIMIENTOFONDOS_ID(getC_MOVIMIENTOFONDOS_ID());
@@ -88,11 +92,11 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
                     JOptionPane.showMessageDialog(null, "No se pudo Registrar Crédito", "Información", JOptionPane.INFORMATION_MESSAGE);
                     return false;
                 }
-            }            
-        
+            }
+
         } else {
-        
-            if (success && newRecord && dynMovFondos.isCRE_DEPOSITO_PEND() && acreditar) {
+
+            if (newRecord && dynMovFondos.isCRE_DEPOSITO_PEND() && acreditar) {
                 MMOVIMIENTOFONDOSCRE cred = new MMOVIMIENTOFONDOSCRE(getCtx(), 0, get_TrxName());
 
                 cred.setC_MOVIMIENTOFONDOS_ID(getC_MOVIMIENTOFONDOS_ID());
@@ -106,10 +110,10 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
                     JOptionPane.showMessageDialog(null, "No se pudo Registrar Crédito", "Información", JOptionPane.INFORMATION_MESSAGE);
                     return false;
                 }
-            }            
-        
+            }
+
         }
-        
+
 
 
         return success;
@@ -118,9 +122,9 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
     protected boolean beforeSave(boolean newRecord) {
 
         MZYNDYNAMICMOVFONDOS dynMovFondos = MZYNDYNAMICMOVFONDOS.get(Env.getCtx(), getTipo());
-         
-        if(dynMovFondos == null) {
-            
+
+        if (dynMovFondos == null) {
+
             if (TIPO_RechCqPropio.equals(getTipo())) {
                 if ((getC_BankAccount_ID() == null) || (getC_BankAccount_ID().equals(0))) {
                     JOptionPane.showMessageDialog(null, "Ingrese Cuenta Bancaria", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
@@ -354,10 +358,19 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
                 setEstado("En Cartera");
 
                 return true;
-            }    
-            
+            }
+
+            // Transferencia entre cuentas 
+            if (MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias.equals(getTipo())) {
+                MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
+                if (mov.getDocStatus().equals(mov.DOCSTATUS_Drafted)
+                        || mov.getDocStatus().equals(mov.DOCSTATUS_InProgress)) {
+                    setConvertido(mov.getC_Currency_ID(),mov.getCotizacion() );
+                }
+            }
+
         } else {
-        
+
             if (dynMovFondos.isDEB_CHEQUE_PRO_RECH()) {
                 if ((getC_BankAccount_ID() == null) || (getC_BankAccount_ID().equals(0))) {
                     JOptionPane.showMessageDialog(null, "Ingrese Cuenta Bancaria", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
@@ -591,9 +604,9 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
                 setEstado("En Cartera");
 
                 return true;
-            }         
-        
-        }      
+            }
+
+        }
 
 
         return true;
@@ -605,5 +618,18 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
 
     public void setAcreditar(boolean acreditar) {
         this.acreditar = acreditar;
+    }
+
+    public void setConvertido(int C_Currency_ID,BigDecimal cotizacion) {
+            //Si es extranjera y la cuenta actual es en ARS
+            MBankAccount ba = new MBankAccount(getCtx(), getC_BankAccount_ID(), get_TrxName());
+
+            if (C_Currency_ID != 118
+                    && ba.getC_Currency_ID() != 118) {
+                //Actualizo Convertido segun cotizacion
+                setConvertido(getDEBITO().multiply(cotizacion));
+            } else {
+                setConvertido(getDEBITO());
+            }
     }
 }

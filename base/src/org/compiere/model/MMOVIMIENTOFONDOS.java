@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import java.util.logging.Level;
 import javax.swing.JOptionPane;
 
 import org.compiere.print.ReportEngine;
@@ -77,11 +78,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
     }	//	MMOVIMIENTOFONDOS
 
     public ArrayList<MMOVIMIENTOFONDOSCRE> getC_MOVIMIENTOFONDOS_CRE_ID() {
-        ArrayList<MMOVIMIENTOFONDOSCRE> cred = null;
+        ArrayList<MMOVIMIENTOFONDOSCRE> cred = new ArrayList<MMOVIMIENTOFONDOSCRE>();
         try {
             String sql = "SELECT C_MOVIMIENTOFONDOS_CRE_ID "
-                         + "FROM C_MOVIMIENTOFONDOS_CRE "
-                         + "WHERE C_MOVIMIENTOFONDOS_ID = ?";
+                    + "FROM C_MOVIMIENTOFONDOS_CRE "
+                    + "WHERE C_MOVIMIENTOFONDOS_ID = ?";
 
             PreparedStatement pstmt = DB.prepareStatement(sql, null);
             pstmt.setLong(1, getC_MOVIMIENTOFONDOS_ID());
@@ -102,11 +103,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
     }
 
     public ArrayList<MMOVIMIENTOFONDOSDEB> getC_MOVIMIENTOFONDOS_DEB_ID() {
-        ArrayList<MMOVIMIENTOFONDOSDEB> deb = null;
+        ArrayList<MMOVIMIENTOFONDOSDEB> deb = new ArrayList<MMOVIMIENTOFONDOSDEB>();;
         try {
             String sql = "SELECT C_MOVIMIENTOFONDOS_DEB_ID "
-                         + "FROM C_MOVIMIENTOFONDOS_DEB "
-                         + "WHERE C_MOVIMIENTOFONDOS_ID = ?";
+                    + "FROM C_MOVIMIENTOFONDOS_DEB "
+                    + "WHERE C_MOVIMIENTOFONDOS_ID = ?";
 
             PreparedStatement pstmt = DB.prepareStatement(sql, null);
             pstmt.setLong(1, getC_MOVIMIENTOFONDOS_ID());
@@ -130,8 +131,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
         List<MFactAcct> list = new ArrayList<MFactAcct>();
 
         String sql = "SELECT Fact_Acct_ID "
-                     + " FROM Fact_Acct "
-                     + " WHERE Record_ID=? AND AD_Table_ID=? ";
+                + " FROM Fact_Acct "
+                + " WHERE Record_ID=? AND AD_Table_ID=? ";
 
         try {
             PreparedStatement pstm = DB.prepareStatement(sql, get_TrxName());
@@ -235,43 +236,13 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
          *
          * VERIFICACIÓN DE BALANCE
          */
-        try {
-            BigDecimal debito = new BigDecimal(0);
-            BigDecimal credito = new BigDecimal(0);
+        BigDecimal debito = getCreditoTotal();
+        BigDecimal credito = getDebitoTotal();
 
-            String sql = "SELECT COALESCE(SUM(DEBITO),0) "
-                         + "FROM C_MOVIMIENTOFONDOS_DEB "
-                         + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
-            PreparedStatement pstmt = DB.prepareStatement(sql, null);
-            pstmt.setLong(1, getC_MOVIMIENTOFONDOS_ID());
-
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                debito = rs.getBigDecimal(1);
-            }
-
-            sql = "SELECT COALESCE(SUM(CREDITO),0) "
-                  + "FROM C_MOVIMIENTOFONDOS_CRE "
-                  + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
-
-            pstmt = DB.prepareStatement(sql, null);
-            pstmt.setLong(1, getC_MOVIMIENTOFONDOS_ID());
-
-            rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                credito = rs.getBigDecimal(1);
-            }
-
-            if (!credito.equals(debito)) {
-                JOptionPane.showMessageDialog(null, "La contabilidad generada en esta ventana no balancea correctamente", "ERROR - Verificación de balance", JOptionPane.ERROR_MESSAGE);
-                return DocAction.STATUS_Invalid;
-            }
-
-        } catch (SQLException esql) {
-            m_processMsg = "Error verificar el Balance";
+        if (!credito.equals(debito)) {
+            JOptionPane.showMessageDialog(null, "La contabilidad generada en esta ventana no balancea correctamente", "ERROR - Verificación de balance", JOptionPane.ERROR_MESSAGE);
+            m_processMsg = "@NotBalanced@";
             return DocAction.STATUS_Invalid;
         }
 
@@ -294,18 +265,18 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
 
         MZYNDYNAMICMOVFONDOS dynMovFondos = MZYNDYNAMICMOVFONDOS.get(Env.getCtx(), getTIPO());
         /*
-         if (TIPO_EmiCheque.equals(getTIPO())
-         || dynMovFondos.isDEB_CUENTA_DEBITO()
-         || dynMovFondos.isCRE_CHEQUE_PROPIO()) {
+        if (TIPO_EmiCheque.equals(getTIPO())
+        || dynMovFondos.isDEB_CUENTA_DEBITO()
+        || dynMovFondos.isCRE_CHEQUE_PROPIO()) {
          */
-        
-        if(dynMovFondos == null) {        
-        
+
+        if (dynMovFondos == null) {
+
             if (TIPO_EmiCheque.equals(getTIPO())) {
-                
+
                 String sql = "SELECT C_MOVIMIENTOFONDOS_CRE_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_CRE "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -323,7 +294,7 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
 
                     while (rs.next()) {
                         MMOVIMIENTOFONDOSCRE mfcre = new MMOVIMIENTOFONDOSCRE(getCtx(), rs.getInt(1), get_TrxName());
-                        
+
                         char orden = 'N';
                         if (mfcre.isOrden() == true) {
                             orden = 'Y';
@@ -341,50 +312,47 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                         if (mfcre.getReleasedLocation() != null) {
                             lugar = mfcre.getReleasedLocation();
                         }
-                        
-                        
+
+
                         //Se Obtiene numero de cheque
                         String unNumeroCheque = mfcre.getNroCheque();
                         int key = mfcre.getC_BankAccount_ID();
                         //Si el numero de cheque todavia no se genero, se genera.
-                        if (unNumeroCheque.equals("00000000")){
+                        if (unNumeroCheque.equals("00000000")) {
                             unNumeroCheque = generateCheck(key);
-                            if (unNumeroCheque.equals("00000000")){
-                             JOptionPane.showMessageDialog(null,"Actualice Documento de Cuenta Bancaria, cuenta: "+key, "Chequera Completa", JOptionPane.INFORMATION_MESSAGE);   
-                             System.out.println("No se pudo generar numero de cheque para la cuenta: "+key);
-                             return DocAction.STATUS_Drafted; 
+                            if (unNumeroCheque.equals("00000000")) {
+                                JOptionPane.showMessageDialog(null, "Actualice Documento de Cuenta Bancaria, cuenta: " + key, "Chequera Completa", JOptionPane.INFORMATION_MESSAGE);
+                                System.out.println("No se pudo generar numero de cheque para la cuenta: " + key);
+                                return DocAction.STATUS_Drafted;
                             }
-                            if (unNumeroCheque == null){
-                                JOptionPane.showMessageDialog(null,"No se pudo generar el numero de cheque, cuenta: "+key, "Número de Cheque Incorrecto", JOptionPane.INFORMATION_MESSAGE);
-                                System.out.println("No se pudo generar numero de cheque para la cuenta: "+key);
-                                return DocAction.STATUS_Drafted; 
+                            if (unNumeroCheque == null) {
+                                JOptionPane.showMessageDialog(null, "No se pudo generar el numero de cheque, cuenta: " + key, "Número de Cheque Incorrecto", JOptionPane.INFORMATION_MESSAGE);
+                                System.out.println("No se pudo generar numero de cheque para la cuenta: " + key);
+                                return DocAction.STATUS_Drafted;
                             }
                             mfcre.setNroCheque(unNumeroCheque);
-                            if (mfcre.save()){
+                            if (mfcre.save()) {
                                 //Incremento Cheque
                                 int nextNroCheque = Integer.valueOf(unNumeroCheque).intValue() + 1;
-                                try
-                                {
+                                try {
                                     DB.executeUpdate("UPDATE C_BankAccountDoc SET CURRENTNEXT = " + nextNroCheque + " WHERE C_BankAccount_ID = " + key, null);
 
 
+                                } catch (Exception e) {
+                                    JOptionPane.showMessageDialog(null, "No se pudo generar el siguiente numero de cheque para: " + nextNroCheque + ", cuenta: " + key, "Error al Actualizar", JOptionPane.INFORMATION_MESSAGE);
+                                    System.out.println("No se pudo generar el siguiente numero de cheque para: " + nextNroCheque + ", cuenta: " + key);
                                 }
-                                catch (Exception e) {
-                                    JOptionPane.showMessageDialog(null,"No se pudo generar el siguiente numero de cheque para: "+ nextNroCheque +", cuenta: "+key, "Error al Actualizar", JOptionPane.INFORMATION_MESSAGE);
-                                    System.out.println("No se pudo generar el siguiente numero de cheque para: "+ nextNroCheque +", cuenta: "+key);
-                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "No se pudo actualizar Nro. de Cheque", "Error al Actualizar", JOptionPane.INFORMATION_MESSAGE);
+                                System.out.println("No se pudo actualizar Nro. de Cheque.");
+                                return DocAction.STATUS_Drafted;
                             }
-                            else {
-                               JOptionPane.showMessageDialog(null,"No se pudo actualizar Nro. de Cheque", "Error al Actualizar", JOptionPane.INFORMATION_MESSAGE);
-                               System.out.println("No se pudo actualizar Nro. de Cheque.");                                 
-                               return DocAction.STATUS_Drafted;  
-                            }
-                            
+
                         }
 
                         sql = "INSERT INTO C_VALORPAGO "
-                            + "(AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_ValorPago_Id,C_Payment_ID,C_MOVIMIENTOFONDOS_ID,TIPOMOV,NROCOMP,TIPO,C_BankAccount_Id,TIPOCHEQUE,NROCHEQUE,REALEASEDLOCATION,REALEASEDDATE,PAYMENTDATE,FAVOR,ORDEN,STATE,IMPORTE,Processed) "
-                            + "VALUES (" + getAD_Client_ID() + "," + getAD_Org_ID() + ",'Y',to_date('" + CDate + "','ddmmyy')," + getCreatedBy() + ",to_date('" + UDate + "','ddmmyy')," + getUpdatedBy() + "," + seq.getCurrentNext() + ",0," + getC_MOVIMIENTOFONDOS_ID() + ",'" + getTIPO() + "','" + getDocumentNo() + "','P'," + mfcre.getC_BankAccount_ID() + ",'" + mfcre.getTipoCheque() + "','" + mfcre.getNroCheque() + "','" + lugar + "',to_date('" + RDate + "','ddmmyy'),to_date('" + PDate + "','ddmmyy'),'" + mfcre.getAFavor() + "','" + orden + "','E'," + mfcre.getCREDITO() + ",'Y')";
+                                + "(AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_ValorPago_Id,C_Payment_ID,C_MOVIMIENTOFONDOS_ID,TIPOMOV,NROCOMP,TIPO,C_BankAccount_Id,TIPOCHEQUE,NROCHEQUE,REALEASEDLOCATION,REALEASEDDATE,PAYMENTDATE,FAVOR,ORDEN,STATE,IMPORTE,Processed) "
+                                + "VALUES (" + getAD_Client_ID() + "," + getAD_Org_ID() + ",'Y',to_date('" + CDate + "','ddmmyy')," + getCreatedBy() + ",to_date('" + UDate + "','ddmmyy')," + getUpdatedBy() + "," + seq.getCurrentNext() + ",0," + getC_MOVIMIENTOFONDOS_ID() + ",'" + getTIPO() + "','" + getDocumentNo() + "','P'," + mfcre.getC_BankAccount_ID() + ",'" + mfcre.getTipoCheque() + "','" + mfcre.getNroCheque() + "','" + lugar + "',to_date('" + RDate + "','ddmmyy'),to_date('" + PDate + "','ddmmyy'),'" + mfcre.getAFavor() + "','" + orden + "','E'," + mfcre.getCREDITO() + ",'Y')";
 
                         int n = DB.executeUpdate(sql, get_TrxName());
 
@@ -405,18 +373,18 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
 
             }
 
-    //		if (TIPO_TraBancaria.equals(getTIPO()))	{
+            //		if (TIPO_TraBancaria.equals(getTIPO()))	{
 
-    //		}
+            //		}
             /*
             if (TIPO_RechCqPropio.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_PROPIO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (TIPO_RechCqPropio.equals(getTIPO())) {
                 String sql = "SELECT C_VALORPAGO_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_DEB "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -444,11 +412,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_DepCheque.equals(getTIPO())
             || dynMovFondos.isDEB_CUENTA_BANCO()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()) {
-            */
+             */
             if (TIPO_DepCheque.equals(getTIPO())) {
                 String sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_CRE "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -477,11 +445,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_RechCqTercero.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (TIPO_RechCqTercero.equals(getTIPO())) {
                 String sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_DEB "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -505,11 +473,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_VencCqPropio.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (TIPO_VencCqPropio.equals(getTIPO())) {
                 String sql = "SELECT C_VALORPAGO_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_DEB "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -532,11 +500,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_VencCqTercero.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (TIPO_VencCqTercero.equals(getTIPO())) {
                 String sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_DEB "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -559,12 +527,12 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_ValNegociados.equals(getTIPO())
             || dynMovFondos.isDEB_CUENTA_BANCO()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()) {
-            */
+             */
             if (TIPO_ValNegociados.equals(getTIPO())) {
 
                 String sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_CRE "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -584,20 +552,20 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             }
 
             /*
-            * Anexo para la funcionalidad de mov de fondos por cesion de facturas Debe poner los cheques como depositados
-            *
-            * Zynnia 02/05/2012
-            *
-            */
+             * Anexo para la funcionalidad de mov de fondos por cesion de facturas Debe poner los cheques como depositados
+             *
+             * Zynnia 02/05/2012
+             *
+             */
             /*
             if (TIPO_CancelacionCesionFacturas.equals(getTIPO())
             || dynMovFondos.isDEB_CUENTA_DEBITO()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()) {
-            */
+             */
             if (TIPO_CancelacionCesionFacturas.equals(getTIPO())) {
                 String sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_CRE "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -619,13 +587,13 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_CambioCheque.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_REC()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()) {
-            */
+             */
             if (TIPO_CambioCheque.equals(getTIPO())) {
                 //--------------------------------------------------------
                 // Débito
                 String sql = "SELECT C_MOVIMIENTOFONDOS_DEB_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_DEB "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -652,8 +620,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                         //MSequence seq = MSequence.get(getCtx(), "C_PAYMENTVALORES");
 
                         sql = "INSERT INTO C_PAYMENTVALORES "
-                            + "(AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_PaymentValores_Id,C_Payment_ID,C_MOVIMIENTOFONDOS_ID,TIPOMOV,NROCOMP,TIPO,BANCO,TIPOCHEQUE,NROCHEQUE,REALEASEDDATE,PAYMENTDATE,TERCEROS,STATE,IMPORTE,CLEARING,CUITFIRM,Processed) "
-                            + "VALUES (" + getAD_Client_ID() + "," + getAD_Org_ID() + ",'Y',to_date('" + CDate + "','ddmmyy')," + getCreatedBy() + ",to_date('" + UDate + "','ddmmyy')," + getUpdatedBy() + "," + seq.getCurrentNext() + ",0," + getC_MOVIMIENTOFONDOS_ID() + ",'" + getTIPO() + "','" + getDocumentNo() + "','Q','" + mfdeb.getBank() + "','" + mfdeb.getTipoCheque() + "','" + mfdeb.getNroCheque() + "',to_date('" + RDate + "','ddmmyy'),to_date('" + PDate + "','ddmmyy'),'" + terceros + "','" + MPAYMENTVALORES.CARTERA + "'," + mfdeb.getDEBITO() + ",'" + mfdeb.getClearing() + "','" + mfdeb.getCuitFirmante() + "','Y')";
+                                + "(AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_PaymentValores_Id,C_Payment_ID,C_MOVIMIENTOFONDOS_ID,TIPOMOV,NROCOMP,TIPO,BANCO,TIPOCHEQUE,NROCHEQUE,REALEASEDDATE,PAYMENTDATE,TERCEROS,STATE,IMPORTE,CLEARING,CUITFIRM,Processed) "
+                                + "VALUES (" + getAD_Client_ID() + "," + getAD_Org_ID() + ",'Y',to_date('" + CDate + "','ddmmyy')," + getCreatedBy() + ",to_date('" + UDate + "','ddmmyy')," + getUpdatedBy() + "," + seq.getCurrentNext() + ",0," + getC_MOVIMIENTOFONDOS_ID() + ",'" + getTIPO() + "','" + getDocumentNo() + "','Q','" + mfdeb.getBank() + "','" + mfdeb.getTipoCheque() + "','" + mfdeb.getNroCheque() + "',to_date('" + RDate + "','ddmmyy'),to_date('" + PDate + "','ddmmyy'),'" + terceros + "','" + MPAYMENTVALORES.CARTERA + "'," + mfdeb.getDEBITO() + ",'" + mfdeb.getClearing() + "','" + mfdeb.getCuitFirmante() + "','Y')";
 
                         int n = DB.executeUpdate(sql, get_TrxName());
 
@@ -674,8 +642,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                 //--------------------------------------------------------
                 // Credito
                 sql = "SELECT C_PAYMENTVALORES_ID "
-                    + "FROM C_MOVIMIENTOFONDOS_CRE "
-                    + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -698,14 +666,14 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                 }
 
             }
-        
+
         } else {
-        
-        
+
+
             if (dynMovFondos.isCRE_CHEQUE_PROPIO()) {
                 String sql = "SELECT C_MOVIMIENTOFONDOS_CRE_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_CRE "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -741,51 +709,48 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                         if (mfcre.getReleasedLocation() != null) {
                             lugar = mfcre.getReleasedLocation();
                         }
-                        
+
                         //Se Obtiene numero de cheque
                         String unNumeroCheque = mfcre.getNroCheque();
                         int key = mfcre.getC_BankAccount_ID();
                         //Si el numero de cheque todavia no se genero, se genera.
-                        if (unNumeroCheque.equals("00000000")){
+                        if (unNumeroCheque.equals("00000000")) {
                             unNumeroCheque = generateCheck(key);
-                            if (unNumeroCheque.equals("00000000")){
-                             JOptionPane.showMessageDialog(null,"Actualice Documento de Cuenta Bancaria, cuenta: "+key, "Chequera Completa", JOptionPane.INFORMATION_MESSAGE);   
-                             System.out.println("No se pudo generar numero de cheque para la cuenta: "+key);
-                             return DocAction.STATUS_Drafted; 
+                            if (unNumeroCheque.equals("00000000")) {
+                                JOptionPane.showMessageDialog(null, "Actualice Documento de Cuenta Bancaria, cuenta: " + key, "Chequera Completa", JOptionPane.INFORMATION_MESSAGE);
+                                System.out.println("No se pudo generar numero de cheque para la cuenta: " + key);
+                                return DocAction.STATUS_Drafted;
                             }
-                            if (unNumeroCheque == null){
-                                JOptionPane.showMessageDialog(null,"No se pudo generar el numero de cheque, cuenta: "+key, "Número de Cheque Incorrecto", JOptionPane.INFORMATION_MESSAGE);
-                                System.out.println("No se pudo generar numero de cheque para la cuenta: "+key);
-                                return DocAction.STATUS_Drafted; 
+                            if (unNumeroCheque == null) {
+                                JOptionPane.showMessageDialog(null, "No se pudo generar el numero de cheque, cuenta: " + key, "Número de Cheque Incorrecto", JOptionPane.INFORMATION_MESSAGE);
+                                System.out.println("No se pudo generar numero de cheque para la cuenta: " + key);
+                                return DocAction.STATUS_Drafted;
                             }
                             mfcre.setNroCheque(unNumeroCheque);
-                            if (mfcre.save()){
+                            if (mfcre.save()) {
                                 //Incremento Cheque
                                 int nextNroCheque = Integer.valueOf(unNumeroCheque).intValue() + 1;
-                                try
-                                {
+                                try {
                                     DB.executeUpdate("UPDATE C_BankAccountDoc SET CURRENTNEXT = " + nextNroCheque + " WHERE C_BankAccount_ID = " + key, null);
 
 
+                                } catch (Exception e) {
+                                    JOptionPane.showMessageDialog(null, "No se pudo generar el siguiente numero de cheque para: " + nextNroCheque + ", cuenta: " + key, "Error al Actualizar", JOptionPane.INFORMATION_MESSAGE);
+                                    System.out.println("No se pudo generar el siguiente numero de cheque para: " + nextNroCheque + ", cuenta: " + key);
                                 }
-                                catch (Exception e) {
-                                    JOptionPane.showMessageDialog(null,"No se pudo generar el siguiente numero de cheque para: "+ nextNroCheque +", cuenta: "+key, "Error al Actualizar", JOptionPane.INFORMATION_MESSAGE);
-                                    System.out.println("No se pudo generar el siguiente numero de cheque para: "+ nextNroCheque +", cuenta: "+key);
-                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "No se pudo actualizar Nro. de Cheque", "Error al Actualizar", JOptionPane.INFORMATION_MESSAGE);
+                                System.out.println("No se pudo actualizar Nro. de Cheque.");
+                                return DocAction.STATUS_Drafted;
                             }
-                            else {
-                               JOptionPane.showMessageDialog(null,"No se pudo actualizar Nro. de Cheque", "Error al Actualizar", JOptionPane.INFORMATION_MESSAGE);
-                               System.out.println("No se pudo actualizar Nro. de Cheque.");                                 
-                               return DocAction.STATUS_Drafted;  
-                            }
-                            
+
                         }
-                        
-                        
-                        
+
+
+
                         sql = "INSERT INTO C_VALORPAGO "
-                            + "(AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_ValorPago_Id,C_Payment_ID,C_MOVIMIENTOFONDOS_ID,TIPOMOV,NROCOMP,TIPO,C_BankAccount_Id,TIPOCHEQUE,NROCHEQUE,REALEASEDLOCATION,REALEASEDDATE,PAYMENTDATE,FAVOR,ORDEN,STATE,IMPORTE,Processed) "
-                            + "VALUES (" + getAD_Client_ID() + "," + getAD_Org_ID() + ",'Y',to_date('" + CDate + "','ddmmyy')," + getCreatedBy() + ",to_date('" + UDate + "','ddmmyy')," + getUpdatedBy() + "," + seq.getCurrentNext() + ",0," + getC_MOVIMIENTOFONDOS_ID() + ",'" + getTIPO() + "','" + getDocumentNo() + "','P'," + mfcre.getC_BankAccount_ID() + ",'" + mfcre.getTipoCheque() + "','" + mfcre.getNroCheque() + "','" + lugar + "',to_date('" + RDate + "','ddmmyy'),to_date('" + PDate + "','ddmmyy'),'" + mfcre.getAFavor() + "','" + orden + "','E'," + mfcre.getCREDITO() + ",'Y')";
+                                + "(AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_ValorPago_Id,C_Payment_ID,C_MOVIMIENTOFONDOS_ID,TIPOMOV,NROCOMP,TIPO,C_BankAccount_Id,TIPOCHEQUE,NROCHEQUE,REALEASEDLOCATION,REALEASEDDATE,PAYMENTDATE,FAVOR,ORDEN,STATE,IMPORTE,Processed) "
+                                + "VALUES (" + getAD_Client_ID() + "," + getAD_Org_ID() + ",'Y',to_date('" + CDate + "','ddmmyy')," + getCreatedBy() + ",to_date('" + UDate + "','ddmmyy')," + getUpdatedBy() + "," + seq.getCurrentNext() + ",0," + getC_MOVIMIENTOFONDOS_ID() + ",'" + getTIPO() + "','" + getDocumentNo() + "','P'," + mfcre.getC_BankAccount_ID() + ",'" + mfcre.getTipoCheque() + "','" + mfcre.getNroCheque() + "','" + lugar + "',to_date('" + RDate + "','ddmmyy'),to_date('" + PDate + "','ddmmyy'),'" + mfcre.getAFavor() + "','" + orden + "','E'," + mfcre.getCREDITO() + ",'Y')";
 
                         int n = DB.executeUpdate(sql, get_TrxName());
 
@@ -806,18 +771,18 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
 
             }
 
-    //		if (TIPO_TraBancaria.equals(getTIPO()))	{
+            //		if (TIPO_TraBancaria.equals(getTIPO()))	{
 
-    //		}
+            //		}
             /*
             if (TIPO_RechCqPropio.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_PROPIO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (dynMovFondos.isDEB_CHEQUE_PRO_RECH()) {
                 String sql = "SELECT C_VALORPAGO_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_DEB "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -845,11 +810,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_DepCheque.equals(getTIPO())
             || dynMovFondos.isDEB_CUENTA_BANCO()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()) {
-            */
+             */
             if (dynMovFondos.isCRE_CHEQUE_DEPO()) {
                 String sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_CRE "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -878,11 +843,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_RechCqTercero.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (dynMovFondos.isDEB_CHEQUE_TER_RECH()) {
                 String sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_DEB "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -906,11 +871,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_VencCqPropio.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (dynMovFondos.isDEB_CHEQUE_PRO_VENC()) {
                 String sql = "SELECT C_VALORPAGO_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_DEB "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -933,11 +898,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_VencCqTercero.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (dynMovFondos.isDEB_CHEQUE_TER_VENC()) {
                 String sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_DEB "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -960,12 +925,12 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_ValNegociados.equals(getTIPO())
             || dynMovFondos.isDEB_CUENTA_BANCO()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()) {
-            */
+             */
             if (dynMovFondos.isCRE_VALORES_NEG()) {
 
                 String sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_CRE "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -985,20 +950,20 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             }
 
             /*
-            * Anexo para la funcionalidad de mov de fondos por cesion de facturas Debe poner los cheques como depositados
-            *
-            * Zynnia 02/05/2012
-            *
-            */
+             * Anexo para la funcionalidad de mov de fondos por cesion de facturas Debe poner los cheques como depositados
+             *
+             * Zynnia 02/05/2012
+             *
+             */
             /*
             if (TIPO_CancelacionCesionFacturas.equals(getTIPO())
             || dynMovFondos.isDEB_CUENTA_DEBITO()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()) {
-            */
+             */
             if (dynMovFondos.isCRE_CANCEL_FACT()) {
                 String sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_CRE "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1020,13 +985,13 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_CambioCheque.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_REC()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()) {
-            */
+             */
             if (dynMovFondos.isDEB_CHEQUE_REC()) {
                 //--------------------------------------------------------
                 // Débito
                 String sql = "SELECT C_MOVIMIENTOFONDOS_DEB_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_DEB "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1053,8 +1018,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                         //MSequence seq = MSequence.get(getCtx(), "C_PAYMENTVALORES");
 
                         sql = "INSERT INTO C_PAYMENTVALORES "
-                            + "(AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_PaymentValores_Id,C_Payment_ID,C_MOVIMIENTOFONDOS_ID,TIPOMOV,NROCOMP,TIPO,BANCO,TIPOCHEQUE,NROCHEQUE,REALEASEDDATE,PAYMENTDATE,TERCEROS,STATE,IMPORTE,CLEARING,CUITFIRM,Processed) "
-                            + "VALUES (" + getAD_Client_ID() + "," + getAD_Org_ID() + ",'Y',to_date('" + CDate + "','ddmmyy')," + getCreatedBy() + ",to_date('" + UDate + "','ddmmyy')," + getUpdatedBy() + "," + seq.getCurrentNext() + ",0," + getC_MOVIMIENTOFONDOS_ID() + ",'" + getTIPO() + "','" + getDocumentNo() + "','Q','" + mfdeb.getBank() + "','" + mfdeb.getTipoCheque() + "','" + mfdeb.getNroCheque() + "',to_date('" + RDate + "','ddmmyy'),to_date('" + PDate + "','ddmmyy'),'" + terceros + "','" + MPAYMENTVALORES.CARTERA + "'," + mfdeb.getDEBITO() + ",'" + mfdeb.getClearing() + "','" + mfdeb.getCuitFirmante() + "','Y')";
+                                + "(AD_Client_ID,AD_Org_ID,IsActive,Created,CreatedBy,Updated,UpdatedBy,C_PaymentValores_Id,C_Payment_ID,C_MOVIMIENTOFONDOS_ID,TIPOMOV,NROCOMP,TIPO,BANCO,TIPOCHEQUE,NROCHEQUE,REALEASEDDATE,PAYMENTDATE,TERCEROS,STATE,IMPORTE,CLEARING,CUITFIRM,Processed) "
+                                + "VALUES (" + getAD_Client_ID() + "," + getAD_Org_ID() + ",'Y',to_date('" + CDate + "','ddmmyy')," + getCreatedBy() + ",to_date('" + UDate + "','ddmmyy')," + getUpdatedBy() + "," + seq.getCurrentNext() + ",0," + getC_MOVIMIENTOFONDOS_ID() + ",'" + getTIPO() + "','" + getDocumentNo() + "','Q','" + mfdeb.getBank() + "','" + mfdeb.getTipoCheque() + "','" + mfdeb.getNroCheque() + "',to_date('" + RDate + "','ddmmyy'),to_date('" + PDate + "','ddmmyy'),'" + terceros + "','" + MPAYMENTVALORES.CARTERA + "'," + mfdeb.getDEBITO() + ",'" + mfdeb.getClearing() + "','" + mfdeb.getCuitFirmante() + "','Y')";
 
                         int n = DB.executeUpdate(sql, get_TrxName());
 
@@ -1075,8 +1040,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                 //--------------------------------------------------------
                 // Credito
                 sql = "SELECT C_PAYMENTVALORES_ID "
-                    + "FROM C_MOVIMIENTOFONDOS_CRE "
-                    + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -1098,16 +1063,16 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                     return DocAction.STATUS_Invalid;
                 }
 
-            }        
-        
+            }
+
         }
-        
+
         /**
          * INCREMENTO EN SECUENCIA SEGUN TIPO DE MOVIMIENTO
          */
         String sql = "SELECT DocNoSequence_ID "
-                     + "FROM C_DocType "
-                     + "WHERE C_DocType_ID = " + getC_DocType_ID();
+                + "FROM C_DocType "
+                + "WHERE C_DocType_ID = " + getC_DocType_ID();
         try {
             PreparedStatement pstm = DB.prepareStatement(sql, null);
             ResultSet rs = pstm.executeQuery();
@@ -1155,9 +1120,9 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
          * CAMBIOS DE ESTADO - LOGICA DEPENDIENDO DEL TIPO DE MOVIMIENTO
          */
         String sql = " SELECT DISTINCT mc.REG_MOVIMIENTOFONDOS "
-                     + " FROM C_MOVIMIENTOCONCILIACION mc "
-                     + " INNER JOIN C_CONCILIACIONBANCARIA cb ON (mc.C_CONCILIACIONBANCARIA_ID = cb.C_CONCILIACIONBANCARIA_ID) "
-                     + " WHERE cb.IsActive = 'Y' and cb.DocStatus in ('CO','CL') and mc.conciliado = 'Y' AND mc.C_MOVIMIENTOFONDOS_ID = ?";
+                + " FROM C_MOVIMIENTOCONCILIACION mc "
+                + " INNER JOIN C_CONCILIACIONBANCARIA cb ON (mc.C_CONCILIACIONBANCARIA_ID = cb.C_CONCILIACIONBANCARIA_ID) "
+                + " WHERE cb.IsActive = 'Y' and cb.DocStatus in ('CO','CL') and mc.conciliado = 'Y' AND mc.C_MOVIMIENTOFONDOS_ID = ?";
 
         try {
             PreparedStatement pss = DB.prepareStatement(sql, null);
@@ -1175,17 +1140,17 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
 
         MZYNDYNAMICMOVFONDOS dynMovFondos = MZYNDYNAMICMOVFONDOS.get(Env.getCtx(), getTIPO());
         /*
-         if (TIPO_EmiCheque.equals(getTIPO())
-         || dynMovFondos.isDEB_CUENTA_DEBITO()
-         || dynMovFondos.isCRE_CHEQUE_PROPIO()) {
+        if (TIPO_EmiCheque.equals(getTIPO())
+        || dynMovFondos.isDEB_CUENTA_DEBITO()
+        || dynMovFondos.isCRE_CHEQUE_PROPIO()) {
          */
-        
-        if(dynMovFondos == null) {        
-        
+
+        if (dynMovFondos == null) {
+
             if (TIPO_EmiCheque.equals(getTIPO())) {
                 sql = " SELECT C_MOVIMIENTOFONDOS_CRE_ID "
-                    + " FROM C_MOVIMIENTOFONDOS_CRE "
-                    + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + " FROM C_MOVIMIENTOFONDOS_CRE "
+                        + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1198,9 +1163,9 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
 
                         // ACTUALIZAR EL CHEQUE EN SI.
                         sql = " SELECT C_VALORPAGO_ID "
-                            + " FROM C_VALORPAGO "
-                            + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y' "
-                            + "	 AND C_BankAccount_ID=? AND NROCHEQUE=?";
+                                + " FROM C_VALORPAGO "
+                                + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y' "
+                                + "	 AND C_BankAccount_ID=? AND NROCHEQUE=?";
 
                         PreparedStatement ps = DB.prepareStatement(sql, null);
                         ps.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1228,11 +1193,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_RechCqPropio.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_PROPIO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (TIPO_RechCqPropio.equals(getTIPO())) {
                 sql = "SELECT C_VALORPAGO_ID "
-                    + "FROM C_MOVIMIENTOFONDOS_DEB "
-                    + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1255,13 +1220,13 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             || dynMovFondos.isDEB_CUENTA_BANCO()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()
             || dynMovFondos.isDEB_CUENTA_BANCO()) {
-            */
+             */
             if (TIPO_DepCheque.equals(getTIPO())
-                || TIPO_ValNegociados.equals(getTIPO())) {
+                    || TIPO_ValNegociados.equals(getTIPO())) {
 
                 sql = " SELECT C_PAYMENTVALORES_ID "
-                    + " FROM C_MOVIMIENTOFONDOS_CRE "
-                    + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + " FROM C_MOVIMIENTOFONDOS_CRE "
+                        + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1292,11 +1257,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_RechCqTercero.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (TIPO_RechCqTercero.equals(getTIPO())) {
                 sql = " SELECT C_PAYMENTVALORES_ID "
-                    + " FROM C_MOVIMIENTOFONDOS_DEB "
-                    + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + " FROM C_MOVIMIENTOFONDOS_DEB "
+                        + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1316,11 +1281,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_VencCqPropio.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (TIPO_VencCqPropio.equals(getTIPO())) {
                 sql = " SELECT C_VALORPAGO_ID "
-                    + " FROM C_MOVIMIENTOFONDOS_DEB "
-                    + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + " FROM C_MOVIMIENTOFONDOS_DEB "
+                        + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1339,11 +1304,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_VencCqTercero.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (TIPO_VencCqTercero.equals(getTIPO())) {
                 sql = "SELECT C_PAYMENTVALORES_ID "
-                    + "FROM C_MOVIMIENTOFONDOS_DEB "
-                    + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -1362,27 +1327,27 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             }
 
             /*
-            * if (TIPO_ValNegociados.equals(getTIPO()))	{ sql = " SELECT C_PAYMENTVALORES_ID " + " FROM
-            * C_MOVIMIENTOFONDOS_CRE " + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'"; try { PreparedStatement
-            * pstmt = DB.prepareStatement(sql, null); pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID()); ResultSet rs =
-            * pstmt.executeQuery();
-            *
-            * while (rs.next()) { MPAYMENTVALORES pval = new MPAYMENTVALORES(getCtx(),rs.getInt(1),get_TrxName());
-            * pval.setEstado(MPAYMENTVALORES.CARTERA); pval.save(get_TrxName()); } } catch(Exception e) { m_processMsg =
-            * "Error al cambiar el estado del Cheque a En Cartera"; return false; } }
-            */
+             * if (TIPO_ValNegociados.equals(getTIPO()))	{ sql = " SELECT C_PAYMENTVALORES_ID " + " FROM
+             * C_MOVIMIENTOFONDOS_CRE " + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'"; try { PreparedStatement
+             * pstmt = DB.prepareStatement(sql, null); pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID()); ResultSet rs =
+             * pstmt.executeQuery();
+             *
+             * while (rs.next()) { MPAYMENTVALORES pval = new MPAYMENTVALORES(getCtx(),rs.getInt(1),get_TrxName());
+             * pval.setEstado(MPAYMENTVALORES.CARTERA); pval.save(get_TrxName()); } } catch(Exception e) { m_processMsg =
+             * "Error al cambiar el estado del Cheque a En Cartera"; return false; } }
+             */
             /*
             if (TIPO_CambioCheque.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_REC()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()) {
-            */
+             */
             if (TIPO_CambioCheque.equals(getTIPO())) {
                 //--------------------------------------------------------
                 // Débito
 
                 sql = "SELECT C_MOVIMIENTOFONDOS_DEB_ID "
-                    + "FROM C_MOVIMIENTOFONDOS_DEB "
-                    + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1403,9 +1368,9 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                         MMOVIMIENTOFONDOSDEB mfdeb = new MMOVIMIENTOFONDOSDEB(getCtx(), rs.getInt(1), get_TrxName());
                         //	ELIMINAR CHEQUES NUEVOS EN CARTERA.
                         sql = " SELECT C_PAYMENTVALORES_ID "
-                            + " FROM C_PAYMENTVALORES "
-                            + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y' "
-                            + "	 AND BANCO=? AND NROCHEQUE=?";
+                                + " FROM C_PAYMENTVALORES "
+                                + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y' "
+                                + "	 AND BANCO=? AND NROCHEQUE=?";
 
                         PreparedStatement ps = DB.prepareStatement(sql, null);
                         ps.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1430,8 +1395,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                 //--------------------------------------------------------
                 // Credito
                 sql = " SELECT C_PAYMENTVALORES_ID "
-                    + " FROM C_MOVIMIENTOFONDOS_CRE "
-                    + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + " FROM C_MOVIMIENTOFONDOS_CRE "
+                        + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1455,9 +1420,9 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
              * del tipo CancelacionCesionFacturas
              */
             if (TIPO_CancelacionCesionFacturas.equals(getTIPO())) {
-               sql = "SELECT C_PAYMENTVALORES_ID "
-                            + "FROM C_MOVIMIENTOFONDOS_CRE "
-                            + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                sql = "SELECT C_PAYMENTVALORES_ID "
+                        + "FROM C_MOVIMIENTOFONDOS_CRE "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1480,8 +1445,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
 
             if (dynMovFondos.isCRE_CHEQUE_PROPIO()) {
                 sql = " SELECT C_MOVIMIENTOFONDOS_CRE_ID "
-                    + " FROM C_MOVIMIENTOFONDOS_CRE "
-                    + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + " FROM C_MOVIMIENTOFONDOS_CRE "
+                        + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1494,9 +1459,9 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
 
                         // ACTUALIZAR EL CHEQUE EN SI.
                         sql = " SELECT C_VALORPAGO_ID "
-                            + " FROM C_VALORPAGO "
-                            + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y' "
-                            + "	 AND C_BankAccount_ID=? AND NROCHEQUE=?";
+                                + " FROM C_VALORPAGO "
+                                + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y' "
+                                + "	 AND C_BankAccount_ID=? AND NROCHEQUE=?";
 
                         PreparedStatement ps = DB.prepareStatement(sql, null);
                         ps.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1524,11 +1489,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_RechCqPropio.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_PROPIO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (dynMovFondos.isDEB_CHEQUE_PRO_RECH()) {
                 sql = "SELECT C_VALORPAGO_ID "
-                    + "FROM C_MOVIMIENTOFONDOS_DEB "
-                    + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1551,12 +1516,12 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             || dynMovFondos.isDEB_CUENTA_BANCO()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()
             || dynMovFondos.isDEB_CUENTA_BANCO()) {
-            */
+             */
             if (dynMovFondos.isCRE_CHEQUE_DEPO() || dynMovFondos.isCRE_VALORES_NEG()) {
 
                 sql = " SELECT C_PAYMENTVALORES_ID "
-                    + " FROM C_MOVIMIENTOFONDOS_CRE "
-                    + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + " FROM C_MOVIMIENTOFONDOS_CRE "
+                        + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1587,11 +1552,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_RechCqTercero.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (dynMovFondos.isDEB_CHEQUE_TER_RECH()) {
                 sql = " SELECT C_PAYMENTVALORES_ID "
-                    + " FROM C_MOVIMIENTOFONDOS_DEB "
-                    + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + " FROM C_MOVIMIENTOFONDOS_DEB "
+                        + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1611,11 +1576,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_VencCqPropio.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (dynMovFondos.isDEB_CHEQUE_PRO_VENC()) {
                 sql = " SELECT C_VALORPAGO_ID "
-                    + " FROM C_MOVIMIENTOFONDOS_DEB "
-                    + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + " FROM C_MOVIMIENTOFONDOS_DEB "
+                        + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1634,11 +1599,11 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             if (TIPO_VencCqTercero.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_TERCERO()
             || dynMovFondos.isCRE_CUENTA_CREDITO()) {
-            */
+             */
             if (dynMovFondos.isDEB_CHEQUE_TER_VENC()) {
                 sql = "SELECT C_PAYMENTVALORES_ID "
-                    + "FROM C_MOVIMIENTOFONDOS_DEB "
-                    + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
@@ -1657,27 +1622,27 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             }
 
             /*
-            * if (TIPO_ValNegociados.equals(getTIPO()))	{ sql = " SELECT C_PAYMENTVALORES_ID " + " FROM
-            * C_MOVIMIENTOFONDOS_CRE " + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'"; try { PreparedStatement
-            * pstmt = DB.prepareStatement(sql, null); pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID()); ResultSet rs =
-            * pstmt.executeQuery();
-            *
-            * while (rs.next()) { MPAYMENTVALORES pval = new MPAYMENTVALORES(getCtx(),rs.getInt(1),get_TrxName());
-            * pval.setEstado(MPAYMENTVALORES.CARTERA); pval.save(get_TrxName()); } } catch(Exception e) { m_processMsg =
-            * "Error al cambiar el estado del Cheque a En Cartera"; return false; } }
-            */
+             * if (TIPO_ValNegociados.equals(getTIPO()))	{ sql = " SELECT C_PAYMENTVALORES_ID " + " FROM
+             * C_MOVIMIENTOFONDOS_CRE " + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'"; try { PreparedStatement
+             * pstmt = DB.prepareStatement(sql, null); pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID()); ResultSet rs =
+             * pstmt.executeQuery();
+             *
+             * while (rs.next()) { MPAYMENTVALORES pval = new MPAYMENTVALORES(getCtx(),rs.getInt(1),get_TrxName());
+             * pval.setEstado(MPAYMENTVALORES.CARTERA); pval.save(get_TrxName()); } } catch(Exception e) { m_processMsg =
+             * "Error al cambiar el estado del Cheque a En Cartera"; return false; } }
+             */
             /*
             if (TIPO_CambioCheque.equals(getTIPO())
             || dynMovFondos.isDEB_CHEQUE_REC()
             || dynMovFondos.isCRE_CHEQUE_TERCERO()) {
-            */
+             */
             if (dynMovFondos.isDEB_CHEQUE_REC()) {
                 //--------------------------------------------------------
                 // Débito
 
                 sql = "SELECT C_MOVIMIENTOFONDOS_DEB_ID "
-                    + "FROM C_MOVIMIENTOFONDOS_DEB "
-                    + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + "FROM C_MOVIMIENTOFONDOS_DEB "
+                        + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1698,9 +1663,9 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                         MMOVIMIENTOFONDOSDEB mfdeb = new MMOVIMIENTOFONDOSDEB(getCtx(), rs.getInt(1), get_TrxName());
                         //	ELIMINAR CHEQUES NUEVOS EN CARTERA.
                         sql = " SELECT C_PAYMENTVALORES_ID "
-                            + " FROM C_PAYMENTVALORES "
-                            + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y' "
-                            + "	 AND BANCO=? AND NROCHEQUE=?";
+                                + " FROM C_PAYMENTVALORES "
+                                + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y' "
+                                + "	 AND BANCO=? AND NROCHEQUE=?";
 
                         PreparedStatement ps = DB.prepareStatement(sql, null);
                         ps.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1725,8 +1690,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                 //--------------------------------------------------------
                 // Credito
                 sql = " SELECT C_PAYMENTVALORES_ID "
-                    + " FROM C_MOVIMIENTOFONDOS_CRE "
-                    + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+                        + " FROM C_MOVIMIENTOFONDOS_CRE "
+                        + " WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
                 try {
                     PreparedStatement pstmt = DB.prepareStatement(sql, null);
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
@@ -1741,12 +1706,12 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                     m_processMsg = "Error al cambiar el estado del Cheque a En Cartera";
                     return false;
                 }
-            }            
-            
+            }
+
         }
-        
-        
-        
+
+
+
         /**
          * ELIMINAR REGISTROS DE CONTABILIDAD
          */
@@ -1826,8 +1791,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             return;
         }
         String sql = "UPDATE C_MovimientoFondos SET Processed='"
-                     + (processed ? "Y" : "N")
-                     + "' WHERE C_MovimientoFondos_ID=" + getC_MOVIMIENTOFONDOS_ID();
+                + (processed ? "Y" : "N")
+                + "' WHERE C_MovimientoFondos_ID=" + getC_MOVIMIENTOFONDOS_ID();
         int no = DB.executeUpdate(sql, get_TrxName());
         log.fine(processed + " - #" + no);
     }	//	setProcessed
@@ -1903,8 +1868,13 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
      *
      * @return C_Currency_ID
      */
+    @Override
     public int getC_Currency_ID() {
-        return Env.getContextAsInt(getCtx(), "$C_Currency_ID ");
+        if (super.getC_Currency_ID() == 0) {
+            return Env.getContextAsInt(getCtx(), "$C_Currency_ID ");
+        } else {
+            return super.getC_Currency_ID();
+        }
     }
 
     /**
@@ -1938,11 +1908,36 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
      * else return false; } catch (Exception e){ return false; } return true; }
      */
     public boolean afterSave(boolean newRecord, boolean sucess) {
+
+        //Actualizo conversiones si el movimiento es de transferencia entre cuentas
+        if (MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias.equals(getTIPO())
+                && (getDocStatus().equals(DOCSTATUS_Drafted)
+                || getDocStatus().equals(DOCSTATUS_InProgress))) {
+
+            ArrayList<MMOVIMIENTOFONDOSCRE> lineasCred = getC_MOVIMIENTOFONDOS_CRE_ID();
+            for (MMOVIMIENTOFONDOSCRE aLine : lineasCred) {
+                aLine.setConvertido(getC_Currency_ID(), getCotizacion());
+                if (!aLine.save()) {
+                    m_processMsg = "Error al actualizar convertido para linea credito: " + aLine;
+                    return false;
+                }
+            }
+            ArrayList<MMOVIMIENTOFONDOSDEB> lineasDeb = getC_MOVIMIENTOFONDOS_DEB_ID();
+            for (MMOVIMIENTOFONDOSDEB aLine : lineasDeb) {
+                aLine.setConvertido(getC_Currency_ID(), getCotizacion());
+                if (!aLine.save()) {
+                    m_processMsg = "Error al actualizar convertido para linea debito: " + aLine;
+                    return false;
+                }
+            }
+
+        }
+
         if (sucess && isChange()) {
             int nro;
 
             String sql = "DELETE FROM C_MOVIMIENTOFONDOS_DEB "
-                         + "WHERE C_MOVIMIENTOFONDOS_ID = " + getC_MOVIMIENTOFONDOS_ID();
+                    + "WHERE C_MOVIMIENTOFONDOS_ID = " + getC_MOVIMIENTOFONDOS_ID();
             nro = DB.executeUpdate(sql, get_TrxName());
             if (nro < 0) {
                 setChange(false);
@@ -1950,7 +1945,7 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             }
 
             sql = "DELETE FROM C_MOVIMIENTOFONDOS_CRE "
-                  + "WHERE C_MOVIMIENTOFONDOS_ID = " + getC_MOVIMIENTOFONDOS_ID();
+                    + "WHERE C_MOVIMIENTOFONDOS_ID = " + getC_MOVIMIENTOFONDOS_ID();
             nro = DB.executeUpdate(sql, get_TrxName());
             if (nro < 0) {
                 setChange(false);
@@ -1965,8 +1960,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
             String tipo = getTIPO();
 
             String sql = "SELECT TIPO "
-                         + "FROM C_MOVIMIENTOFONDOS "
-                         + "WHERE C_MOVIMIENTOFONDOS_ID = " + getC_MOVIMIENTOFONDOS_ID();
+                    + "FROM C_MOVIMIENTOFONDOS "
+                    + "WHERE C_MOVIMIENTOFONDOS_ID = " + getC_MOVIMIENTOFONDOS_ID();
             try {
                 PreparedStatement pstm = DB.prepareStatement(sql, null);
                 ResultSet rs = pstm.executeQuery();
@@ -1995,10 +1990,10 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
         //MReference refer;
 
         String sql = " SELECT rlt.name "
-                     + " FROM ad_reference r "
-                     + " inner join ad_ref_list rl ON (rl.ad_reference_id= r.ad_reference_id)"
-                     + " inner join ad_ref_list_trl rlt ON (rl.ad_ref_list_id= rlt.ad_ref_list_id)"
-                     + " WHERE r.name = ? and rl.value = ?";
+                + " FROM ad_reference r "
+                + " inner join ad_ref_list rl ON (rl.ad_reference_id= r.ad_reference_id)"
+                + " inner join ad_ref_list_trl rlt ON (rl.ad_ref_list_id= rlt.ad_ref_list_id)"
+                + " WHERE r.name = ? and rl.value = ?";
         try {
             PreparedStatement pstm = DB.prepareStatement(sql, null);
             pstm.setString(1, REFERENCE_NAME);
@@ -2024,89 +2019,138 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
 
     private void eliminarMovimientosConciliacion(int c_MOVIMIENTOFONDOS_ID) {
         String sql = "DELETE FROM C_MOVIMIENTOCONCILIACION where C_MOVIMIENTOCONCILIACION_ID in "
-                     + "(SELECT C_MOVIMIENTOCONCILIACION_ID FROM C_MOVIMIENTOCONCILIACION mc "
-                     + "INNER JOIN C_CONCILIACIONBANCARIA c on (mc.C_CONCILIACIONBANCARIA_ID = c.C_CONCILIACIONBANCARIA_ID) "
-                     + "WHERE mc.C_MOVIMIENTOFONDOS_ID = " + c_MOVIMIENTOFONDOS_ID + " AND c.DOCSTATUS = 'DR')";
+                + "(SELECT C_MOVIMIENTOCONCILIACION_ID FROM C_MOVIMIENTOCONCILIACION mc "
+                + "INNER JOIN C_CONCILIACIONBANCARIA c on (mc.C_CONCILIACIONBANCARIA_ID = c.C_CONCILIACIONBANCARIA_ID) "
+                + "WHERE mc.C_MOVIMIENTOFONDOS_ID = " + c_MOVIMIENTOFONDOS_ID + " AND c.DOCSTATUS = 'DR')";
         DB.executeUpdate(sql, null);
     }
-    
-    
+
     /* Devuelve el numero de cheque correspondiente para una cuenta bancaria.
-         * "00000000" si la chequera esta completa
-         *  null en caso de error
-        */
-        public String generateCheck (int bankAccountID)
-	{
-            //	Get Info from DB
-            int key = bankAccountID;
+     * "00000000" si la chequera esta completa
+     *  null en caso de error
+     */
+    public String generateCheck(int bankAccountID) {
+        //	Get Info from DB
+        int key = bankAccountID;
 
-            String sql = "SELECT CURRENTNEXT,HASTA FROM C_BankAccountDoc WHERE C_BankAccount_ID = ? and IsActive='Y'";
+        String sql = "SELECT CURRENTNEXT,HASTA FROM C_BankAccountDoc WHERE C_BankAccount_ID = ? and IsActive='Y'";
 
-            try	{
+        try {
 
-                    PreparedStatement pstm = DB.prepareStatement(sql, null);
-                    pstm.setInt(1, key);
+            PreparedStatement pstm = DB.prepareStatement(sql, null);
+            pstm.setInt(1, key);
 
-                    ResultSet rs = pstm.executeQuery();
+            ResultSet rs = pstm.executeQuery();
 
-                    //	Set Info to Tab
-                    if (rs.next())
-                    {
-                        int next = rs.getInt(1);
-                        int to = rs.getInt(2);
+            //	Set Info to Tab
+            if (rs.next()) {
+                int next = rs.getInt(1);
+                int to = rs.getInt(2);
 
-                        if (next<=to)
-                        {
-                            String prefix = rs.getString(1);
+                if (next <= to) {
+                    String prefix = rs.getString(1);
 
-                            switch (prefix.length()) {
-                              case 1:
-                                    prefix = "0000000" + prefix;
-                                    break;
-                              case 2:
-                                    prefix = "000000" + prefix;
-                                    break;
-                              case 3:
-                                    prefix = "00000" + prefix;
-                                    break;
-                              case 4:
-                                    prefix = "0000" + prefix;
-                                    break;
-                              case 5:
-                                    prefix = "000" + prefix;
-                                    break;
-                              case 6:
-                                    prefix = "00" + prefix;
-                                    break;
-                              case 7:
-                                    prefix = "0" + prefix;
-                                    break;
-                              case 8:
-                                    break;
-                              default:
-                                    prefix = null;
-                                    //JOptionPane.showMessageDialog(null,"Número de Cheque Incorrecto", "Error", JOptionPane.ERROR_MESSAGE);
-                            }
-                            return prefix;
-                           // mTab.setValue("NROCHEQUE", prefix);
-                        }
-                        else
-                        {
-                                return "00000000";
-                                /*JOptionPane.showMessageDialog(null,"Actualice Documento de Cuenta Bancaria", "Chequera Completa", JOptionPane.INFORMATION_MESSAGE);
-                                mTab.setValue("NROCHEQUE", "00000000");*/
-                        }
+                    switch (prefix.length()) {
+                        case 1:
+                            prefix = "0000000" + prefix;
+                            break;
+                        case 2:
+                            prefix = "000000" + prefix;
+                            break;
+                        case 3:
+                            prefix = "00000" + prefix;
+                            break;
+                        case 4:
+                            prefix = "0000" + prefix;
+                            break;
+                        case 5:
+                            prefix = "000" + prefix;
+                            break;
+                        case 6:
+                            prefix = "00" + prefix;
+                            break;
+                        case 7:
+                            prefix = "0" + prefix;
+                            break;
+                        case 8:
+                            break;
+                        default:
+                            prefix = null;
+                        //JOptionPane.showMessageDialog(null,"Número de Cheque Incorrecto", "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                    else
-                    {
-                        return "00000000";
-                        /*JOptionPane.showMessageDialog(null,"Actualice Documento de Cuenta Bancaria", "Chequera Completa", JOptionPane.INFORMATION_MESSAGE);					
-                        mTab.setValue("NROCHEQUE", "00000000");*/
-                    }
+                    return prefix;
+                    // mTab.setValue("NROCHEQUE", prefix);
+                } else {
+                    return "00000000";
+                    /*JOptionPane.showMessageDialog(null,"Actualice Documento de Cuenta Bancaria", "Chequera Completa", JOptionPane.INFORMATION_MESSAGE);
+                    mTab.setValue("NROCHEQUE", "00000000");*/
+                }
+            } else {
+                return "00000000";
+                /*JOptionPane.showMessageDialog(null,"Actualice Documento de Cuenta Bancaria", "Chequera Completa", JOptionPane.INFORMATION_MESSAGE);					
+                mTab.setValue("NROCHEQUE", "00000000");*/
             }
-            catch (Exception e) {
+        } catch (Exception e) {
             return null;
+        }
+
+    }
+
+    private BigDecimal getCreditoTotal() {
+        BigDecimal credito = BigDecimal.ZERO;
+
+        try {
+            String field = "CREDITO";
+            if (MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias.equals(getTIPO())
+                    && getC_Currency_ID() != 118) {
+                field = "convertido";
             }
-               
-	}
+
+            String sql = "SELECT COALESCE(SUM(" + field + "),0) "
+                    + "FROM C_MOVIMIENTOFONDOS_CRE "
+                    + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+
+            PreparedStatement pstmt = DB.prepareStatement(sql, null);
+            pstmt.setLong(1, getC_MOVIMIENTOFONDOS_ID());
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                credito = rs.getBigDecimal(1);
+            }
+
+        } catch (SQLException esql) {
+            log.log(Level.SEVERE, "Error calculando Credito", esql);
+        }
+        return credito;
+    }
+
+    private BigDecimal getDebitoTotal() {
+        BigDecimal debito = BigDecimal.ZERO;
+
+        try {
+            String field = "DEBITO";
+            if (MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias.equals(getTIPO())
+                    && getC_Currency_ID() != 118) {
+                field = "convertido";
+            }
+
+            String sql = "SELECT COALESCE(SUM(" + field + "),0) "
+                    + "FROM C_MOVIMIENTOFONDOS_DEB "
+                    + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
+
+            PreparedStatement pstmt = DB.prepareStatement(sql, null);
+            pstmt.setLong(1, getC_MOVIMIENTOFONDOS_ID());
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                debito = rs.getBigDecimal(1);
+            }
+
+        } catch (SQLException esql) {
+            log.log(Level.SEVERE, "Error calculando Debito", esql);
+        }
+        return debito;
+    }
 }

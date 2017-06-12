@@ -61,7 +61,7 @@ public class Doc_MovFondos extends Doc
 		mov.save();
 		
 		setDateDoc(mov.getDateAcct());
-		
+		setC_Currency_ID(NO_CURRENCY);
 		//	Contained Objects
 		deb_lines = loadLinesDebito();
 		cred_lines = loadLinesCredito();
@@ -82,7 +82,7 @@ public class Doc_MovFondos extends Doc
 	{
 		ArrayList<DocLine_Debito> list = new ArrayList<DocLine_Debito>();
 		
-		String sql =  "SELECT C_MovimientoFondos_Deb_Id, DEBITO "
+		String sql =  "SELECT C_MovimientoFondos_Deb_Id, DEBITO, CONVERTIDO "
 					+ "FROM C_MovimientoFondos_Deb "
 					+ "WHERE C_MovimientoFondos_Id= ? AND IsActive = 'Y'";
 		
@@ -98,6 +98,11 @@ public class Doc_MovFondos extends Doc
 				BigDecimal amount = rs.getBigDecimal(2);
 				
 				//
+                                                                MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(),get_ID(),getTrxName());
+                                                                // Agrego soporte para moneda extranjera (Solo Transferencia entre cuentas) -> Convertido es el monto en pesos ARS
+                                                                if (mov.getTIPO().equals(MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias) && mov.getC_Currency_ID() != 118){
+                                                                    amount=rs.getBigDecimal(3);
+                                                                }
 				DocLine_Debito valueLine = new DocLine_Debito(get_ID(),C_MovimientoFondos_Id, amount, "D",true);
 				log.fine(valueLine.toString());
 				list.add(valueLine);
@@ -127,7 +132,7 @@ public class Doc_MovFondos extends Doc
 	{
 		ArrayList<DocLine_Debito> list = new ArrayList<DocLine_Debito>();
 		
-		String sql =  "SELECT C_MovimientoFondos_Cre_Id, CREDITO "
+		String sql =  "SELECT C_MovimientoFondos_Cre_Id, CREDITO, CONVERTIDO "
 					+ "FROM C_MovimientoFondos_Cre "
 					+ "WHERE C_MovimientoFondos_Id= ? AND IsActive = 'Y'";
 		
@@ -136,6 +141,7 @@ public class Doc_MovFondos extends Doc
 			PreparedStatement pstmt = DB.prepareStatement(sql, getTrxName());
 			pstmt.setInt(1, get_ID());
 			ResultSet rs = pstmt.executeQuery();
+                                                MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(),get_ID(),getTrxName());
 			//
 			while (rs.next())
 			{
@@ -143,6 +149,10 @@ public class Doc_MovFondos extends Doc
 				BigDecimal amount = rs.getBigDecimal(2);
 				
 				//
+                                                                // Agrego soporte para moneda extranjera (Solo Transferencia entre cuentas) -> Convertido es el monto en pesos ARS
+                                                                if (mov.getTIPO().equals(MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias) && mov.getC_Currency_ID() != 118){
+                                                                    amount=rs.getBigDecimal(3);
+                                                                }
 				DocLine_Debito valueLine = new DocLine_Debito(get_ID(),C_MovimientoFondos_Id, amount, "C",false);
 				log.fine(valueLine.toString());
 				list.add(valueLine);
@@ -193,8 +203,8 @@ public class Doc_MovFondos extends Doc
 	 *  Create Facts (the accounting logic) for
 	 *  CMC.
 	 *  <pre>
-	 *          Débito		   DR
-	 *          Crédito               CR
+	 *          Dï¿½bito		   DR
+	 *          Crï¿½dito               CR
 	 *  </pre>
 	 *  @param as account schema
 	 *  @return Fact
@@ -204,7 +214,7 @@ public class Doc_MovFondos extends Doc
 		//  create Fact Header
 		Fact fact = new Fact(this, as, Fact.POST_Actual);
 		
-		//  Débito Lines
+		//  Dï¿½bito Lines
 		for (int i = 0; i < deb_lines.length; i++)
 		{
 			FactLine fl = fact.createLine(null, deb_lines[i].getAccount(deb_lines[i].getValueType(), as),

@@ -9,8 +9,8 @@
 #  Check the following parameters:
 #  -------------------------------
 
-JAVA_HOME=/usr/lib/jvm/jdk1.5.0_22
-COMPIERE_SOURCE=/home/pepo/workspace/pnlb_prod
+JAVA_HOME=/usr/lib/jvm/java5/jdk1.5.0_22
+COMPIERE_SOURCE=/home/pablo/Trabajo/Panalab/pnlb_prod
 
 export JAVA_HOME;
 if [ $JAVA_HOME ]; then
@@ -49,14 +49,14 @@ export ANT_PROPERTIES="$ANT_PROPERTIES -DMailLogger.mailhost=xxx -DMailLogger.fr
 
 
 #	Automatic Installation - Where Compiere2 will be unzipped
-export COMPIERE_ROOT=/home/pepo/apps/Compiere2
+export COMPIERE_ROOT=/home/pablo/apps/Compiere2
 
 #	Automatic Installation - Resulting Home Directory
 export COMPIERE_HOME=$COMPIERE_ROOT/Compiere2
 
 
 #	Automatic Installation - Share for final Installers
-export COMPIERE_INSTALL=/home/pepo/apps/install/
+export COMPIERE_INSTALL=$COMPIERE_ROOT/install
 if [ ! -d $COMPIERE_INSTALL ] ; then
     mkdir -p $COMPIERE_INSTALL
 fi  
