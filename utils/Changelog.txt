@@ -9,4 +9,5 @@
  - Se agrega soporte de cuentas en dolares a las conciliaciones: (1091)
 # Version xxxxxxxx
 - Validacion de IMPUESTO al dar de alta un nuevo Regimen de Retencion (Arrojaba nullPointer Exception)
+- Validacion de Cheques duplicados para movimiento de Fondos DEPOSITO DE CHEQUES y VALORES NEGOCIADOS
 

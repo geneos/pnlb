@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
 
+import java.util.logging.Level;
 import javax.swing.JOptionPane;
 
 import org.compiere.util.DB;
@@ -302,6 +303,11 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                         JOptionPane.showMessageDialog(null, "Ingrese Nro de Cheque de Tercero", "Error - Falta Parámetro", JOptionPane.ERROR_MESSAGE);
                         return false;
                     }
+                    
+                   if  ( !verificarChequeDuplicdo() ) {
+                         JOptionPane.showMessageDialog(null, "El Cheque de Tercero ya fue ingresado en esta conciliacion", "Error - Cheque ya ingresado", JOptionPane.ERROR_MESSAGE);
+                        return false;
+                   }
 
                     //Verificación de Datos
 
@@ -329,7 +335,10 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
                 }
 
                 if (TIPO_ValNegociados.equals(getTipo())) {
-
+                     if  ( !verificarChequeDuplicdo() ) {
+                         JOptionPane.showMessageDialog(null, "El Cheque de Tercero ya fue ingresado en esta conciliacion", "Error - Cheque ya ingresado", JOptionPane.ERROR_MESSAGE);
+                        return false;
+                   }
                     return true;
                 }
 
@@ -538,5 +547,31 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
         } else {
             setConvertido(getCREDITO());
         }
+    }
+
+    private boolean verificarChequeDuplicdo() {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        boolean retValue = true;
+         try {
+            String query = "select 1 from c_movimientofondos_cre where c_movimientofondos_id = ? and  C_PAYMENTVALORES_id = ? and  c_movimientofondos_cre_id <> ?";
+
+            pstmt = DB.prepareStatement(query, null);
+            pstmt.setInt(1,getC_MOVIMIENTOFONDOS_ID());
+            pstmt.setInt(2, getC_PAYMENTVALORES_ID());
+            pstmt.setInt(3, getC_MOVIMIENTOFONDOS_CRE_ID());
+
+             rs = pstmt.executeQuery();
+            if (rs.next()) {
+                 retValue = false;
+            }
+
+            rs.close();
+            pstmt.close();
+         } catch (Exception e) {
+             log.log(Level.SEVERE, "Error al validar cheques duplicados", e);
+              retValue = false;
+         }
+         return retValue;
     }
 }
