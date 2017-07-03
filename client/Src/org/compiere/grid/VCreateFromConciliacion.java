@@ -770,7 +770,7 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
                     + " b.name," //AFavor
                     + " null," //VencimientoDate
                     + " vp.realeaseddate," //ReleasedDate
-                    + " vp.mextranjera" //Amt Extranjero 
+                    + " -vp.mextranjera" //Amt Extranjero 
                     + " FROM C_ValorPago vp"
                     + " LEFT OUTER JOIN C_Payment p ON (p.C_Payment_ID=vp.C_Payment_ID)"
                     + " LEFT OUTER JOIN C_BPartner b ON (p.c_Bpartner_id=b.c_Bpartner_id)"
@@ -819,7 +819,7 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
             
             //	TIPO DE MOVIMIENTO: Emisión de Cheque Propio
              sql = " SELECT "
-                    + " 0," //MovimientoFondos_ID
+                    + " mf.c_movimientofondos_id," //MovimientoFondos_ID
                     + " CASE vp.C_Payment_Id"
                         + " WHEN 0 THEN mf.documentno"
                         + " ELSE p.documentno"
@@ -838,7 +838,7 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
                         + " END," //AFavor
                     + " vp.paymentdate," //VencimientoDate
                     + " vp.realeaseddate," //ReleasedDate
-                    + " vp.mextranjera" //Amt Extranjero
+                    + " -vp.mextranjera" //Amt Extranjero
                     + " FROM C_ValorPago vp"
                     + " LEFT OUTER JOIN C_MovimientoFondos mf ON (mf.C_MovimientoFondos_Id=vp.C_MovimientoFondos_Id)"
                     + " LEFT OUTER JOIN C_Payment p ON (p.C_Payment_ID=vp.C_Payment_ID)"
@@ -923,7 +923,7 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
 
             //	TIPO DE MOVIMIENTO: Emisión de Cheque Propio
              sql = " SELECT "
-                    + " 0," //MovimientoFondos_ID
+                    + " mf.MovimientoFondos_ID," //MovimientoFondos_ID
                     + " CASE vp.C_Payment_Id"
                         + " WHEN 0 THEN mf.documentno"
                         + " ELSE p.documentno"
@@ -945,7 +945,7 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
                         + " END," //AFavor
                     + " vp.paymentdate," //VencimientoDate
                     + " vp.realeaseddate," //ReleasedDate
-                    + " vp.mextranjera" //Amt Extranjero
+                    + " -vp.mextranjera" //Amt Extranjero
                     + " FROM C_ValorPago vp"
                     + " LEFT OUTER JOIN C_MovimientoFondos mf ON (mf.C_MovimientoFondos_Id=vp.C_MovimientoFondos_Id)"
                     + " LEFT OUTER JOIN C_Payment p ON (p.C_Payment_ID=vp.C_Payment_ID)"

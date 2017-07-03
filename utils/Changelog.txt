@@ -7,7 +7,8 @@
  - Fix Partidas en ajuste de inventarios: (1115)
  - Se agrega funcionalidad de Movimiento: Transferencia entre cuentas bancarias en dolares: (1094)
  - Se agrega soporte de cuentas en dolares a las conciliaciones: (1091)
-# Version xxxxxxxx
+# Version 20170703
 - Validacion de IMPUESTO al dar de alta un nuevo Regimen de Retencion (Arrojaba nullPointer Exception)
 - Validacion de Cheques duplicados para movimiento de Fondos DEPOSITO DE CHEQUES y VALORES NEGOCIADOS
+- Ajustes en conciliaciones bancarias en dolares, montos deben estar en negativo para TRANSFERENCIAS PAGOS
 
