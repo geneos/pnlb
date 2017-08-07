@@ -368,6 +368,15 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
                     setConvertido(mov.getC_Currency_ID(),mov.getCotizacion() );
                 }
             }
+            
+            // Credito Bancario 
+            if (MMOVIMIENTOFONDOS.TIPO_CreditoBancario.equals(getTipo())) {
+                MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
+                if (mov.getDocStatus().equals(mov.DOCSTATUS_Drafted)
+                        || mov.getDocStatus().equals(mov.DOCSTATUS_InProgress)) {
+                    setConvertido(mov.getC_Currency_ID(),mov.getCotizacion() );
+                }
+            }
 
         } else {
 

@@ -2347,7 +2347,7 @@ public class VOrderReceiptIssue extends CPanel
                 }
 
                 if (ADialog.ask(m_WindowNo, this, "Print Document")) {
-                    format = MPrintFormat.get(Env.getCtx(), 1000676, false);
+                    format = MPrintFormat.get(Env.getCtx(), 5000189, false);
                     format.setLanguage(language);
                     format.setTranslationLanguage(language);
 

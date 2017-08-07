@@ -165,6 +165,9 @@ public final class Fact
 
 		if (creditAmt != null)
 			System.out.print("\n Veamos el CRED - F: "+creditAmt.floatValue());
+                
+                                if (debitAmt != null)
+			System.out.print("\n Veamos el DEB - F: "+debitAmt.floatValue());
 
 		//  Amounts - one needs to not zero
 		if (!line.setAmtSource(C_Currency_ID, debitAmt, creditAmt))
@@ -188,6 +191,8 @@ public final class Fact
 			line.setAmtAcct(docLine.getAmtAcctDr(), docLine.getAmtAcctCr());
 		//
 		log.fine(line.toString());
+                	System.out.print("\n"+ line);
+
 		add(line);
 		return line;
 	}	//	createLine
@@ -389,6 +394,8 @@ public final class Fact
 			log.finer(toString());
 		else
 			log.warning ("NO - Diff=" + balance + " - " + toString());
+                                
+                                System.out.println("Diff=" + balance + " - " + toString());
 		return retValue;
 	}	//	isSourceBalanced
 
@@ -631,6 +638,7 @@ public final class Fact
 			log.finer(toString());
 		else
 			log.warning("NO - Diff=" + balance + " - " + toString());
+                System.out.println("Diff=" + balance + " - " + toString());
 		return retValue;
 	}	//	isAcctBalanced
 

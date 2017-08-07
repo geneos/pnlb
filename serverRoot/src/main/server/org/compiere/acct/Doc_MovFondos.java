@@ -99,8 +99,12 @@ public class Doc_MovFondos extends Doc
 				
 				//
                                                                 MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(),get_ID(),getTrxName());
-                                                                // Agrego soporte para moneda extranjera (Solo Transferencia entre cuentas) -> Convertido es el monto en pesos ARS
-                                                                if (mov.getTIPO().equals(MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias) && mov.getC_Currency_ID() != 118){
+                                                                // Agrego soporte para moneda extranjera  -> Convertido es el monto en pesos ARS
+                                                                // - Transferencia entre cuentas
+                                                                // - credito bancario
+                                                                if ( (mov.getTIPO().equals(MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias) 
+                                                                      || mov.getTIPO().equals(MMOVIMIENTOFONDOS.MOV_CREDITO_BANCARIO)) 
+                                                                        && mov.getC_Currency_ID() != 118 ){
                                                                     amount=rs.getBigDecimal(3);
                                                                 }
 				DocLine_Debito valueLine = new DocLine_Debito(get_ID(),C_MovimientoFondos_Id, amount, "D",true);
@@ -241,6 +245,8 @@ public class Doc_MovFondos extends Doc
 		//
 		ArrayList<Fact> facts = new ArrayList<Fact>();
 		facts.add(fact);
+                                System.out.print("Lineas creadas");
+
 		return facts;
 	}   //  createFact
 

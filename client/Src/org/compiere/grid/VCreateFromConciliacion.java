@@ -806,8 +806,14 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
                 movConc.setVencimientoDate(rs.getTimestamp(col_VendimientoDate));
                 movConc.setRELEASEDATE(rs.getTimestamp(col_ReleasedDate));
                 
+                //Cuando el pago se hizo a partir de una factura en Dolares, entonces el monto extranjero no se esta calculando
                 if (bankAccount.getC_Currency_ID() != 118)  { //ARS
-                    movConc.setAmt(rs.getBigDecimal(col_AmtExt));
+                    
+                    //Chequeo si el pago es en moneda extranjera entonces el valor en dolares esta en la columna AmtExt,
+                    //Caso contrario esta en campo IMPORTE
+                    MPayment pay = new MPayment(Env.getCtx(), rs.getInt(col_C_Payment_ID),null);
+                    if (pay.isForeingCurrency())
+                         movConc.setAmt(rs.getBigDecimal(col_AmtExt));
                 }
                 
                 if (!movConc.save()) {
@@ -908,7 +914,11 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
                 movConc.setRELEASEDATE(rs.getTimestamp(col_ReleasedDate));
 
                 if (bankAccount.getC_Currency_ID() != 118)  { //ARS
-                    movConc.setAmt(rs.getBigDecimal(col_AmtExt));
+                    //Chequeo si el pago es en moneda extranjera entonces el valor en dolares esta en la columna AmtExt,
+                    //Caso contrario esta en campo IMPORTE
+                    MPayment pay = new MPayment(Env.getCtx(), rs.getInt(col_C_Payment_ID),null);
+                    if (pay.isForeingCurrency())
+                         movConc.setAmt(rs.getBigDecimal(col_AmtExt));
                 }
                 
                 // Cambio para que la fecha efectiva tome la fecha de emisión y no la de debito
@@ -923,7 +933,7 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
 
             //	TIPO DE MOVIMIENTO: Emisión de Cheque Propio
              sql = " SELECT "
-                    + " mf.MovimientoFondos_ID," //MovimientoFondos_ID
+                    + " mf.C_MovimientoFondos_ID," //MovimientoFondos_ID
                     + " CASE vp.C_Payment_Id"
                         + " WHEN 0 THEN mf.documentno"
                         + " ELSE p.documentno"
@@ -1010,7 +1020,11 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
                 movConc.setEfectivaDate(valpay.getDebitoDate());
                 
                 if (bankAccount.getC_Currency_ID() != 118)  { //ARS
-                    movConc.setAmt(rs.getBigDecimal(col_AmtExt));
+                    //Chequeo si el pago es en moneda extranjera entonces el valor en dolares esta en la columna AmtExt,
+                    //Caso contrario esta en campo IMPORTE
+                    MPayment pay = new MPayment(Env.getCtx(), rs.getInt(col_C_Payment_ID),null);
+                    if (pay.isForeingCurrency())
+                         movConc.setAmt(rs.getBigDecimal(col_AmtExt));
                 }
 
                 if (!movConc.save()) {
@@ -1149,7 +1163,11 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
                 movConc.setEstado("Rechazado");
                 
                 if (bankAccount.getC_Currency_ID() != 118)  { //ARS
-                    movConc.setAmt(rs.getBigDecimal(col_AmtExt));
+                    //Chequeo si el pago es en moneda extranjera entonces el valor en dolares esta en la columna AmtExt,
+                    //Caso contrario esta en campo IMPORTE
+                    MPayment pay = new MPayment(Env.getCtx(), rs.getInt(col_C_Payment_ID),null);
+                    if (pay.isForeingCurrency())
+                         movConc.setAmt(rs.getBigDecimal(col_AmtExt));
                 }
 
                 if (!movConc.save()) {
@@ -1315,7 +1333,7 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
                     + " null," //AFavor
                     + " null," //VencimientoDate
                     + " null," //ReleasedDate
-                    + " 0" //Amt Extranjero
+                    + " mfd.debito" //Amt Extranjero (Se ingresa en moneda original y el campo convertido esta en pesos)
                     + " FROM C_MovimientoFondos mf"
                     + " INNER JOIN C_MovimientoFondos_Deb mfd ON (mf.C_MovimientoFondos_ID=mfd.C_MovimientoFondos_ID)"
                     + " INNER JOIN C_BankAccount ba ON (ba.C_BankAccount_Id = mfd.C_BankAccount_Id)"
@@ -1394,7 +1412,7 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
                     + " null," //AFavor
                     + " null," //VencimientoDate
                     + " null," //ReleasedDate
-                    + " 0" //Amt Extranjero
+                    + " -mfc.credito" //Amt Extranjero (Se ingresa en moneda original y el campo convertido esta en pesos)
                     + " FROM C_MovimientoFondos mf"
                     + " INNER JOIN C_MovimientoFondos_Cre mfc ON (mf.C_MovimientoFondos_ID=mfc.C_MovimientoFondos_ID)"
                     + " INNER JOIN C_BankAccount ba ON (ba.C_BankAccount_Id = mfc.C_BankAccount_Id)"
@@ -1626,7 +1644,11 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
                 movConc.setRELEASEDATE(rs.getTimestamp(col_ReleasedDate));
 
                 if (bankAccount.getC_Currency_ID() != 118)  { //ARS
-                    movConc.setAmt(rs.getBigDecimal(col_AmtExt));
+                    //Chequeo si el pago es en moneda extranjera entonces el valor en dolares esta en la columna AmtExt,
+                    //Caso contrario esta en campo IMPORTE
+                    MPayment pay = new MPayment(Env.getCtx(), rs.getInt(col_C_Payment_ID),null);
+                    if (pay.isForeingCurrency())
+                         movConc.setAmt(rs.getBigDecimal(col_AmtExt));
                 }
                 
                 if (!movConc.save()) {

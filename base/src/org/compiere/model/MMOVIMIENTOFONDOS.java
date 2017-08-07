@@ -236,8 +236,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
          *
          * VERIFICACIÓN DE BALANCE
          */
-        BigDecimal debito = getCreditoTotal();
-        BigDecimal credito = getDebitoTotal();
+        BigDecimal debito = getDebitoTotal();
+        BigDecimal credito = getCreditoTotal();
 
 
         if (!credito.equals(debito)) {
@@ -1909,8 +1909,9 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
      */
     public boolean afterSave(boolean newRecord, boolean sucess) {
 
-        //Actualizo conversiones si el movimiento es de transferencia entre cuentas
-        if (MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias.equals(getTIPO())
+        //Actualizo conversiones (Credito) si el movimiento es de:
+        // - transferencia entre cuentas
+        if ( (MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias.equals(getTIPO()) )
                 && (getDocStatus().equals(DOCSTATUS_Drafted)
                 || getDocStatus().equals(DOCSTATUS_InProgress))) {
 
@@ -1922,6 +1923,16 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                     return false;
                 }
             }
+        }
+        
+         //Actualizo conversiones (Debito) si el movimiento es de:
+        // - transferencia entre cuentas
+        // - credito bancario
+        if ( (MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias.equals(getTIPO()) 
+                || MMOVIMIENTOFONDOS.MOV_CREDITO_BANCARIO.equals(getTIPO())  )
+                && (getDocStatus().equals(DOCSTATUS_Drafted)
+                || getDocStatus().equals(DOCSTATUS_InProgress))) {
+
             ArrayList<MMOVIMIENTOFONDOSDEB> lineasDeb = getC_MOVIMIENTOFONDOS_DEB_ID();
             for (MMOVIMIENTOFONDOSDEB aLine : lineasDeb) {
                 aLine.setConvertido(getC_Currency_ID(), getCotizacion());
@@ -2130,7 +2141,8 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
 
         try {
             String field = "DEBITO";
-            if (MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias.equals(getTIPO())
+            if ( (MMOVIMIENTOFONDOS.TIPO_TransferenciaCuentasBancarias.equals(getTIPO()) 
+                  || MMOVIMIENTOFONDOS.TIPO_CreditoBancario.equals(getTIPO()))
                     && getC_Currency_ID() != 118) {
                 field = "convertido";
             }

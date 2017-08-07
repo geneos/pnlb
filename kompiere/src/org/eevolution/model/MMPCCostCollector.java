@@ -1368,11 +1368,11 @@ public class MMPCCostCollector extends X_MPC_Cost_Collector implements DocAction
             return success;
         
         //fjv e-evolution Operation Activity Report begin
+        if (getMPC_Order_Node_ID() != 0){
             MMPCOrderNode onodeact =new MMPCOrderNode(Env.getCtx(),getMPC_Order_Node_ID(),null);
-        // comentado fviejo     onodeact.setDocStatus("IP");
-        //onodeact.setAD_WF_Node_ID(getMPC_Order_Workflow_ID());
-        onodeact.save();
-        
+              onodeact.save();
+        }
+      
         // setDocStatus("IP");
         
         //fjv e-evolution Operation Activity Report end

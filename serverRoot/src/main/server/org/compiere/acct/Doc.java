@@ -771,6 +771,7 @@ public abstract class Doc {
 
         //  rejectUnbalanced
         if (!m_ass[index].isSuspenseBalancing() && !isBalanced()) {
+            System.out.print("act.isSuspenseBalancing");
             return STATUS_NotBalanced;
         }
 
@@ -832,6 +833,7 @@ public abstract class Doc {
                     if (no != 0) {
                         log.info("deleted=" + no);
                     }
+                     System.out.print("act.isSourceBalanced");
                     return STATUS_NotBalanced;
                 }
             }
@@ -846,6 +848,7 @@ public abstract class Doc {
                     if (no != 0) {
                         log.info("deleted=" + no);
                     }
+                     System.out.print("act.isSegmentBalanced");
                     return STATUS_NotBalanced;
                 }
             }
@@ -860,6 +863,7 @@ public abstract class Doc {
                     if (no != 0) {
                         log.info("deleted=" + no);
                     }
+                    System.out.print("act.isAcctBalanced");
                     return STATUS_NotBalanced;
                 }
             }
