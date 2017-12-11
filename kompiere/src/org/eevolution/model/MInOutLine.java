@@ -185,9 +185,13 @@ public class MInOutLine extends org.compiere.model.MInOutLine {
             int M_Locator_ID = getParent().getSalidasLocatorID();
             MStorage aStorage = MStorage.get(getCtx(), M_Locator_ID, getM_Product_ID(), getM_AttributeSetInstance_ID(), get_TrxName());
             if (aStorage == null || aStorage.getQtyAvailable().compareTo(qtyReturn) == -1) {
+                BigDecimal qtyAvailable = BigDecimal.ZERO;
+                if (aStorage != null) {
+                    qtyAvailable = aStorage.getQtyAvailable();
+                }
                 MProduct prod = new MProduct(getCtx(), getM_Product_ID(), get_TrxName());
                 MAttributeSetInstance masi = new MAttributeSetInstance(getCtx(), getM_AttributeSetInstance_ID(), get_TrxName());
-                JOptionPane.showMessageDialog(null, "No existe cantidad sufiente ("+ aStorage.getQtyAvailable()+") en Salidas para  producto: " + prod + " partida: " + masi.getDescription(), "Cantidad insuficiente", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No existe cantidad sufiente ("+ qtyAvailable+") en Salidas para  producto: " + prod + " partida: " + masi.getDescription(), "Cantidad insuficiente", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
 

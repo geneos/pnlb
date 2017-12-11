@@ -1817,6 +1817,25 @@ public abstract class PO implements Serializable, Comparator, Evaluatee {
 		return false;
 	} // is_Change
 
+        
+                /**
+	 * Is there a Change to be saved (omiting is active)?
+	 * 
+	 * @return true if record changed
+	 */
+	public boolean is_ChangedOmitFields(String... args) {
+                    int size = get_ColumnCount();
+                    ArrayList<String> aux = new ArrayList<String>();
+                    for (String arg : args) {
+                       aux.add(arg);
+                    }
+                    for (int i = 0; i < size; i++) {
+                            if (m_newValues[i] != null && aux.contains(get_ColumnName(i)))
+                                    return true; // something changed
+                    }
+                    return false;
+	} // is_ChangedOnlyIsActive
+        
 	/**
 	 * Called before Save for Pre-Save Operation
 	 * 
@@ -2531,6 +2550,43 @@ public abstract class PO implements Serializable, Comparator, Evaluatee {
 			sql.append("IsTranslated='Y'");
 		} else
 			sql.append("IsTranslated='N'");
+		//
+		sql.append(" WHERE ").append(keyColumn).append("=").append(get_ID());
+		int no = DB.executeUpdate(sql.toString(), m_trxName);
+		log.fine("#" + no);
+		return no >= 0;
+	} // updateTranslations
+        
+                /**
+	 * Update Translations.
+	 * 
+	 * @return false if error (true if no translation or success)
+	 */
+	public boolean updateTranslation(String columnName) {
+
+		MClient client = MClient.get(getCtx());
+		//
+		String tableName = p_info.getTableName();
+		String keyColumn = m_KeyColumns[0];
+		StringBuffer sql = new StringBuffer("UPDATE ").append(tableName)
+				.append("_Trl SET ");
+
+                                sql.append(columnName).append("=");
+                                Object value = get_Value(columnName);
+                                if (value == null)
+                                        sql.append("NULL");
+                                else if (value instanceof String)
+                                        sql.append(DB.TO_STRING((String) value));
+                                else if (value instanceof Boolean)
+                                        sql.append(((Boolean) value).booleanValue() ? "'Y'"
+                                                        : "'N'");
+                                else if (value instanceof Timestamp)
+                                        sql.append(DB.TO_DATE((Timestamp) value));
+                                else
+                                        sql.append(value.toString());
+                                sql.append(",");
+
+                                sql.append("IsTranslated='N'");
 		//
 		sql.append(" WHERE ").append(keyColumn).append("=").append(get_ID());
 		int no = DB.executeUpdate(sql.toString(), m_trxName);

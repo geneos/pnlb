@@ -253,8 +253,9 @@ public class MZYNDYNAMICMOVFONDOS extends X_ZYN_DYNAMIC_MOVFONDOS {
         if (!validateDebito() || !validateCredito()) {
             return false;
         }
-
+        
         MRefList refList = null;
+        
         boolean existsCode = false;
         if (newRecord) {
             if (getCode() != null && getCode().length() > 0) {
@@ -295,12 +296,14 @@ public class MZYNDYNAMICMOVFONDOS extends X_ZYN_DYNAMIC_MOVFONDOS {
 
         } else {
             existsCode = findExistentsMovements((String) get_ValueOld("Code"));
-            if (existsCode) {
+            
+            
+            if (existsCode && is_ChangedOmitFields("Name","Name") ) {
                 log.saveError("Error", "No se puede modificar. Existen movimiento de fondos de este tipo");
                 return false;
             }
 
-            if (is_ValueChanged("Name") || is_ValueChanged("Code")) {
+            if (is_ValueChanged("Name") || is_ValueChanged("Code") || is_ValueChanged("IsActive")) {
                 if (is_ValueChanged("Code")) {
                     existsCode = findPrevListValue(getCode());
                     if (existsCode) {
@@ -312,8 +315,14 @@ public class MZYNDYNAMICMOVFONDOS extends X_ZYN_DYNAMIC_MOVFONDOS {
             }
         }
         if (refList != null) {
+            
             refList.setValue(getCode());
             refList.setName(getName());
+            
+            //Desactivo o activo lista de referencia.
+            refList.setIsActive(isActive());
+            refList.get_Translation(Table_Name, Table_Name);
+            refList.updateTranslation("Name");
             refList.save();
 
             if (newRecord) {

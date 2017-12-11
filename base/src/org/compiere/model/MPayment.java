@@ -589,12 +589,12 @@ public class MPayment extends X_C_Payment
                     }
 
                     if (nro == "" || nro == null) {
-                        JOptionPane.showMessageDialog(null, "Número de Documento Inválido", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Número de Documento Inválido - Falta sufijo", "Error", JOptionPane.ERROR_MESSAGE);
                         return false;
                     }
 
                     if (prefijo == "" || prefijo == null) {
-                        JOptionPane.showMessageDialog(null, "Número de Documento Inválido", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Número de Documento Inválido - Falta prefijo", "Error", JOptionPane.ERROR_MESSAGE);
                         return false;
                     }
 
@@ -651,6 +651,12 @@ public class MPayment extends X_C_Payment
                         this.setDocumentNo(val);
                     } else {
                         JOptionPane.showMessageDialog(null, "Número de Documento Inválido", "Error", JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
+                    
+                    //Chequeo que el numero no no este repetido
+                    if (!validateUniqueDocumentNo()){
+                        JOptionPane.showMessageDialog(null, "El numero ingresado: "+val+" ya fue utilizado por otro documento ", "Error",  JOptionPane.ERROR_MESSAGE);
                         return false;
                     }
 
@@ -3282,11 +3288,7 @@ public class MPayment extends X_C_Payment
             return null;
         }
 
-        if (listVal.size() > 0) {
-            return listVal;
-        }
-
-        return null;
+        return listVal;
     }	// getValoresCobranza
 
     public List<MVALORPAGO> getValoresPago() {
@@ -3683,5 +3685,13 @@ public class MPayment extends X_C_Payment
         MSequence seq = new MSequence(getCtx(), 5000048, get_TrxName());
 
         return Integer.toString(seq.getCurrentNext());
+    }
+
+    private boolean validateUniqueDocumentNo() {
+        String sql = "SELECT 1 FROM C_Payment WHERE documentno= '"+getDocumentNo()+"' "
+                + " AND  c_payment_id <> "+getC_Payment_ID()+""
+                + " AND c_doctype_id = "+getC_DocType_ID();
+        int ret = DB.getSQLValue(get_TrxName(), sql);
+        return ret == -1;
     }
 }   //  MPayment

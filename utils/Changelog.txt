@@ -11,4 +11,10 @@
 - Validacion de IMPUESTO al dar de alta un nuevo Regimen de Retencion (Arrojaba nullPointer Exception)
 - Validacion de Cheques duplicados para movimiento de Fondos DEPOSITO DE CHEQUES y VALORES NEGOCIADOS
 - Ajustes en conciliaciones bancarias en dolares, montos deben estar en negativo para TRANSFERENCIAS PAGOS
-
+#Version 20171211
+- Activar/Desactivar movimiento de fondos.(856)
+- Devolucion clientes funcionando.(751)
+- Chequeo de numero de doc dupliado en Cobranzas (1155)
+- Fix de errores en proceso para crear requisiciones desde OC (781)
+- Fix pasaje de reporte a EXCEL para casos en los que los numeros son muy grandes (1156)
+#Version XXXXXXXX

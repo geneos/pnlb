@@ -1054,6 +1054,7 @@ public class MBPartner extends X_C_BPartner
 				setEXENCIONPERIB(true);
 				setEXENCIONPERIVA(true);
 				setIsTaxExempt(true);
+                                                                setTaxID(getNro_Extranjero());
 			}
 			
 		

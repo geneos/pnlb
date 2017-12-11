@@ -469,9 +469,16 @@ public class ExcelEngine {
             // Comparo con una expresion regular si el String es
             // entero
             if (valueStr.matches("[0-9]+")) {
-                int val = Integer.valueOf(valueStr).intValue();
-                BigDecimal number = new BigDecimal(val);
-                cell = new jxl.write.Number(col, row, number.doubleValue(), cellFormat);
+                try {
+                    int val = Integer.valueOf(valueStr).intValue();
+                    BigDecimal number = new BigDecimal(val);
+                    cell = new jxl.write.Number(col, row, number.doubleValue(), cellFormat);
+                }
+                //Capturo error al transformar a integer, entonces lo guado como string
+                catch (NumberFormatException e) {
+                   log.log(Level.SEVERE, "Error parseando valor "+valueStr+", se parsea entonces como texto", e);
+                    cell = new jxl.write.Label(col, row, valueStr, cellFormat);
+                }
             } else if (valueStr.matches("[0-9]+,[0-9]+")
                        || valueStr.matches("[0-9]+\\.[0-9]+")) {
                 double valD = Double.valueOf(valueStr).doubleValue();

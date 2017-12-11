@@ -182,7 +182,7 @@ public class Doc_Payment extends Doc {
 
                 BigDecimal amount = Env.ZERO;
 
-                if (!rs.getBigDecimal(4).equals(Env.ZERO)) {
+                if (!(rs.getBigDecimal(4).compareTo(Env.ZERO) == 0)) {
                     amount = rs.getBigDecimal(4);
                 } else {
                     amount = rs.getBigDecimal(3);
@@ -403,7 +403,7 @@ public class Doc_Payment extends Doc {
             MCurrency moneda = MCurrency.get (Env.getCtx(), mPay.getC_Currency_ID());                
      
             //Monto retenciones 
-            BigDecimal montoRetRound = mPay.getRetencionGanancias().divide(mPay.getCotizacion(), BigDecimal.ROUND_HALF_UP);
+            BigDecimal montoRetRound = mPay.getRetencionGanancias().divide(mPay.getCotizacion(),moneda.getStdPrecision(), BigDecimal.ROUND_HALF_UP);
             
             
             /*
@@ -413,7 +413,7 @@ public class Doc_Payment extends Doc {
              * 
              */
             
-            if (!montoRetRound.equals(Env.ZERO)){
+            if (!(montoRetRound.compareTo(Env.ZERO) == 0)){
                 
                 if (moneda != null) {                    
                      montoRetRound = montoRetRound.setScale(moneda.getStdPrecision(),BigDecimal.ROUND_HALF_UP);
@@ -436,10 +436,10 @@ public class Doc_Payment extends Doc {
                 MPAYMENTRET aPaymentRet = (MPAYMENTRET) retenciones.get(r);
                 if ( !aPaymentRet.getTIPO_RET().equals(MPAYMENTRET.TIPO_RET_IB) )
                     continue;
-                BigDecimal montoRetIBRound = aPaymentRet.getIMPORTE().divide(mPay.getCotizacion(), BigDecimal.ROUND_HALF_UP);
+                BigDecimal montoRetIBRound = aPaymentRet.getIMPORTE().divide(mPay.getCotizacion(),moneda.getStdPrecision() ,BigDecimal.ROUND_HALF_UP);
 
                 //Las retenciones no deben ser con monto 0
-                if (!montoRetIBRound.equals(Env.ZERO)){
+                if (!(montoRetIBRound.compareTo(Env.ZERO) == 0)){
                     
                     if (moneda != null) {                    
                         montoRetIBRound = montoRetIBRound.setScale(moneda.getStdPrecision(),BigDecimal.ROUND_HALF_UP);
@@ -461,7 +461,7 @@ public class Doc_Payment extends Doc {
             }
             
             
-            BigDecimal montoRetIVARound = mPay.getRetencionIVA().divide(mPay.getCotizacion(), BigDecimal.ROUND_HALF_UP);
+            BigDecimal montoRetIVARound = mPay.getRetencionIVA().divide(mPay.getCotizacion(),moneda.getStdPrecision(), BigDecimal.ROUND_HALF_UP);
 
             /*
              *  Zynnia - 04/06/2012
@@ -470,7 +470,7 @@ public class Doc_Payment extends Doc {
              * 
              */
             
-            if (!montoRetIVARound.equals(Env.ZERO)){
+            if (!(montoRetIVARound.compareTo(Env.ZERO) == 0) ){
             
                 if (moneda != null) {                    
                      montoRetIVARound = montoRetIVARound.setScale(moneda.getStdPrecision(),BigDecimal.ROUND_HALF_UP);
@@ -484,7 +484,7 @@ public class Doc_Payment extends Doc {
             }            
 
 
-            BigDecimal montoRetSUSSRound = mPay.getRetencionSUSS().divide(mPay.getCotizacion(), BigDecimal.ROUND_HALF_UP);
+            BigDecimal montoRetSUSSRound = mPay.getRetencionSUSS().divide(mPay.getCotizacion(),moneda.getStdPrecision(), BigDecimal.ROUND_HALF_UP);
 
             /*
              *  Zynnia - 04/06/2012
@@ -493,7 +493,7 @@ public class Doc_Payment extends Doc {
              * 
              */
             
-            if (!montoRetSUSSRound.equals(Env.ZERO)){            
+            if (!(montoRetSUSSRound.compareTo(Env.ZERO) == 0)){            
             
                 if (moneda != null) {                    
                      montoRetSUSSRound = montoRetSUSSRound.setScale(moneda.getStdPrecision(),BigDecimal.ROUND_HALF_UP);

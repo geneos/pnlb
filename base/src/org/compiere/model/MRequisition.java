@@ -324,7 +324,7 @@ public class MRequisition extends X_M_Requisition implements DocAction
 			return DocAction.STATUS_Invalid;
 		}
                 
-                enviarMensajeCompleto();
+                                enviarMensajeCompleto();
 		//
 		setProcessed(true);
 		setDocAction(ACTION_Close);
