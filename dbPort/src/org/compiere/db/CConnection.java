@@ -1453,10 +1453,10 @@ public class CConnection implements Serializable
 		}
 		env.put (Context.URL_PKG_PREFIXES, "org.jboss.naming.client");
 		//	HTTP - default timeout 0
-		env.put (org.jnp.interfaces.TimedSocketFactory.JNP_TIMEOUT, "5000");	//	timeout in ms
-		env.put (org.jnp.interfaces.TimedSocketFactory.JNP_SO_TIMEOUT, "5000");
+		env.put ("jnp.timeout", "5000");	//	timeout in ms
+		env.put ("jnp.sotimeout", "5000");
 		//	JNP - default timeout 5 sec
-		env.put(org.jnp.interfaces.NamingContext.JNP_DISCOVERY_TIMEOUT, "5000");
+		env.put("jnp.discoveryTimeout", "5000");
 		return env;
 	}	//	getInitialEnvironment
 

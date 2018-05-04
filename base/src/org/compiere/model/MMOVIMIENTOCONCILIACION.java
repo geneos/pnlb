@@ -227,7 +227,7 @@ public class MMOVIMIENTOCONCILIACION extends X_C_MOVIMIENTOCONCILIACION
 	public static int deleteMov(int M_Payment_ID) throws SQLException {
             
             String sql = "DELETE FROM C_MOVIMIENTOCONCILIACION "
-                    + "WHERE c_payment_id = ?";
+                    + "WHERE c_payment_id = "+M_Payment_ID;
             
             return DB.executeUpdate(sql, null);
 

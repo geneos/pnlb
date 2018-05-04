@@ -155,13 +155,13 @@ public class VCreateFromConciliacion extends VCreateFrom implements VetoableChan
 
                 if (rs.getInt(11) != 0) {
                     MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(Env.getCtx(), rs.getInt(11), null);
-                    if (mov.getDocStatus().equals("CO")) {
+                    if (mov != null && mov.getDocStatus().equals("CO")) {
                         flag = 1;
                     }
                 }
                 if (rs.getInt(10) != 0) {
                     MPayment pay = new MPayment(Env.getCtx(), rs.getInt(10), null);
-                    if (pay.getDocStatus().equals("CO")) {
+                    if (pay != null && pay.getDocStatus().equals("CO")) {
                         flag = 1;
                     }
                 }

@@ -2846,7 +2846,7 @@ public class MPayment extends X_C_Payment
      * 		Cambio de Estado de Cheques
      *
      */
-    private void CQChangeState(String origen, String destino) {
+    private void CQChangeStateVP(String origen, String destino) {
         if (!isReceipt()) {
             String sql = "SELECT C_VALORPAGO_ID FROM C_VALORPAGO WHERE TIPO='P' AND STATE=? AND C_PAYMENT_ID=?";
 
@@ -2866,6 +2866,31 @@ public class MPayment extends X_C_Payment
                     payval.save(get_TrxName());
                 }
             } catch (Exception e) {
+            }
+        }
+    }
+    
+    private void CQChangeStatePV(String origen, String destino) {
+        if (isReceipt()) {
+            String sql = "SELECT C_PAYMENTVALORES_ID FROM C_PAYMENTVALORES WHERE TIPO='Q' AND STATE=? AND C_PAYMENT_ID=?";
+
+            try {
+
+                PreparedStatement pstm = DB.prepareStatement(sql, get_TrxName());
+                pstm.setString(1, origen);
+                pstm.setInt(2, getC_Payment_ID());
+                ResultSet rs = pstm.executeQuery();
+
+                int C_PAYMENTVALORES_ID;
+
+                while (rs.next()) {
+                    C_PAYMENTVALORES_ID = rs.getInt(1);
+                    MPAYMENTVALORES payval = new MPAYMENTVALORES(getCtx(), C_PAYMENTVALORES_ID, get_TrxName());
+                    payval.setEstado(destino);
+                    payval.save(get_TrxName());
+                }
+            } catch (Exception e) {
+                Logger.getLogger(MPayment.class.getName()).log(Level.SEVERE, null, e);
             }
         }
     }
@@ -2891,8 +2916,8 @@ public class MPayment extends X_C_Payment
         log.info(toString());
 
         if (!isReceipt()) {
-            CQChangeState(MVALORPAGO.EMITIDO, MVALORPAGO.REVERTIDO);
-            CQChangeState(MVALORPAGO.IMPRESO, MVALORPAGO.REVERTIDO);
+            CQChangeStateVP(MVALORPAGO.EMITIDO, MVALORPAGO.REVERTIDO);
+            CQChangeStateVP(MVALORPAGO.IMPRESO, MVALORPAGO.REVERTIDO);
 
         }
 
@@ -2901,8 +2926,8 @@ public class MPayment extends X_C_Payment
 
     private void deleteValoresPago() {
         // Cambiar Valores del Pago
-        CQChangeState(MVALORPAGO.EMITIDO, MVALORPAGO.ANULADO);
-        CQChangeState(MVALORPAGO.IMPRESO, MVALORPAGO.ANULADO);
+        CQChangeStateVP(MVALORPAGO.EMITIDO, MVALORPAGO.ANULADO);
+        CQChangeStateVP(MVALORPAGO.IMPRESO, MVALORPAGO.ANULADO);
     }
 
     private void deleteValoresCobranza() {
@@ -2914,6 +2939,10 @@ public class MPayment extends X_C_Payment
         MPAYMENTVALORES payval = (MPAYMENTVALORES)lVal.get(i);
         payval.delete(true);
         }*/
+        
+        // Cambio de estado los cheques de tercero
+        CQChangeStatePV(MPAYMENTVALORES.CARTERA,  MPAYMENTVALORES.DEVUELTOCLIENTE);
+
     }
 
     /*	private void deleteRetencionesCobranza()

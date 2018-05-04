@@ -18,3 +18,7 @@
 - Fix de errores en proceso para crear requisiciones desde OC (781)
 - Fix pasaje de reporte a EXCEL para casos en los que los numeros son muy grandes (1156)
 #Version XXXXXXXX
+- Pasaje de estado de cheques de terceros EN CARTERA -> DEVUELTO al anular cobranzas (1063)
+- Eliminacion de conciliaciones al reactivar cobranza (1164)
+- Ya no aparecen insumos desactivados en Informe de LDM y Formulas (848)
+
