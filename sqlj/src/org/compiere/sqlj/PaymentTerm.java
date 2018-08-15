@@ -16,7 +16,6 @@ package org.compiere.sqlj;
 import java.math.*;
 import java.sql.*;
 import java.util.*;
-import org.compiere.util.DB;
 
 
 /**
@@ -53,7 +52,7 @@ public class PaymentTerm
 		String sql = "SELECT * "
 			+ "FROM C_PaymentTerm "
 			+ "WHERE C_PaymentTerm_ID=?";
-		PreparedStatement pstmt = DB.prepareStatement(sql,null);
+		PreparedStatement pstmt = Compiere.prepareStatement(sql);
 		pstmt.setInt(1, p_C_PaymentTerm_ID);
 		ResultSet rs = pstmt.executeQuery();
 		if (rs.next())
@@ -100,7 +99,7 @@ public class PaymentTerm
 		String sql = "SELECT C_PaymentTerm_ID, DateInvoiced "
 			+ "FROM C_Invoice "
 			+ "WHERE C_Invoice_ID=?";
-		PreparedStatement pstmt = DB.prepareStatement(sql,null);
+		PreparedStatement pstmt = Compiere.prepareStatement(sql);
 		pstmt.setInt(1, p_C_Invoice_ID);
 		ResultSet rs = pstmt.executeQuery();
 		if (rs.next())
@@ -136,7 +135,7 @@ public class PaymentTerm
 		String sql = "SELECT * "
 			+ "FROM C_PaymentTerm "
 			+ "WHERE C_PaymentTerm_ID=?";
-		PreparedStatement pstmt = DB.prepareStatement(sql,null);
+		PreparedStatement pstmt = Compiere.prepareStatement(sql);
 		pstmt.setInt(1, p_C_PaymentTerm_ID);
 		ResultSet rs = pstmt.executeQuery();
 		if (rs.next())
@@ -182,7 +181,7 @@ public class PaymentTerm
 		String sql = "SELECT C_PaymentTerm_ID, DateInvoiced "
 			+ "FROM C_Invoice "
 			+ "WHERE C_Invoice_ID=?";
-		PreparedStatement pstmt = DB.prepareStatement(sql,null);
+		PreparedStatement pstmt = Compiere.prepareStatement(sql);
 		pstmt.setInt(1, p_C_Invoice_ID);
 		ResultSet rs = pstmt.executeQuery();
 		if (rs.next())
@@ -267,7 +266,7 @@ public class PaymentTerm
 		String sql = "SELECT * "
 			+ "FROM C_PaymentTerm "
 			+ "WHERE C_PaymentTerm_ID=?";
-		PreparedStatement pstmt = DB.prepareStatement(sql,null);
+		PreparedStatement pstmt = Compiere.prepareStatement(sql);
 		pstmt.setInt(1, p_C_PaymentTerm_ID);
 		ResultSet rs = pstmt.executeQuery();
 		if (rs.next())

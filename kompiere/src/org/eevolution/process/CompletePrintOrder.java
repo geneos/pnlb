@@ -94,6 +94,205 @@ public class CompletePrintOrder extends SvrProcess {
         if (p_MPC_Order_ID == 0)
             throw new IllegalArgumentException("Manufactuing Order == 0");    
         
+        /**
+         * Armo estructura de pick list por mas que no se seleccione el checkbox, por si a posterior
+         * quiero sacar el informe
+         */
+        
+        //	Get Format & Data
+            // fjviejo e-evolution T_ComponentCheck
+            String sqlupd;
+            String sqlins;
+            int cntu = 0;
+            int cnti = 0;
+            
+            boolean isQTYPorcent = false;
+            int acumQTYPorcent = 0;
+            int acumQTYBOM = 0;
+            int QTYSuf = 0;
+            
+            log.info("Inventory Valuation Temporary Table");
+            
+            
+            log.info("Delete MO");
+            String sqldel ="delete from T_ComponentCheck where MPC_Order_ID="+p_MPC_Order_ID;
+            cntu = DB.executeUpdate(sqldel,null);
+            System.out.println("*****  Created=" +cntu);
+            // Clear
+            //	v_ResultStr := 'ClearTable';
+            //	DELETE T_InventoryValue WHERE M_Warehouse_ID=p_M_Warehouse_ID;
+            //	COMMIT;
+            
+            // Insert Products
+            sqlins = "INSERT INTO T_ComponentCheck "
+                    + "(AD_Client_ID,AD_Org_ID, AD_PInstance_ID, MPC_Order_ID,MPC_Order_BOM_ID,MPC_Order_BOMLine_ID,M_Product_ID,Name, Value,C_UOM_ID  ,QtyOnhand , QtyRequiered "
+                    + ",QtyReserved,QtyAvailable ,M_Warehouse_ID  ,QtyBom  ,QtyBatch ,M_Locator_ID ,m_attributesetinstance_id,x ,y ,z) ";
+ 
+            int q_M_Product_ID=0;
+            int q_M_Warehouse_ID=0;
+            int q_MPC_Order_ID=0;
+            float q_QTYConvert=0;
+            float q_QTYConvertBOM=0;
+            BigDecimal req1=Env.ZERO;
+            BigDecimal requp=Env.ZERO;
+            
+            StringBuffer sqlobl = new StringBuffer("Select obl.M_Product_ID, o.M_Warehouse_ID, o.MPC_Order_ID, obl.MPC_Order_BOM_ID, obl.MPC_Order_BOMLine_ID, obl.QtyRequiered,BOMQtyReserved(obl.M_Product_ID,obl.M_Warehouse_ID,0),BOMQtyAvailable(obl.M_Product_ID,obl.M_Warehouse_ID,0),obl.QtyBom ,obl.isQtyPercentage, obl.QtyBatch, p.Value,p.Name, p.C_UOM_ID, obl.AD_Client_ID, obl.AD_Org_ID, (obl.QTYBATCH * o.QTYENTERED / 100) as QTYConvert, (obl.QTYBOM * o.QTYENTERED) as QTYConvertBOM  from MPC_Order_BOMLine obl INNER Join MPC_Order o ON(o.MPC_Order_ID=obl.MPC_Order_ID) Inner Join M_Product p ON(p.M_Product_ID=obl.M_Product_ID) where obl.MPC_Order_ID=" +p_MPC_Order_ID);
+            
+            System.out.println("***** Imprime primer sql" +sqlobl.toString());
+            try {
+                
+                PreparedStatement pstmtobl = DB.prepareStatement(sqlobl.toString(),null);
+                //pstmt.setInt(1, AD_Client_ID);
+                ResultSet rsobl = pstmtobl.executeQuery();
+                //
+                while (rsobl.next()) {
+                    System.out.println("***** entra primer sql" +rsobl.getInt(1));
+                    q_M_Product_ID = rsobl.getInt(1);
+                    q_M_Warehouse_ID = rsobl.getInt(2);
+                    q_MPC_Order_ID=rsobl.getInt(3);
+                    req1=rsobl.getBigDecimal(6);
+                    
+                    q_QTYConvert = rsobl.getFloat(17);
+                    q_QTYConvertBOM = rsobl.getFloat(18);
+                    
+                    System.out.println("***** resultado de la comparativa de % " + rsobl.getString(10));
+                    
+                    if(rsobl.getString(10).equals("Y"))
+                        isQTYPorcent = true;
+                    
+                    if(isQTYPorcent) {
+                        if(rsobl.getInt(11) == -1)
+                            QTYSuf = 100 - acumQTYPorcent;
+                        else
+                            acumQTYPorcent += rsobl.getInt(11);
+                    } else {
+                        if(rsobl.getInt(9) == -1)
+                            QTYSuf = 100 - acumQTYBOM;
+                        else
+                            acumQTYBOM += rsobl.getInt(9);
+                    }
+                    
+                    
+                    
+                    
+                    System.out.println("***** resultado de la operacion " + q_QTYConvert);
+                    
+                    
+                    
+                    int count1=0;
+                    StringBuffer sql = new StringBuffer("SELECT s.AD_Client_ID, s.AD_Org_ID,s.M_Product_ID , s.QtyOnHand, s.Updated, p.Name ,p.Value, masi.Description, l.Value, w.Value, w.M_warehouse_ID, p.C_UOM_ID,s.M_Locator_ID, s.M_AttributeSetInstance_ID, l.x,l.y,l.z ");
+                    sql.append("  FROM M_Storage s ");
+                    sql.append(" INNER JOIN M_Product p ON (s.M_Product_ID = p.M_Product_ID) ");
+                    sql.append(" INNER JOIN M_AttributeSetInstance masi ON (masi.M_AttributeSetInstance_ID = s.M_AttributeSetInstance_ID) ");
+                    sql.append(" Inner Join M_Locator l ON (s.M_Locator_ID=l.M_Locator_ID and l.M_Locator_ID in (select loc.m_locator_id from m_locator loc JOIN m_warehouse ware ON (ware.m_warehouse_id = loc.m_warehouse_id and ware.ISRELEASE = 'Y') ) )" );
+                    sql.append(" inner join m_warehouse w on (w.m_warehouse_id = l.m_warehouse_id) ");
+                    sql.append(" WHERE s.M_Product_ID = " +q_M_Product_ID + " and s.QtyOnHand-s.QtyReserved > 0 AND ( masi.guaranteedate > current_date OR masi.guaranteedate is null ) ORDER BY masi.guaranteedate asc, masi.m_attributesetinstance_id asc " );
+                    
+                    log.log(Level.INFO, "TComponentCheck.executeQuery - SQL", sql.toString());
+                    //  reset table
+                    //  Execute
+                    
+                    
+                    PreparedStatement pstmt1 = DB.prepareStatement(sql.toString(),null);
+                    //pstmt.setInt(1, AD_Client_ID);
+
+                    ResultSet rs1 = pstmt1.executeQuery();
+                    //
+                    
+                    while (rs1.next()) {
+                        if (req1.compareTo(rs1.getBigDecimal(4)) <0) {
+                            if (req1.compareTo(Env.ZERO)<=0)
+                                requp=Env.ZERO;
+                            else
+                                requp=req1;
+                            req1=req1.subtract(rs1.getBigDecimal(4));
+                        } else {
+                            
+                            requp=rs1.getBigDecimal(4);
+                            req1=req1.subtract(rs1.getBigDecimal(4));
+                        }
+                        
+                        
+                        System.out.println("*****  req1=" +req1);
+                        System.out.println("*****  Id de la instancia de attributos = " + rs1.getBigDecimal(14));
+                        String sqlins2="";
+                        
+                        if(isQTYPorcent) {
+                            if(rsobl.getInt(11) == -1)
+                                sqlins2 = sqlins +"Values("+rs1.getInt(1) +"," +rs1.getInt(2) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rs1.getString(6) +"','" +rs1.getString(7) +"',"
+                                        +rs1.getInt(12) +"," +rs1.getBigDecimal(4) +"," +requp +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," + QTYSuf +"," +rs1.getInt(13) +"," +rs1.getInt(14) +"," +rs1.getString(15) +"," +rs1.getString(16) + "," + rs1.getString(17) + ")";
+                            else
+                                sqlins2 = sqlins +"Values("+rs1.getInt(1) +"," +rs1.getInt(2) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rs1.getString(6) +"','" +rs1.getString(7) +"',"
+                                        +rs1.getInt(12) +"," +rs1.getBigDecimal(4) +"," +requp +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," +rsobl.getBigDecimal(11) +"," +rs1.getInt(13) +"," +rs1.getInt(14) +"," +rs1.getString(15) +"," +rs1.getString(16) + "," + rs1.getString(17) + ")";
+                        } else {
+                            if(rsobl.getInt(9) == -1)
+                                sqlins2 = sqlins +"Values("+rs1.getInt(1) +"," +rs1.getInt(2) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rs1.getString(6) +"','" +rs1.getString(7) +"',"
+                                        +rs1.getInt(12) +"," +rs1.getBigDecimal(4) +"," +requp +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," + QTYSuf +"," + rsobl.getBigDecimal(11) +"," +rs1.getInt(13) +"," +rs1.getInt(14) +"," +rs1.getString(15) +"," +rs1.getString(16) + "," + rs1.getString(17) + ")";
+                            else
+                                sqlins2 = sqlins +"Values("+rs1.getInt(1) +"," +rs1.getInt(2) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rs1.getString(6) +"','" +rs1.getString(7) +"',"
+                                        +rs1.getInt(12) +"," +rs1.getBigDecimal(4) +"," +requp +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," +rsobl.getBigDecimal(11) +"," +rs1.getInt(13) +"," +rs1.getInt(14) +"," +rs1.getString(15) +"," +rs1.getString(16) + "," + rs1.getString(17) + ")";
+                        }
+                        
+                        System.out.println("***** inserta lineas " +sqlins2 );
+                        cnti = DB.executeUpdate(sqlins2,null);
+                        
+                        
+                        count1++;
+                        System.out.println("*****  Created=" +cnti);
+                        
+                        
+                    }
+                    rs1.close();
+                    pstmt1.close();
+                    
+                    if (count1==0) {
+                        
+                        String sqlins2="";
+                        
+                        
+                        
+                        if(isQTYPorcent) {
+                            if(rsobl.getInt(11) == -1)
+                                sqlins2 = sqlins +"Values("+rsobl.getInt(15) +"," +rsobl.getInt(16) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rsobl.getString(13) +"','" +rsobl.getString(12) +"',"
+                                        +rsobl.getInt(14) +",0," +rsobl.getBigDecimal(6) +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," + QTYSuf +",0,0,'','','')";
+                            else
+                                sqlins2 = sqlins +"Values("+rsobl.getInt(15) +"," +rsobl.getInt(16) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rsobl.getString(13) +"','" +rsobl.getString(12) +"',"
+                                        +rsobl.getInt(14) +",0," +rsobl.getBigDecimal(6) +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," +rsobl.getBigDecimal(11) +",0,0,'','','')";
+                        }
+                        
+                        else {
+                            if(rsobl.getInt(9) == -1)
+                                sqlins2 = sqlins +"Values("+rsobl.getInt(15) +"," +rsobl.getInt(16) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rsobl.getString(13) +"','" +rsobl.getString(12) +"',"
+                                        +rsobl.getInt(14) +",0," +rsobl.getBigDecimal(6) +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," + QTYSuf +"," +rsobl.getBigDecimal(11) +",0,0,'','','')";
+                            else
+                                sqlins2 = sqlins +"Values("+rsobl.getInt(15) +"," +rsobl.getInt(16) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rsobl.getString(13) +"','" +rsobl.getString(12) +"',"
+                                        +rsobl.getInt(14) +",0," +rsobl.getBigDecimal(6) +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," +rsobl.getBigDecimal(11) +",0,0,'','','')";
+                            
+                        }
+                        
+                        System.out.println("***** inserta lineas " +sqlins2 );
+                        cnti = DB.executeUpdate(sqlins2,null);
+                    } else {
+                        
+                        if (req1.compareTo(Env.ZERO)>0) {
+                            String sqlins2="";
+                            sqlins2 = sqlins +"Values("+rsobl.getInt(15) +"," +rsobl.getInt(16) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rsobl.getString(13) +"','" +rsobl.getString(12) +"',"
+                                    +rsobl.getInt(14) +",0," +req1 +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," +rsobl.getBigDecimal(11) +",0,0,'','','')";
+                            
+                            System.out.println("***** inserta lineas " +sqlins2 );
+                            cnti = DB.executeUpdate(sqlins2,null);
+                        }
+                        
+                    }
+                    
+                    
+                }
+                rsobl.close();
+                pstmtobl.close();
+            } catch(SQLException obl) {
+        }
+//                  fjviejo e-evolution T_ComponentCheck
+        
         if (p_IsComplete) {
             
             
@@ -318,210 +517,8 @@ public class CompletePrintOrder extends SvrProcess {
             }
         }
         */
-        
+            
         if (p_IsPrintPickList) {
-            //	Get Format & Data
-            // fjviejo e-evolution T_ComponentCheck
-            String sqlupd;
-            String sqlins;
-            int cntu = 0;
-            int cnti = 0;
-            
-            boolean isQTYPorcent = false;
-            int acumQTYPorcent = 0;
-            int acumQTYBOM = 0;
-            int QTYSuf = 0;
-            
-            log.info("Inventory Valuation Temporary Table");
-            
-            
-            log.info("Delete MO");
-            String sqldel ="delete from T_ComponentCheck where MPC_Order_ID="+p_MPC_Order_ID;
-            cntu = DB.executeUpdate(sqldel,null);
-            System.out.println("*****  Created=" +cntu);
-            // Clear
-            //	v_ResultStr := 'ClearTable';
-            //	DELETE T_InventoryValue WHERE M_Warehouse_ID=p_M_Warehouse_ID;
-            //	COMMIT;
-            
-            // Insert Products
-            sqlins = "INSERT INTO T_ComponentCheck "
-                    + "(AD_Client_ID,AD_Org_ID, AD_PInstance_ID, MPC_Order_ID,MPC_Order_BOM_ID,MPC_Order_BOMLine_ID,M_Product_ID,Name, Value,C_UOM_ID  ,QtyOnhand , QtyRequiered "
-                    + ",QtyReserved,QtyAvailable ,M_Warehouse_ID  ,QtyBom  ,QtyBatch ,M_Locator_ID ,m_attributesetinstance_id,x ,y ,z) ";
-            // + "SELECT AD_Client_ID,AD_Org_ID," + p_PInstance_ID + "," + p_MPC_Order_ID + ",M_Product_ID "
-            //+ "FROM M_Storage "
-            //+ "WHERE IsStocked='Y'";
-//		cnti = DB.executeUpdate(sqlins);
-//		if (cnti == 0) {
-//			return "@Created@ = 0";
-//		}
-//		if (cnti < 0) {
-//			raiseError("InsertStockedProducts:ERROR", sqlins);
-//		}
-            int q_M_Product_ID=0;
-            int q_M_Warehouse_ID=0;
-            int q_MPC_Order_ID=0;
-            float q_QTYConvert=0;
-            float q_QTYConvertBOM=0;
-            BigDecimal req1=Env.ZERO;
-            BigDecimal requp=Env.ZERO;
-            
-            StringBuffer sqlobl = new StringBuffer("Select obl.M_Product_ID, o.M_Warehouse_ID, o.MPC_Order_ID, obl.MPC_Order_BOM_ID, obl.MPC_Order_BOMLine_ID, obl.QtyRequiered,BOMQtyReserved(obl.M_Product_ID,obl.M_Warehouse_ID,0),BOMQtyAvailable(obl.M_Product_ID,obl.M_Warehouse_ID,0),obl.QtyBom ,obl.isQtyPercentage, obl.QtyBatch, p.Value,p.Name, p.C_UOM_ID, obl.AD_Client_ID, obl.AD_Org_ID, (obl.QTYBATCH * o.QTYENTERED / 100) as QTYConvert, (obl.QTYBOM * o.QTYENTERED) as QTYConvertBOM  from MPC_Order_BOMLine obl INNER Join MPC_Order o ON(o.MPC_Order_ID=obl.MPC_Order_ID) Inner Join M_Product p ON(p.M_Product_ID=obl.M_Product_ID) where obl.MPC_Order_ID=" +p_MPC_Order_ID);
-            
-            System.out.println("***** Imprime primer sql" +sqlobl.toString());
-            try {
-                
-                PreparedStatement pstmtobl = DB.prepareStatement(sqlobl.toString(),null);
-                //pstmt.setInt(1, AD_Client_ID);
-                ResultSet rsobl = pstmtobl.executeQuery();
-                //
-                while (rsobl.next()) {
-                    System.out.println("***** entra primer sql" +rsobl.getInt(1));
-                    q_M_Product_ID = rsobl.getInt(1);
-                    q_M_Warehouse_ID = rsobl.getInt(2);
-                    q_MPC_Order_ID=rsobl.getInt(3);
-                    req1=rsobl.getBigDecimal(6);
-                    
-                    q_QTYConvert = rsobl.getFloat(17);
-                    q_QTYConvertBOM = rsobl.getFloat(18);
-                    
-                    System.out.println("***** resultado de la comparativa de % " + rsobl.getString(10));
-                    
-                    if(rsobl.getString(10).equals("Y"))
-                        isQTYPorcent = true;
-                    
-                    if(isQTYPorcent) {
-                        if(rsobl.getInt(11) == -1)
-                            QTYSuf = 100 - acumQTYPorcent;
-                        else
-                            acumQTYPorcent += rsobl.getInt(11);
-                    } else {
-                        if(rsobl.getInt(9) == -1)
-                            QTYSuf = 100 - acumQTYBOM;
-                        else
-                            acumQTYBOM += rsobl.getInt(9);
-                    }
-                    
-                    
-                    
-                    
-                    System.out.println("***** resultado de la operacion " + q_QTYConvert);
-                    
-                    
-                    
-                    int count1=0;
-                    StringBuffer sql = new StringBuffer("SELECT s.AD_Client_ID, s.AD_Org_ID,s.M_Product_ID , s.QtyOnHand, s.Updated, p.Name ,p.Value, masi.Description, l.Value, w.Value, w.M_warehouse_ID, p.C_UOM_ID,s.M_Locator_ID, s.M_AttributeSetInstance_ID, l.x,l.y,l.z ");
-                    sql.append("  FROM M_Storage s ");
-                    sql.append(" INNER JOIN M_Product p ON (s.M_Product_ID = p.M_Product_ID) ");
-                    sql.append(" INNER JOIN M_AttributeSetInstance masi ON (masi.M_AttributeSetInstance_ID = s.M_AttributeSetInstance_ID) ");
-                    sql.append(" Inner Join M_Locator l ON (s.M_Locator_ID=l.M_Locator_ID and l.M_Locator_ID in (select loc.m_locator_id from m_locator loc JOIN m_warehouse ware ON (ware.m_warehouse_id = loc.m_warehouse_id and ware.ISRELEASE = 'Y') ) )" );
-                    sql.append(" inner join m_warehouse w on (w.m_warehouse_id = l.m_warehouse_id) ");
-                    sql.append(" WHERE s.M_Product_ID = " +q_M_Product_ID + " and s.QtyOnHand-s.QtyReserved > 0 AND ( masi.guaranteedate > current_date OR masi.guaranteedate is null ) ORDER BY masi.guaranteedate asc, masi.m_attributesetinstance_id asc " );
-                    
-                    log.log(Level.INFO, "TComponentCheck.executeQuery - SQL", sql.toString());
-                    //  reset table
-                    //  Execute
-                    
-                    
-                    PreparedStatement pstmt1 = DB.prepareStatement(sql.toString(),null);
-                    //pstmt.setInt(1, AD_Client_ID);
-
-                    ResultSet rs1 = pstmt1.executeQuery();
-                    //
-                    
-                    while (rs1.next()) {
-                        if (req1.compareTo(rs1.getBigDecimal(4)) <0) {
-                            if (req1.compareTo(Env.ZERO)<=0)
-                                requp=Env.ZERO;
-                            else
-                                requp=req1;
-                            req1=req1.subtract(rs1.getBigDecimal(4));
-                        } else {
-                            
-                            requp=rs1.getBigDecimal(4);
-                            req1=req1.subtract(rs1.getBigDecimal(4));
-                        }
-                        
-                        
-                        System.out.println("*****  req1=" +req1);
-                        System.out.println("*****  Id de la instancia de attributos = " + rs1.getBigDecimal(14));
-                        String sqlins2="";
-                        
-                        if(isQTYPorcent) {
-                            if(rsobl.getInt(11) == -1)
-                                sqlins2 = sqlins +"Values("+rs1.getInt(1) +"," +rs1.getInt(2) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rs1.getString(6) +"','" +rs1.getString(7) +"',"
-                                        +rs1.getInt(12) +"," +rs1.getBigDecimal(4) +"," +requp +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," + QTYSuf +"," +rs1.getInt(13) +"," +rs1.getInt(14) +"," +rs1.getString(15) +"," +rs1.getString(16) + "," + rs1.getString(17) + ")";
-                            else
-                                sqlins2 = sqlins +"Values("+rs1.getInt(1) +"," +rs1.getInt(2) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rs1.getString(6) +"','" +rs1.getString(7) +"',"
-                                        +rs1.getInt(12) +"," +rs1.getBigDecimal(4) +"," +requp +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," +rsobl.getBigDecimal(11) +"," +rs1.getInt(13) +"," +rs1.getInt(14) +"," +rs1.getString(15) +"," +rs1.getString(16) + "," + rs1.getString(17) + ")";
-                        } else {
-                            if(rsobl.getInt(9) == -1)
-                                sqlins2 = sqlins +"Values("+rs1.getInt(1) +"," +rs1.getInt(2) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rs1.getString(6) +"','" +rs1.getString(7) +"',"
-                                        +rs1.getInt(12) +"," +rs1.getBigDecimal(4) +"," +requp +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," + QTYSuf +"," + rsobl.getBigDecimal(11) +"," +rs1.getInt(13) +"," +rs1.getInt(14) +"," +rs1.getString(15) +"," +rs1.getString(16) + "," + rs1.getString(17) + ")";
-                            else
-                                sqlins2 = sqlins +"Values("+rs1.getInt(1) +"," +rs1.getInt(2) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rs1.getString(6) +"','" +rs1.getString(7) +"',"
-                                        +rs1.getInt(12) +"," +rs1.getBigDecimal(4) +"," +requp +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," +rsobl.getBigDecimal(11) +"," +rs1.getInt(13) +"," +rs1.getInt(14) +"," +rs1.getString(15) +"," +rs1.getString(16) + "," + rs1.getString(17) + ")";
-                        }
-                        
-                        System.out.println("***** inserta lineas " +sqlins2 );
-                        cnti = DB.executeUpdate(sqlins2,null);
-                        
-                        
-                        count1++;
-                        System.out.println("*****  Created=" +cnti);
-                        
-                        
-                    }
-                    rs1.close();
-                    pstmt1.close();
-                    
-                    if (count1==0) {
-                        
-                        String sqlins2="";
-                        
-                        
-                        
-                        if(isQTYPorcent) {
-                            if(rsobl.getInt(11) == -1)
-                                sqlins2 = sqlins +"Values("+rsobl.getInt(15) +"," +rsobl.getInt(16) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rsobl.getString(13) +"','" +rsobl.getString(12) +"',"
-                                        +rsobl.getInt(14) +",0," +rsobl.getBigDecimal(6) +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," + QTYSuf +",0,0,'','','')";
-                            else
-                                sqlins2 = sqlins +"Values("+rsobl.getInt(15) +"," +rsobl.getInt(16) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rsobl.getString(13) +"','" +rsobl.getString(12) +"',"
-                                        +rsobl.getInt(14) +",0," +rsobl.getBigDecimal(6) +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," +rsobl.getBigDecimal(11) +",0,0,'','','')";
-                        }
-                        
-                        else {
-                            if(rsobl.getInt(9) == -1)
-                                sqlins2 = sqlins +"Values("+rsobl.getInt(15) +"," +rsobl.getInt(16) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rsobl.getString(13) +"','" +rsobl.getString(12) +"',"
-                                        +rsobl.getInt(14) +",0," +rsobl.getBigDecimal(6) +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," + QTYSuf +"," +rsobl.getBigDecimal(11) +",0,0,'','','')";
-                            else
-                                sqlins2 = sqlins +"Values("+rsobl.getInt(15) +"," +rsobl.getInt(16) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rsobl.getString(13) +"','" +rsobl.getString(12) +"',"
-                                        +rsobl.getInt(14) +",0," +rsobl.getBigDecimal(6) +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," +rsobl.getBigDecimal(11) +",0,0,'','','')";
-                            
-                        }
-                        
-                        System.out.println("***** inserta lineas " +sqlins2 );
-                        cnti = DB.executeUpdate(sqlins2,null);
-                    } else {
-                        
-                        if (req1.compareTo(Env.ZERO)>0) {
-                            String sqlins2="";
-                            sqlins2 = sqlins +"Values("+rsobl.getInt(15) +"," +rsobl.getInt(16) +"," +p_PInstance_ID +"," +q_MPC_Order_ID +"," +rsobl.getInt(4) +"," +rsobl.getInt(5) +"," +q_M_Product_ID +",'" +rsobl.getString(13) +"','" +rsobl.getString(12) +"',"
-                                    +rsobl.getInt(14) +",0," +req1 +"," +rsobl.getBigDecimal(7) +"," +rsobl.getBigDecimal(8) +"," +q_M_Warehouse_ID +"," +rsobl.getBigDecimal(9) +"," +rsobl.getBigDecimal(11) +",0,0,'','','')";
-                            
-                            System.out.println("***** inserta lineas " +sqlins2 );
-                            cnti = DB.executeUpdate(sqlins2,null);
-                        }
-                        
-                    }
-                    
-                    
-                }
-                rsobl.close();
-                pstmtobl.close();
-            } catch(SQLException obl) {
-            }
-//                  fjviejo e-evolution T_ComponentCheck
             
             if(isQTYPorcent == true) {
                 System.out.println("***** ES POR PORCENTAJE ******* valor: " + isQTYPorcent);

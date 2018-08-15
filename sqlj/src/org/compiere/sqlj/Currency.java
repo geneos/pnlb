@@ -15,7 +15,6 @@ package org.compiere.sqlj;
 
 import java.math.*;
 import java.sql.*;
-import org.compiere.util.DB;
 
 
 /**
@@ -186,7 +185,7 @@ public class Currency
 			+ " AND TRUNC(ValidTo) >= ?"
 			+ " AND AD_Client_ID IN (0,?) AND AD_Org_ID IN (0,?) "
 			+ "ORDER BY AD_Client_ID DESC, AD_Org_ID DESC, ValidFrom DESC";
-		PreparedStatement pstmt = DB.prepareStatement(sql,null);
+		PreparedStatement pstmt = Compiere.prepareStatement(sql);
 		pstmt.setInt(1, p_C_CurrencyFrom_ID);
 		pstmt.setInt(2, p_C_CurrencyTo_ID);
 		pstmt.setInt(3, C_ConversionType_ID);
@@ -242,7 +241,7 @@ public class Currency
 		String sql = "SELECT StdPrecision, CostingPrecision "
 			+ "FROM C_Currency "
 			+ "WHERE C_Currency_ID=?";
-		PreparedStatement pstmt = DB.prepareStatement(sql,null);
+		PreparedStatement pstmt = Compiere.prepareStatement(sql);
 		pstmt.setInt(1, p_C_Currency_ID);
 		ResultSet rs = pstmt.executeQuery();
 		if (rs.next())

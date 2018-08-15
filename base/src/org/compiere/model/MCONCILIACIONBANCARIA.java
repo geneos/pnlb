@@ -30,7 +30,7 @@ import org.compiere.util.*;
  */
 @SuppressWarnings("serial")
 public class MCONCILIACIONBANCARIA extends X_C_CONCILIACIONBANCARIA implements DocAction {
-
+    private boolean  isReactivate = false;
     /**
      * 	Standard Constructor
      *	@param ctx context
@@ -139,77 +139,94 @@ public class MCONCILIACIONBANCARIA extends X_C_CONCILIACIONBANCARIA implements D
      *	@return true
      */
     protected boolean beforeSave(boolean newRecord) {
-        //	Verificación de Superposición de Fechas.
-        String sql = "SELECT FROMDATE, TODATE "
-                + " FROM C_CONCILIACIONBANCARIA "
-                + " WHERE C_BankAccount_Id = ? AND C_CONCILIACIONBANCARIA_ID !=? AND IsActive = 'Y'";
+        
+        //if (DocAction.ACTION_ReActivate.equals(getDocAction()) && DocAction.STATUS_D.equals(getDocStatus()))
+           
+        
+        String sql = "";
+        if(!isReactivate) {
+             // Verificación de Superposición de Fechas.
 
-        try {
-            PreparedStatement pstmt = DB.prepareStatement(sql, null);
+             sql = "SELECT 1 "
+                    + " FROM C_CONCILIACIONBANCARIA "
+                    + " WHERE C_BankAccount_Id = ? AND C_CONCILIACIONBANCARIA_ID !=? AND IsActive = 'Y'"
+                    + " AND ( FROMDATE between ? and ?"
+                    + " OR TODATE between ? AND ? "
+                    + " OR (FROMDATE <= ? and TODATE >= ?) )";
+    /*
+            String sql = "SELECT FROMDATE, TODATE "
+                    + " FROM C_CONCILIACIONBANCARIA "
+                    + " WHERE C_BankAccount_Id = ? AND C_CONCILIACIONBANCARIA_ID !=? AND IsActive = 'Y'";*/
 
-            pstmt.setInt(1, getC_BankAccount_ID());
-            pstmt.setInt(2, getC_ConciliacionBancaria_ID());
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                Timestamp from = rs.getTimestamp(1);
-                Timestamp to = rs.getTimestamp(2);
-
-                if ((from.after(getFromDate()) && from.before(getToDate())) || (to.after(getFromDate()) && to.before(getToDate()))) {
-                    JOptionPane.showMessageDialog(null, "Existe Superpocición entre Conciliaciones para la misma Cuenta Bancaria", "ERROR - Superpocición de Fechas", JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-            }
-
-            pstmt.close();
-            rs.close();
-        } catch (SQLException sqlE) {
-        }
-
-        //	Verificación de Conciliaciones anteriores Completas.
-        sql = "SELECT C_CONCILIACIONBANCARIA_ID"
-                + " FROM C_CONCILIACIONBANCARIA "
-                + " WHERE C_BankAccount_Id = ? AND C_CONCILIACIONBANCARIA_ID !=? AND DocStatus='DR' AND IsActive = 'Y'";
-
-        try {
-            PreparedStatement pstmt = DB.prepareStatement(sql, null);
-            pstmt.setInt(1, getC_BankAccount_ID());
-            pstmt.setInt(2, getC_ConciliacionBancaria_ID());
-
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                JOptionPane.showMessageDialog(null, "Existe Conciliación Abierta", "ERROR - Validación Conciliaciones", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (newRecord) {
-                sql = "SELECT TODATE, AMOUNTCIERRE "
-                        + " FROM C_CONCILIACIONBANCARIA "
-                        + " WHERE C_BankAccount_Id = ? AND C_CONCILIACIONBANCARIA_ID !=? AND IsActive = 'Y' AND TODATE < ? AND DocStatus IN ('CO','CL')"
-                        + " Order By TODATE desc";
-
-                pstmt = DB.prepareStatement(sql, null);
+            try {
+                PreparedStatement pstmt = DB.prepareStatement(sql, null);
 
                 pstmt.setInt(1, getC_BankAccount_ID());
                 pstmt.setInt(2, getC_ConciliacionBancaria_ID());
                 pstmt.setTimestamp(3, getFromDate());
+                pstmt.setTimestamp(4, getToDate());
+                pstmt.setTimestamp(5, getFromDate());
+                pstmt.setTimestamp(6, getToDate());
+                pstmt.setTimestamp(7, getFromDate());
+                pstmt.setTimestamp(8, getToDate());
 
-                rs = pstmt.executeQuery();
-
-                BigDecimal bd = getSaldoInicial();
+                ResultSet rs = pstmt.executeQuery();
 
                 if (rs.next()) {
-                    bd = rs.getBigDecimal(2);
+                    JOptionPane.showMessageDialog(null, "Existe Superpocición entre Conciliaciones para la misma Cuenta Bancaria", "ERROR - Superpocición de Fechas", JOptionPane.ERROR_MESSAGE);
+                    return false;
                 }
 
-                setSaldoInicial(bd);
+                pstmt.close();
+                rs.close();
+            } catch (SQLException sqlE) {
             }
 
-            pstmt.close();
-            rs.close();
-        } catch (SQLException sqlE) {
+        //	Verificación de Conciliaciones anteriores Completas.
+       
+            sql = "SELECT C_CONCILIACIONBANCARIA_ID"
+                    + " FROM C_CONCILIACIONBANCARIA "
+                    + " WHERE C_BankAccount_Id = ? AND C_CONCILIACIONBANCARIA_ID !=? AND DocStatus='DR' AND IsActive = 'Y'";
+
+            try {
+                PreparedStatement pstmt = DB.prepareStatement(sql, null);
+                pstmt.setInt(1, getC_BankAccount_ID());
+                pstmt.setInt(2, getC_ConciliacionBancaria_ID());
+
+                ResultSet rs = pstmt.executeQuery();
+
+                if (rs.next()) {
+                    JOptionPane.showMessageDialog(null, "Existe Conciliación Abierta", "ERROR - Validación Conciliaciones", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+
+                if (newRecord) {
+                    sql = "SELECT TODATE, AMOUNTCIERRE "
+                            + " FROM C_CONCILIACIONBANCARIA "
+                            + " WHERE C_BankAccount_Id = ? AND C_CONCILIACIONBANCARIA_ID !=? AND IsActive = 'Y' AND TODATE < ? AND DocStatus IN ('CO','CL')"
+                            + " Order By TODATE desc";
+
+                    pstmt = DB.prepareStatement(sql, null);
+
+                    pstmt.setInt(1, getC_BankAccount_ID());
+                    pstmt.setInt(2, getC_ConciliacionBancaria_ID());
+                    pstmt.setTimestamp(3, getFromDate());
+
+                    rs = pstmt.executeQuery();
+
+                    BigDecimal bd = getSaldoInicial();
+
+                    if (rs.next()) {
+                        bd = rs.getBigDecimal(2);
+                    }
+
+                    setSaldoInicial(bd);
+                }
+
+                pstmt.close();
+                rs.close();
+            } catch (SQLException sqlE) {
+            }
         }
 
 
@@ -401,9 +418,55 @@ public class MCONCILIACIONBANCARIA extends X_C_CONCILIACIONBANCARIA implements D
      * 	@return true if success
      */
     public boolean reActivateIt() {
-        log.info(toString());
-        return false;
+        this.isReactivate  = true;
+        int AD_Role_ID = Env.getAD_Role_ID(Env.getCtx());
+        int[] roleid = MRole.getAllIDs(MRole.Table_Name, " name = 'Panalab Admin' ", get_TrxName());
+
+        
+        if (roleid.length > 0 && AD_Role_ID != roleid[0]) {
+            m_processMsg = "Solo al rol Panalab Admin se le permite reactivar una conciliacion.";
+            return false;
+        }
+        
+        String sql = "SELECT C_ValorPago_ID, C_MovimientoConciliacion_Id "
+                    + " FROM C_MOVIMIENTOCONCILIACION "
+                    + " WHERE C_BankAccount_Id = ? AND C_CONCILIACIONBANCARIA_ID =? AND TIPO='E' AND IsActive = 'Y' AND CONCILIADO = 'Y'";
+
+            try {
+                PreparedStatement pstmt = DB.prepareStatement(sql, null);
+
+                pstmt.setInt(1, getC_BankAccount_ID());
+                pstmt.setInt(2, getC_ConciliacionBancaria_ID());
+
+                ResultSet rs = pstmt.executeQuery();
+
+                while (rs.next()) {
+                    MVALORPAGO vpay = new MVALORPAGO(getCtx(), rs.getInt(1), get_TrxName());
+                    
+                    //Paso cheques propios a estado impreso
+                    vpay.setEstado("I");
+                    vpay.save();
+
+                    MMOVIMIENTOCONCILIACION movConc = new MMOVIMIENTOCONCILIACION(getCtx(), rs.getInt(2), get_TrxName());
+
+                    //Seteo lineas de conciliacion de cheques propios a estado impreso
+                    movConc.setEstado("Impreso");
+                    movConc.save();
+                }
+
+            } catch (Exception e) {
+                m_processMsg = "Error al cambiar el estado del Cheque";
+                return false;
+            }
+                  
+        setProcessed(false);
+        setPosted(false);
+        setIsApproved(false);
+        setDocAction(DocAction.STATUS_Completed);
+
+        return true;
     }	//	reActivateIt
+    
     private String m_processMsg = null;
 
     /*************************************************************************
@@ -463,6 +526,7 @@ public class MCONCILIACIONBANCARIA extends X_C_CONCILIACIONBANCARIA implements D
         return null;
     }
 
+    @Override
     protected boolean beforeDelete() {
 
         try {
@@ -606,9 +670,15 @@ public class MCONCILIACIONBANCARIA extends X_C_CONCILIACIONBANCARIA implements D
         } catch (SQLException e) {
         }
 
-        int nro = DB.executeUpdate("DELETE FROM C_MOVIMIENTOCONCILIACION WHERE C_CONCILIACIONBANCARIA_ID = " + getC_ConciliacionBancaria_ID(), get_TrxName());
-
-        if (nro < 0) {
+        if (!deleteMovConciliados()) {
+            return false;
+        }
+        
+        if (!deleteMovPendientes()) {
+            return false;
+        }
+        
+        if (!deleteMovPosteriores()) {
             return false;
         }
 
@@ -617,27 +687,28 @@ public class MCONCILIACIONBANCARIA extends X_C_CONCILIACIONBANCARIA implements D
 
     public boolean deleteMovPosteriores() {
         String sql = " DELETE FROM C_MovimientoPosterior WHERE C_ConciliacionBancaria_ID=" + getC_ConciliacionBancaria_ID();
-        DB.executeUpdate(sql, null);
+        
+        int nro = DB.executeUpdate(sql, null);
 
-        return true;
+        return nro >= 0;
     }
 
     public boolean deleteMovConciliados() {
         String sql = " DELETE FROM C_MOVIMIENTOCONCILIACION"
                 + " WHERE C_ConciliacionBancaria_ID=" + getC_ConciliacionBancaria_ID()
                 + "	 AND Conciliado = 'Y'";
-        DB.executeUpdate(sql, get_TrxName());
+        int nro = DB.executeUpdate(sql, get_TrxName());
 
-        return true;
+       return nro >= 0;
     }
 
     public boolean deleteMovPendientes() {
         String sql = " DELETE FROM C_MOVIMIENTOCONCILIACION"
                 + " WHERE C_ConciliacionBancaria_ID=" + getC_ConciliacionBancaria_ID()
                 + "	 AND Conciliado = 'N'";
-        DB.executeUpdate(sql, get_TrxName());
+       int nro = DB.executeUpdate(sql, get_TrxName());
 
-        return true;
+       return nro >= 0;
     }
 
     public List<MMOVIMIENTOCONCILIACION> getMovConciliados(boolean c) {

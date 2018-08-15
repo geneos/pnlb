@@ -414,7 +414,7 @@ public class VTreeBOM extends CPanel
 
         if (implotion.isSelected()) {
             QueryDB query = new QueryDB("org.compiere.model.X_MPC_Product_BOMLine");
-            String filter = "M_Product_ID=" + M_Product_ID+ " isActive='Y'";
+            String filter = "M_Product_ID=" + M_Product_ID+ "AND isActive='Y'";
             java.util.List results = query.execute(filter);
             Iterator select = results.iterator();
             while (select.hasNext()) {

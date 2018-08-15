@@ -503,8 +503,7 @@ public class MPayment extends X_C_Payment
 
             if (this.flagSave == false && this.retencion == true) {
                 System.out.println("Entrando a calcular retenciones");
-                deleteRetenciones();
-                Retenciones.inicio(this.getC_Payment_ID(), this, get_TrxName());
+                recalcularRetenciones();
             }
         }
         return true;
