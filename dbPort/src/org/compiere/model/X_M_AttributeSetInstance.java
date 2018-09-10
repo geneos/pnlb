@@ -224,4 +224,22 @@ public class X_M_AttributeSetInstance extends PO {
 	public String getBUNDLE() {
 		return (String) get_Value("BUNDLE");
 	}
+        
+                /**
+	 * Set Lote Andreani. 
+	 */
+	public void setLoteAndreani(String LoteAndreani) {
+		if (LoteAndreani != null && LoteAndreani.length() > 40) {
+			log.warning("Length > 40 - truncated");
+			LoteAndreani = LoteAndreani.substring(0, 50);
+		}
+		set_Value("LOTE_ANDREANI", LoteAndreani);
+	}
+
+	/**
+	 * Get Lote Andreani. 
+	 */
+	public String getLoteAndreani() {
+		return (String) get_Value("LOTE_ANDREANI");
+	}
 }

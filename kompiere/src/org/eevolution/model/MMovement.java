@@ -300,6 +300,21 @@ public class MMovement extends org.compiere.model.MMovement implements DocAction
                     }
 
                 }
+
+                //Si el movimiento es por liberacion de producto terminado valido el campo LOTE ANDREANI
+                //Y lo traslado a la partida.
+                if (getC_DocType_ID() == 5000030 && line.getM_AttributeSetInstanceTo_ID() != 0) {
+                    if (line.getLoteAndreani() == null || line.getLoteAndreani().equals("")) {
+                        m_processMsg = "Error en linea: " + line + ". Lote andreani obligatorio";
+                        return DocAction.STATUS_Invalid;
+                    }
+                    MAttributeSetInstance masi = new MAttributeSetInstance(getCtx(), line.getM_AttributeSetInstanceTo_ID(), get_TrxName());
+                    masi.setLoteAndreani(line.getLoteAndreani());
+                    if (!masi.save()) {
+                        m_processMsg = "Error en linea: " + line + ". No se pudo actualizar lote andreani en partida";
+                        return DocAction.STATUS_Invalid;
+                    }
+                }
             }	//	for all lines
         }
         //	User Validation
