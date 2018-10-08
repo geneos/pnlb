@@ -1830,7 +1830,7 @@ public abstract class PO implements Serializable, Comparator, Evaluatee {
                        aux.add(arg);
                     }
                     for (int i = 0; i < size; i++) {
-                            if (m_newValues[i] != null && aux.contains(get_ColumnName(i)))
+                            if (m_newValues[i] != null && !aux.contains(get_ColumnName(i)))
                                     return true; // something changed
                     }
                     return false;

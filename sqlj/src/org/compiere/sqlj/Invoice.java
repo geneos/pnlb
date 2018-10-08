@@ -15,6 +15,7 @@ package org.compiere.sqlj;
 
 import java.math.*;
 import java.sql.*;
+import org.compiere.util.DB;
 
 /**
  *	SQLJ Invoice related Functions
@@ -49,7 +50,7 @@ public class Invoice {
         if (p_C_InvoicePaySchedule_ID != 0) {
             sql += " AND C_InvoicePaySchedule_ID=?";
         }
-        PreparedStatement pstmt = Compiere.prepareStatement(sql);
+        PreparedStatement pstmt = DB.prepareStatement(sql);
         pstmt.setInt(1, p_C_Invoice_ID);
         if (p_C_InvoicePaySchedule_ID != 0) {
             pstmt.setInt(2, p_C_InvoicePaySchedule_ID);
@@ -106,7 +107,7 @@ public class Invoice {
                     + "WHERE C_Invoice_ID=?"
                     + " AND IsValid='Y' "
                     + "ORDER BY DueDate";
-            pstmt = Compiere.prepareStatement(sql);
+            pstmt = DB.prepareStatement(sql);
             pstmt.setInt(1, p_C_Invoice_ID);
             rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -200,7 +201,7 @@ public class Invoice {
         if (p_C_InvoicePaySchedule_ID != 0) {
             sql += " AND C_InvoicePaySchedule_ID=?";
         }
-        PreparedStatement pstmt = Compiere.prepareStatement(sql);
+        PreparedStatement pstmt = DB.prepareStatement(sql);
         pstmt.setInt(1, p_C_Invoice_ID);
         // Begin
         pstmt.setTimestamp(2, DateAcct);
@@ -261,7 +262,7 @@ public class Invoice {
                     + "WHERE C_Invoice_ID=?"
                     + " AND IsValid='Y' "
                     + "ORDER BY DueDate";
-            pstmt = Compiere.prepareStatement(sql);
+            pstmt = DB.prepareStatement(sql);
             pstmt.setInt(1, p_C_Invoice_ID);
             rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -405,7 +406,7 @@ public class Invoice {
                 + " INNER JOIN C_AllocationHdr a ON (al.C_AllocationHdr_ID=a.C_AllocationHdr_ID) "
                 + "WHERE al.C_Invoice_ID=?"
                 + " AND a.IsActive='Y'";
-        PreparedStatement pstmt = Compiere.prepareStatement(sql);
+        PreparedStatement pstmt = DB.prepareStatement(sql);
 
         pstmt.setInt(1, C_Invoice_ID);
         ResultSet rs = pstmt.executeQuery();
@@ -454,7 +455,7 @@ public class Invoice {
                 + " INNER JOIN C_AllocationHdr a ON (al.C_AllocationHdr_ID=a.C_AllocationHdr_ID) "
                 + "WHERE al.C_Invoice_ID=?"
                 + " AND a.IsActive='Y' AND a.DateAcct <= ?";
-        PreparedStatement pstmt = Compiere.prepareStatement(sql);
+        PreparedStatement pstmt = DB.prepareStatement(sql);
         pstmt.setInt(1, C_Invoice_ID);
         pstmt.setTimestamp(2, DateAcct);
         ResultSet rs = pstmt.executeQuery();
@@ -516,7 +517,7 @@ public class Invoice {
                 + "FROM C_Invoice i"
                 + " INNER JOIN AD_ClientInfo ci ON (ci.AD_Client_ID=i.AD_Client_ID) "
                 + "WHERE i.C_Invoice_ID=?";
-        PreparedStatement pstmt = Compiere.prepareStatement(sql);
+        PreparedStatement pstmt = DB.prepareStatement(sql);
         pstmt.setInt(1, p_C_Invoice_ID);
         ResultSet rs = pstmt.executeQuery();
         if (rs.next()) {
@@ -553,7 +554,7 @@ public class Invoice {
                     + "FROM C_InvoicePaySchedule "
                     + "WHERE C_InvoicePaySchedule_ID=?"
                     + " AND TRUNC(DiscountDate) <= ?";
-            pstmt = Compiere.prepareStatement(sql);
+            pstmt = DB.prepareStatement(sql);
             pstmt.setInt(1, p_C_InvoicePaySchedule_ID);
             pstmt.setTimestamp(2, PayDate);
             rs = pstmt.executeQuery();

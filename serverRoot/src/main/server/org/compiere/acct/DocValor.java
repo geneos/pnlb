@@ -73,6 +73,9 @@ public final class DocValor {
             case 'C':
                 m_tipo = ACCTTYPE_EFECTIVO;
                 break;
+            case 'A':
+                m_tipo = ACCTTYPE_EFECTIVO;
+                break;
             case 'N':
                 m_tipo = ACCTTYPE_CREDITCARD;
                 break;

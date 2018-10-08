@@ -24,4 +24,11 @@
 - Rework de Validacion de fechas para las conciliaciones (1183)
 - Reactivar conciliaciones (1179)
 - Llenar tabla T_COMPONENTCHECK que se utiliza para informe de picking list por mas que el mismo no se seleccione al Emitir una OM (1187)
-
+#Version 20180918
+- Traslado de campo LOTE ANDREANI en movimientos por liberacion de producto terminado a partida para que luego se exporten en el txt a andreani.
+- Validacion al eliminar un conjunto de atributos para que no se permita en caso de que existan partidas para el mismo con stock.
+- Nuevo medio de pago ALLARIA (ticket 1193)
+#Version xxxxxxxx
+- Permitir cambiar nombre de Movimiento de Fondo (ticket 1194)
+- No permitir eliminar lineas de credito o devito en movimientos de fondo ya procesados (ticket 1195)
+- Asignación de comprobantes No funciona correctamente 1196

@@ -298,7 +298,7 @@ public class MZYNDYNAMICMOVFONDOS extends X_ZYN_DYNAMIC_MOVFONDOS {
             existsCode = findExistentsMovements((String) get_ValueOld("Code"));
             
             
-            if (existsCode && is_ChangedOmitFields("Name","Name") ) {
+            if (existsCode && is_ChangedOmitFields("Name","Description") ) {
                 log.saveError("Error", "No se puede modificar. Existen movimiento de fondos de este tipo");
                 return false;
             }

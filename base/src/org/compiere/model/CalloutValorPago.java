@@ -284,6 +284,12 @@ public class CalloutValorPago extends CalloutEngine {
             {
                 mTab.setValue("NROTRANSFERENCIA", "00000000");
             }
+            
+            // Soporte para pago "tipo efectivo" Allaria Ledesma y Cia S.A
+            if (value.equals("A")) {
+                Integer C_ElementValue_ID = MVALORPAGO.getElementValueForAllaria();
+                mTab.setValue("C_AcctSchema_ID", C_ElementValue_ID);
+             }
         }
 
 

@@ -35,6 +35,23 @@ public class MVALORPAGO extends X_C_VALORPAGO {
      */
     private static final long serialVersionUID = 1L;
 
+    static Integer getElementValueForAllaria() {
+        Integer aux = 0;
+        String sql = "SELECT C_ElementValue_ID "
+                        + "FROM C_ElementValue "
+                        + "WHERE Value = '1.1.2.5.04' ";
+                try {
+                    PreparedStatement pstm = DB.prepareStatement(sql, null);
+                    ResultSet rs = pstm.executeQuery();
+                    if (rs.next()) 
+                        aux = rs.getInt(1);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "No Existe Secuencia para el Tipo de Valor" + e.getMessage(), "Error en Nro. de Transferencia", JOptionPane.INFORMATION_MESSAGE);
+                }
+                        
+        return aux;
+    }
+
     /**
      * Standard Constructor
      *
@@ -67,6 +84,10 @@ public class MVALORPAGO extends X_C_VALORPAGO {
     public static String ANULADO = "A";
     public static String RECHAZADO = "C";
     public static String REVERTIDO = "R";
+    
+    //Soporte para pago "tipo efectivo" Allaria Ledesma y Cia S.A
+    public static String ALLARIA = "A";
+
     /*
      * José Fantasia Anexado para manejar estado impreso
      *
@@ -394,6 +415,10 @@ public class MVALORPAGO extends X_C_VALORPAGO {
         if (getVencimientoDate() != null) {
             setReadOnlyVD(true);
         }
+        
+        //Validacion ALLARIA -> Solo cuenta de allaria
+        if ( getTIPO().equals(ALLARIA) )
+            setC_AcctSchema_ID(getElementValueForAllaria());
 
         return true;
     }	//	beforeSave

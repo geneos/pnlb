@@ -176,6 +176,19 @@ public class MMOVIMIENTOFONDOSCRE extends X_C_MOVIMIENTOFONDOS_CRE {
         }
         return "";
     }
+    
+    
+    @Override
+    public boolean beforeDelete() {
+        MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
+
+        if (mov.isProcessed()){
+            JOptionPane.showMessageDialog(null, "No se pueden eliminar lineas de un documento ya procesado", "Documento ya procesado ", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    return true;
+    }
+
     private int LEY_DIAS_FA = 30;
     private int LEY_DIAS_FE = 360;
     private boolean saveForce = false;

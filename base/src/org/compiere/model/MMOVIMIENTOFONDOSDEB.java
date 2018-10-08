@@ -61,6 +61,18 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
 
         return "";
     }
+
+    @Override
+    public boolean beforeDelete() {
+        MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
+
+        if (mov.isProcessed()) {
+            JOptionPane.showMessageDialog(null, "No se pueden eliminar lineas de un documento ya procesado", "Documento ya procesado ", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+    
     private int LEY_DIAS_FA = 30;
     private int LEY_DIAS_FE = 360;
     private String COMUN = "C";
@@ -365,16 +377,16 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
                 MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
                 if (mov.getDocStatus().equals(mov.DOCSTATUS_Drafted)
                         || mov.getDocStatus().equals(mov.DOCSTATUS_InProgress)) {
-                    setConvertido(mov.getC_Currency_ID(),mov.getCotizacion() );
+                    setConvertido(mov.getC_Currency_ID(), mov.getCotizacion());
                 }
             }
-            
+
             // Credito Bancario 
             if (MMOVIMIENTOFONDOS.TIPO_CreditoBancario.equals(getTipo())) {
                 MMOVIMIENTOFONDOS mov = new MMOVIMIENTOFONDOS(getCtx(), getC_MOVIMIENTOFONDOS_ID(), get_TrxName());
                 if (mov.getDocStatus().equals(mov.DOCSTATUS_Drafted)
                         || mov.getDocStatus().equals(mov.DOCSTATUS_InProgress)) {
-                    setConvertido(mov.getC_Currency_ID(),mov.getCotizacion() );
+                    setConvertido(mov.getC_Currency_ID(), mov.getCotizacion());
                 }
             }
 
@@ -629,16 +641,16 @@ public class MMOVIMIENTOFONDOSDEB extends X_C_MOVIMIENTOFONDOS_DEB {
         this.acreditar = acreditar;
     }
 
-    public void setConvertido(int C_Currency_ID,BigDecimal cotizacion) {
-            //Si es extranjera y la cuenta actual es en ARS
-            MBankAccount ba = new MBankAccount(getCtx(), getC_BankAccount_ID(), get_TrxName());
+    public void setConvertido(int C_Currency_ID, BigDecimal cotizacion) {
+        //Si es extranjera y la cuenta actual es en ARS
+        MBankAccount ba = new MBankAccount(getCtx(), getC_BankAccount_ID(), get_TrxName());
 
-            if (C_Currency_ID != 118
-                    && ba.getC_Currency_ID() != 118) {
-                //Actualizo Convertido segun cotizacion
-                setConvertido(getDEBITO().multiply(cotizacion));
-            } else {
-                setConvertido(getDEBITO());
-            }
+        if (C_Currency_ID != 118
+                && ba.getC_Currency_ID() != 118) {
+            //Actualizo Convertido segun cotizacion
+            setConvertido(getDEBITO().multiply(cotizacion));
+        } else {
+            setConvertido(getDEBITO());
+        }
     }
 }

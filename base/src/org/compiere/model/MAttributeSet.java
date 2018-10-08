@@ -13,6 +13,7 @@
  *****************************************************************************/
 package org.compiere.model;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
@@ -374,6 +375,30 @@ public class MAttributeSet extends X_M_AttributeSet {
         return "";
     }	//	getSerNoCharEnd
 
+    @Override
+    protected boolean beforeDelete() {
+         BigDecimal stock = BigDecimal.ZERO;
+        String sql = "select COALESCE(SUM(str.qtyonhand),0) FROM  M_STORAGE str"
+                + " JOIN M_AttributeSetInstance masi on masi.m_attributesetinstance_id = str.m_attributesetinstance_id "
+                + " WHERE masi.m_attributeset_id = " + getM_AttributeSet_ID();
+        
+        PreparedStatement ps = DB.prepareStatement(sql, null);
+        try {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                stock = rs.getBigDecimal(1);
+            }
+        } catch (SQLException ex) {
+            log.log(Level.SEVERE, sql, ex);
+            return false;
+        }
+
+        if (stock.signum() > 0) {
+            JOptionPane.showMessageDialog(null, "Existe un stock de "+stock+" para este conjunto de atributos", "Error: No se puede Eliminar", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    return true;
+    }
     /**
      * 	Before Save.
      * 	- set instance attribute flag
@@ -381,11 +406,6 @@ public class MAttributeSet extends X_M_AttributeSet {
      *	@return true
      */
     protected boolean beforeSave(boolean newRecord) {
-        if (!isInstanceAttribute()
-                && (isSerNo() || isLot() || isGuaranteeDate())) {
-            setIsInstanceAttribute(true);
-        }
-
         boolean check = false;
         String sql = "select 1 FROM  M_PRODUCT p where p.m_attributeset_id = " + getM_AttributeSet_ID()
                 + " and p.m_product_category_id IN"
@@ -409,6 +429,7 @@ public class MAttributeSet extends X_M_AttributeSet {
                 check = true;
             }
         } catch (SQLException ex) {
+            log.log(Level.SEVERE, sql, ex);
         }
 
         if (check) {
@@ -425,6 +446,7 @@ public class MAttributeSet extends X_M_AttributeSet {
             JOptionPane.showMessageDialog(null, err, "Error: Campos Obligatorios", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+        
         return true;
     }	//	beforeSave
 
