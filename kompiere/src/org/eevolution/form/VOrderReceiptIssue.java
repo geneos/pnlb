@@ -3388,11 +3388,13 @@ public class VOrderReceiptIssue extends CPanel
             /** BISion - 25/03/2010 - Santiago Ibañez
              * COM-PAN-REQ-08.005.02
              */
-            MProduct p = MProduct.get(Env.getCtx(), lines[i].getM_Product_ID()) ;
-            boolean categNOSumin = esCategoriaNOSuministrable(p.getM_Product_Category_ID());
-             //fin modificacion BISion
-            if (!categNOSumin && !tieneSurtimientos(lines[i].getM_Product_ID()))
-                tiene = false;
+            if ( lines[i].getQtyRequiered().compareTo(BigDecimal.ZERO) == 1) {
+                MProduct p = MProduct.get(Env.getCtx(), lines[i].getM_Product_ID()) ;
+                boolean categNOSumin = esCategoriaNOSuministrable(p.getM_Product_Category_ID());
+                 //fin modificacion BISion
+                if (!categNOSumin && !tieneSurtimientos(lines[i].getM_Product_ID()))
+                    tiene = false;
+            }
         }
         return tiene;
     }
