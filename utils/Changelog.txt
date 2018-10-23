@@ -32,3 +32,4 @@
 - Permitir cambiar nombre de Movimiento de Fondo (ticket 1194)
 - No permitir eliminar lineas de credito o devito en movimientos de fondo ya procesados (ticket 1195)
 - Asignación de comprobantes No funciona correctamente 1196
+- Borrar registros asociados a un Pago o Cobranza cuando se eliminan del sistema

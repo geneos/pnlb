@@ -530,6 +530,52 @@ public class MPayment extends X_C_Payment
         }
 
     }
+    
+        /*
+     *  10/10/2018
+     *  Modificacion para que al eliminar un pago se eliminen todos los datos asociados
+     * 
+     */
+
+    protected boolean afterDelete() {
+        if (!DOCSTATUS_Drafted.equals(getDocStatus())) {
+            JOptionPane.showMessageDialog(null, "El documento no se puede eliminar ya que no esta en Estado Borrador.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        } 
+        
+        //C_AllocationLine
+         String sql = "DELETE FROM C_AllocationLine "
+                    + "WHERE c_payment_id = "+getC_Payment_ID();
+            
+         DB.executeUpdate(sql, get_TrxName());
+         
+         //C_PaymentAllocate
+         sql = "DELETE FROM C_PaymentAllocate "
+                    + "WHERE c_payment_id = "+getC_Payment_ID();
+            
+         DB.executeUpdate(sql, get_TrxName());
+         
+         //C_VALORPAGO
+         sql = "DELETE FROM C_VALORPAGO "
+                    + "WHERE c_payment_id = "+getC_Payment_ID();
+            
+         DB.executeUpdate(sql, get_TrxName());
+         
+         //C_PAYMENTVALORES
+         sql = "DELETE FROM C_PAYMENTVALORES "
+                    + "WHERE c_payment_id = "+getC_Payment_ID();
+            
+         DB.executeUpdate(sql, get_TrxName());
+            
+         //C_PAYMENTRET
+         sql = "DELETE FROM C_PAYMENTRET "
+                    + "WHERE c_payment_id = "+getC_Payment_ID();
+            
+         DB.executeUpdate(sql, get_TrxName());
+            
+        return true;
+
+    }
 
     /**
      * 	Before Save
