@@ -1015,7 +1015,7 @@ public class Doc_Invoice extends Doc
 					tl = fact.createLine (null, m_taxes[i].getAccount(m_taxes[i].getAPTaxType(), as),
 							m_rate, getC_Currency_ID(), null, m_taxes[i].getAmount().negate());
 				else
-					tl = fact.createLine (null, m_taxes[i].getAccount(m_taxes[i].getAPTaxType(), as),
+					tl = fact.createLine (null, m_taxes[i].getAccount(DocTax.ACCTTYPE_TaxDue, as),
 							m_rate, getC_Currency_ID(), null, m_taxes[i].getAmount());
 				if (tl != null)
 					tl.setC_Tax_ID(m_taxes[i].getC_Tax_ID());

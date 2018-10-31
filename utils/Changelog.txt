@@ -34,3 +34,4 @@
 - Asignación de comprobantes No funciona correctamente 1196
 - Borrar registros asociados a un Pago o Cobranza cuando se eliminan del sistema
 - Fix en validacion de existencias de surtimiento al hacer una recepcion de terminado
+- Fix en cuenta contable para las notas de credito a proveedor
