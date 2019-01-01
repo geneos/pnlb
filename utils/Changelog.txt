@@ -28,10 +28,12 @@
 - Traslado de campo LOTE ANDREANI en movimientos por liberacion de producto terminado a partida para que luego se exporten en el txt a andreani.
 - Validacion al eliminar un conjunto de atributos para que no se permita en caso de que existan partidas para el mismo con stock.
 - Nuevo medio de pago ALLARIA (ticket 1193)
-#Version xxxxxxxx
+#Version 20181019
 - Permitir cambiar nombre de Movimiento de Fondo (ticket 1194)
 - No permitir eliminar lineas de credito o devito en movimientos de fondo ya procesados (ticket 1195)
 - Asignación de comprobantes No funciona correctamente 1196
 - Borrar registros asociados a un Pago o Cobranza cuando se eliminan del sistema
 - Fix en validacion de existencias de surtimiento al hacer una recepcion de terminado
 - Fix en cuenta contable para las notas de credito a proveedor
+#Version xxxxxxxx
+- Fix para crear conciliaciones con cuentas bancarias y cuentas contables nuevas.

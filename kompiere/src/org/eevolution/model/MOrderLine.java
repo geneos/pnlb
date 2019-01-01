@@ -121,8 +121,8 @@ public class MOrderLine extends org.compiere.model.MOrderLine
 		 */
 		MOrder order = new MOrder(getCtx(),getC_Order_ID(),get_TrxName());        
 		if (!order.isSOTrx())
-              MMPCMRP.C_OrderLine(this,get_TrxName(),false);
-        return super.afterSave (newRecord, success);                
+                                      MMPCMRP.C_OrderLine(this,get_TrxName(),false);
+                                return super.afterSave (newRecord, success);                
 	}	//	afterSave
 
 	/**

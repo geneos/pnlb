@@ -249,7 +249,7 @@ public class MCONCILIACIONBANCARIA extends X_C_CONCILIACIONBANCARIA implements D
 
             ResultSet rs = pstmt.executeQuery();
 
-            if (rs.next()) {
+            if (rs.next() && rs.getBigDecimal(1) != null) {
                 setSaldoContable(rs.getBigDecimal(1));
             } else {
                 JOptionPane.showMessageDialog(null, "No fue posible extraer el Saldo Contable de la Cuanta Bancaria", "INFORMACIÓN - Saldo Registros Contables", JOptionPane.INFORMATION_MESSAGE);

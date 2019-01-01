@@ -291,18 +291,13 @@ public class MMPCMRP extends X_MPC_MRP {
                  *
                  */
 
-
-
-
                 BigDecimal diff = ol.getQtyEntered().subtract(ol.getQtyDelivered());
-
 
                 if (diff.compareTo(Env.ZERO) < 0) {
                     mrp.setQty(Env.ZERO);
                 } else {
                     mrp.setQty(diff);
                 }
-
 
                 mrp.setDatePromised(ol.getDatePromised());
                 mrp.setDateStartSchedule(ol.getDatePromised());
@@ -336,26 +331,17 @@ public class MMPCMRP extends X_MPC_MRP {
                  *
                  */
 
-
-
                 if (ol.getM_Product_ID() == 1006413) {
                     System.out.println("PRODUCTO EN CUESTIONNNNN");
                 }
 
-
-
-
                 BigDecimal diff = ol.getQtyEntered().subtract(ol.getQtyDelivered());
-
 
                 if (diff.compareTo(Env.ZERO) < 0) {
                     mrp.setQty(Env.ZERO);
                 } else {
                     mrp.setQty(diff);
                 }
-
-
-
 
                 mrp.setDatePromised(ol.getDatePromised());
                 mrp.setDateStartSchedule(ol.getDatePromised());
@@ -376,7 +362,6 @@ public class MMPCMRP extends X_MPC_MRP {
                     mrp.setTypeMRP("POO");
                 }
                 mrp.save(trxName);
-
             }
 
             rs.close();
