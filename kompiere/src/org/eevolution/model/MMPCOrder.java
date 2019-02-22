@@ -3805,13 +3805,13 @@ private boolean reserveStock (MMPCOrderBOMLine[] lines)
                     //Sobrepasa limite superior?
                     if ( lines[i].getQtyDelivered().compareTo(maxQtyTolerance) == 1 ){
                         toleranceAccomplishedMayor = false;
-                        productsMayores += producto.getValue() + " - " + producto.getName()+"(Entregado: "+getQtyDelivered()+", Maximo:)"+maxQtyTolerance+"\n";
+                        productsMayores += producto.getValue() + " - " + producto.getName()+"(Esperada: "+qtyRequired+", Entregado: "+lines[i].getQtyDelivered()+", Maximo segun tolerancia "+pct.getTOLERANCE()+":"+maxQtyTolerance+")\n";
                     }
                     
                     //No llega a cubrir limite inferior?
                     if ( lines[i].getQtyDelivered().compareTo(minQtyTolerance) == -1 ){
                         toleranceAccomplishedMenor = false;
-                        productsMenores += producto.getValue() + " - " + producto.getName()+"(Entregado: "+getQtyDelivered()+", Minimo:)"+minQtyTolerance+"\n";
+                        productsMenores += producto.getValue() + " - " + producto.getName()+"(Esperada:  "+qtyRequired+", Entregado: "+lines[i].getQtyDelivered()+", Minimo: segun tolerancia "+pct.getTOLERANCE()+":"+minQtyTolerance+")\n";
                     }
                 }
             }

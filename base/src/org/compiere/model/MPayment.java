@@ -1897,10 +1897,10 @@ public class MPayment extends X_C_Payment
                         pstmt2 = DB.prepareStatement(sql2, null);
                         pstmt2.setLong(1, getC_Payment_ID());
                         rs2 = pstmt2.executeQuery();
-
+                        
                         if (rs2.next()) {
-                            float remanente = (rs2.getFloat(3) == 0 ? rs2.getFloat(1) - rs2.getFloat(2) : rs2.getFloat(1) - rs2.getFloat(3));
-                            if (remanente != 0) {
+                            BigDecimal remanente = rs2.getBigDecimal(3).signum() == 0  ? rs2.getBigDecimal(1).subtract( rs2.getBigDecimal(2)) : rs2.getBigDecimal(1).subtract( rs2.getBigDecimal(3));
+                            if (remanente.signum() != 0) {
                                 JOptionPane.showMessageDialog(null, "Los valores asignados no coinciden con el Neto del Pago", "ERROR - Verificación Montos", JOptionPane.ERROR_MESSAGE);
                                 /*
                                  *  Modificado para que el pago siga quedando en borrador de no coincidir los montos.

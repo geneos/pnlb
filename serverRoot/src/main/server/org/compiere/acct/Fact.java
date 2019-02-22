@@ -217,7 +217,7 @@ public final class Fact
 		//  Data Check
 		if (account == null)
 		{
-			log.info("No account for " + docLine 
+			log.warning("No account for " + docLine 
 				+ ": Amt=" + debitAmt + "/" + creditAmt 
 				+ " - " + toString());			
 			return null;
@@ -234,6 +234,9 @@ public final class Fact
 
 		if (creditAmt != null)
 			System.out.print("\n Veamos el CRED - F: "+creditAmt.floatValue());
+                
+                                if (debitAmt != null)
+			System.out.print("\n Veamos el DEV - F: "+debitAmt.floatValue());
 
 		//  Amounts - one needs to not zero
 		if (!line.setAmtSource(C_Currency_ID, debitAmt, creditAmt))

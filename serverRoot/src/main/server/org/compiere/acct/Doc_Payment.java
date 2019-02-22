@@ -326,8 +326,10 @@ public class Doc_Payment extends Doc {
              * INICIO
              */
             for (int i = 0; i < m_reten.length; i++) {
-                fact.createLine(null, m_reten[i].getAccount(m_reten[i].getAPRetencionType(), as),
+                fl = fact.createLine(null, m_reten[i].getAccount(m_reten[i].getAPRetencionType(), as),
                         m_rate, getC_Currency_ID(), m_reten[i].getAmount(), null);
+                if (fl == null)
+                    return null;
             }
 
             /**

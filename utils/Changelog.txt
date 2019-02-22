@@ -35,5 +35,6 @@
 - Borrar registros asociados a un Pago o Cobranza cuando se eliminan del sistema
 - Fix en validacion de existencias de surtimiento al hacer una recepcion de terminado
 - Fix en cuenta contable para las notas de credito a proveedor
-#Version xxxxxxxx
+#Version 20190222
 - Fix para crear conciliaciones con cuentas bancarias y cuentas contables nuevas.
+- Fix en la validacion de que el pago este balanceado al completar un pago. (Solo tenia en cuenta 1 decimal)
