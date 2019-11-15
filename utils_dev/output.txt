@@ -1,0 +1,1885 @@
+COMPIERE_SOURCE is /home/pablo/Trabajo/Panalab/pnlb_prod
+** NetComponents NOT found **
+Cleanup ...
+Buildfile: build.xml
+
+clean:
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/CCTools.jar
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/CSTools.jar
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/jboss.jar
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/oracle.jar
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/sybase.jar
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/sqlServer.jar
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/looks/build
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/looks/CLooks.jar
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/print/build
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/print/Print.jar
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/build
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/dbPort.jar
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/base/build
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/base/Base.jar
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/extend/build
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/extend/Extend.jar
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/Compiere.jar
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/build
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/CompiereJasper.jar
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/build
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/Kompiere.jar
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/zynnia/build
+
+clean:
+
+clean:
+
+clean:
+
+clean:
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/build
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/sqlj.jar
+
+clean:
+
+BUILD SUCCESSFUL
+Total time: 0 seconds
+Building ...
+Buildfile: build.xml
+
+init:
+     [echo] =========== Build Compiere
+
+build:
+
+toolsInit:
+     [echo] =========== Build Tools  e-Evolution,S.C.
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Client
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Server
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/JBoss
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Oracle
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/IBM
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Sybase
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/MSSQL
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/PostgreSQL
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/EDB
+
+toolsCompile:
+    [javac] Compiling 126 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+     [copy] Copying 1 file to /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build
+
+toolsServer:
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/jstl.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Server
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/standard.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Server
+     [copy] Copying 133 files to /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Server/org/apache/ecs
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/Verisign.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Server
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/jpayment.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Server
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/log4j.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Server
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/jnlp.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Server
+   [delete] Deleting: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Server/META-INF/MANIFEST.MF
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/CSTools.jar
+
+toolsClient:
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/activation.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Client
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/mail.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Client
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/bsh-1.3.0.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Client
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/Verisign.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Client
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/jpayment.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Client
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/log4j.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Client
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/jnlp.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Client
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/jgraph.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Client
+   [delete] Deleting 3 files from /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Client/META-INF
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/CCTools.jar
+
+toolsAppsServer:
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/jboss/client/jboss-client.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/JBoss
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/jboss/client/jboss-common-client.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/JBoss
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/jboss/client/jboss-j2ee.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/JBoss
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/jboss/client/jbosssx-client.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/JBoss
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/jboss/client/jnp-client.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/JBoss
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/jboss/client/jmx-invoker-adaptor-client.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/JBoss
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/jboss/client/jboss-transaction-client.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/JBoss
+   [delete] Deleting 1 files from /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/JBoss/META-INF
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/jboss.jar
+
+toolsDatabase:
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/ojdbc14.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Oracle
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/ocrs12.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Oracle
+   [delete] Deleting 1 files from /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Oracle/META-INF
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/oracle.jar
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/db2jcc.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/IBM
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/db2jcc_license_cu.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/IBM
+   [delete] Deleting 1 files from /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/IBM/META-INF
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/ibm.jar
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/jtds-1.0.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/Sybase
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/sybase.jar
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/jtds-1.0.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/MSSQL
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/sqlServer.jar
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/lib/postgresql.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/PostgreSQL
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/postgresql.jar
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/lib/edb.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/tools/build/EDB
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/edb.jar
+
+toolsDistribution:
+
+init:
+     [echo] =========== Build Looks
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/looks/build
+
+makedir:
+
+looksCompile:
+    [javac] Compiling 130 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/looks/build
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:32: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BackColType_Lines",      "L�nes" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:35: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LookAndFeelEditor",      "Editor Aparen�a i Comportament" },
+    [javac]                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:36: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LookAndFeel",            "Aparen�a i Comportament" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:41: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ColorBlind",             "Defici�ncia Color" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:53: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Primary2Info",           "L�nia Focus, Men� Seleccionat" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:53: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Primary2Info",           "L�nia Focus, Men� Seleccionat" },
+    [javac]                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:57: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Secondary1Info",         "L�nies Marc" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:72: warning: unmappable character for encoding UTF8
+    [javac] 	{ "WindowTitleFont",         "Font T�tol" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:73: warning: unmappable character for encoding UTF8
+    [javac] 	{ "MenuFont",               "Font Men�" },
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:79: warning: unmappable character for encoding UTF8
+    [javac] 	{ "InfoInfo",               "Camp de Fons Informaci�" },
+    [javac]                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:80: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Info",                   "Informaci�" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:81: warning: unmappable character for encoding UTF8
+    [javac] 	{ "WhiteInfo",              "L�nies" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:83: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BlackInfo",              "L�nies, Text" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:95: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Italic",                 "It�lica" },
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:97: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BoldItalic",             "Negreta & It�lica" },
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:101: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestString",             "Aix� �s nom�s una Prova! La Guineu marr� r�pida �st� fent quelcom. 12,3456.78 LetterLOne = l1 LetterOZero = O0" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:101: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestString",             "Aix� �s nom�s una Prova! La Guineu marr� r�pida �st� fent quelcom. 12,3456.78 LetterLOne = l1 LetterOZero = O0" },
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:101: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestString",             "Aix� �s nom�s una Prova! La Guineu marr� r�pida �st� fent quelcom. 12,3456.78 LetterLOne = l1 LetterOZero = O0" },
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:101: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestString",             "Aix� �s nom�s una Prova! La Guineu marr� r�pida �st� fent quelcom. 12,3456.78 LetterLOne = l1 LetterOZero = O0" },
+    [javac]                                                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:101: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestString",             "Aix� �s nom�s una Prova! La Guineu marr� r�pida �st� fent quelcom. 12,3456.78 LetterLOne = l1 LetterOZero = O0" },
+    [javac]                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:101: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestString",             "Aix� �s nom�s una Prova! La Guineu marr� r�pida �st� fent quelcom. 12,3456.78 LetterLOne = l1 LetterOZero = O0" },
+    [javac]                                                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:101: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestString",             "Aix� �s nom�s una Prova! La Guineu marr� r�pida �st� fent quelcom. 12,3456.78 LetterLOne = l1 LetterOZero = O0" },
+    [javac]                                                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:109: warning: unmappable character for encoding UTF8
+    [javac] 	{ "GradientDistance",       "Dist�ncia Degradat" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:112: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TextureTaintColor",      "Textura Color Corrupci�" },
+    [javac]                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:113: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LineColor",              "Color L�nia" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:115: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LineWidth",              "Ampla L�nia" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:116: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LineDistance",           "Dist�ncia L�nia" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_ca.java:116: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LineDistance",           "Dist�ncia L�nia" },
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:35: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LookAndFeelEditor",      "Benutzeroberfl�che Editor" },
+    [javac]                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:36: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LookAndFeel",            "Oberfl�che" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Reset",                  "Zur�cksetzen" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:52: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Primary1",               "Prim�r 1" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:53: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Primary2Info",           "Fokuslinien, Aktives Men�
+    [javac]                                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:54: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Primary2",               "Prim�r 2" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:56: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Primary3",               "Prim�r 3" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:58: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Secondary1",             "Sekund�r 1" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:60: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Secondary2",             "Sekund�r 2" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:62: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Secundary3",             "Sekund�r 3" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:72: warning: unmappable character for encoding UTF8
+    [javac] 	{ "MenuFont",               "Men� Schrift" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:81: warning: unmappable character for encoding UTF8
+    [javac] 	{ "White",                  "Wei�" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:98: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Size",                   "Gr��e" },
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:98: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Size",                   "Gr��e" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_de.java:111: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TextureTaintColor",      "Textur T�nung Farbe" },
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BackColType",            "Taustan v�rityyppi" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:32: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BackColType_Flat",       "Yksiv�ri" },
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:37: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LookAndFeelEditor",      "K�ytt�tuntuman muokkaus" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:37: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LookAndFeelEditor",      "K�ytt�tuntuman muokkaus" },
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:38: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LookAndFeel",            "K�ytt�tuntuma" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:38: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LookAndFeel",            "K�ytt�tuntuma" },
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:41: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SetDefault",             "Oletustaustav�ri" },
+    [javac]                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:42: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SetDefaultColor",        "Taustav�ri" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ColorBlind",             "V�risokeus" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:46: warning: unmappable character for encoding UTF8
+    [javac] 	{ "OK",                     "Hyv�ksy" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:50: warning: unmappable character for encoding UTF8
+    [javac] 	{ "MetalColors",            "Metalliv�rit" },
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:51: warning: unmappable character for encoding UTF8
+    [javac] 	{ "CompiereColors",         "Compiere-v�rit" },
+    [javac]                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:61: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Secondary2Info",         "Ei-aktiiviset Tabulaattorit, Painetut Kent�t, Ei-aktiivinen Reuna + Teksti" },
+    [javac]                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:69: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SystemFont",             "J�rjestelm�kirjasin" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:69: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SystemFont",             "J�rjestelm�kirjasin" },
+    [javac]                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:70: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserFontInfo",           "K�ytt�j�n Sy�tt�m� Tieto" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:70: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserFontInfo",           "K�ytt�j�n Sy�tt�m� Tieto" },
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:70: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserFontInfo",           "K�ytt�j�n Sy�tt�m� Tieto" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:70: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserFontInfo",           "K�ytt�j�n Sy�tt�m� Tieto" },
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:70: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserFontInfo",           "K�ytt�j�n Sy�tt�m� Tieto" },
+    [javac]                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:70: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserFontInfo",           "K�ytt�j�n Sy�tt�m� Tieto" },
+    [javac]                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:71: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserFont",               "Kentt�kirjasin" },
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:77: warning: unmappable character for encoding UTF8
+    [javac] 	{ "MandatoryInfo",          "Pakollinen Kentt�tausta" },
+    [javac]                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:79: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ErrorInfo",              "Virhekent�n Tausta" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:81: warning: unmappable character for encoding UTF8
+    [javac] 	{ "InfoInfo",               "Tietokent�n Tausta" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:87: warning: unmappable character for encoding UTF8
+    [javac] 	{ "InactiveInfo",           "Ei-aktiivinen Kentt�tausta" },
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:89: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TextOKInfo",             "Hyv�ksy Teksti Edusta" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:90: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TextOK",                 "Teksti - Hyv�ksy" },
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:103: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestString",             "T�m� on vain Testi! Nopea ruskea Kettu suorittaa jotain. 12,3456.78 LetterLOne = l1 LetterOZero = O0" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:103: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestString",             "T�m� on vain Testi! Nopea ruskea Kettu suorittaa jotain. 12,3456.78 LetterLOne = l1 LetterOZero = O0" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:106: warning: unmappable character for encoding UTF8
+    [javac] 	{ "CompiereColorEditor",    "Compiere-v�rimuokkaus" },
+    [javac]                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:107: warning: unmappable character for encoding UTF8
+    [javac] 	{ "CompiereType",           "V�rityyppi" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:108: warning: unmappable character for encoding UTF8
+    [javac] 	{ "GradientUpperColor",     "Gradientin Ylempi V�ri" },
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:109: warning: unmappable character for encoding UTF8
+    [javac] 	{ "GradientLowerColor",     "Gradientin Alempi V�ri" },
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:111: warning: unmappable character for encoding UTF8
+    [javac] 	{ "GradientDistance",       "Gradientin Et�isyys" },
+    [javac]                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:114: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TextureTaintColor",      "Kuvioinnin Korvausv�ri" },
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:115: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LineColor",              "Viivan V�ri" },
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:116: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LineBackColor",          "Taustan V�ri" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:118: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LineDistance",           "Viivan Et�isyys" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_fi.java:119: warning: unmappable character for encoding UTF8
+    [javac] 	{ "FlatColor",              "Tavallinen V�ri" }
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_hr.java:35: warning: unmappable character for encoding UTF8
+    [javac] 	{ "LookAndFeelEditor",      "Urediva� izgleda" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_hr.java:38: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EditCompiereTheme",      "Ure�ivanje Compiere teme" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_hr.java:39: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SetDefault",             "Uobi�ajena pozadina" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_hr.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Reset",                  "Poni�titi" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_hr.java:47: warning: unmappable character for encoding UTF8
+    [javac] 	{ "CompiereThemeEditor",    "Ure�ivanje Compiere teme" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_it.java:168: warning: unmappable character for encoding UTF8
+    [javac] 	  { "TestString",             "Questo � solo un Test! La veloce volpe marrone st� facendo qualcosa. 12,3456.78 LetteraLUno = l1 LetteraOZero = O0" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_it.java:168: warning: unmappable character for encoding UTF8
+    [javac] 	  { "TestString",             "Questo � solo un Test! La veloce volpe marrone st� facendo qualcosa. 12,3456.78 LetteraLUno = l1 LetteraOZero = O0" },
+    [javac]                                                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_no.java:21: warning: unmappable character for encoding UTF8
+    [javac]  *  @author     Olaf Slazak L�
+    [javac]                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_no.java:71: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SmallFont",              "Sm� Fonter" },
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_pt.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BackColType_Gradient",   "D�grad�" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_pt.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BackColType_Gradient",   "D�grad�" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_pt.java:39: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SetDefault",             "Fundo Padr�o" },
+    [javac]                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_pt.java:41: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ColorBlind",             "Defici�ncia de Cor" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_pt.java:52: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Primary1",               "Prim�rio 1" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_pt.java:54: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Primary2",               "Prim�rio 2" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_pt.java:56: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Primary3",               "Prim�rio 3" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/PlafRes_pt.java:58: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Secondary1",             "Secund�rio 1" },
+    [javac]                                            ^
+    [javac] Note: /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/plaf/CompiereComboPopup.java uses or overrides a deprecated API.
+    [javac] Note: /home/pablo/Trabajo/Panalab/pnlb_prod/looks/src/org/compiere/util/MediaSize.java uses unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 100 warnings
+     [copy] Copying 22 files to /home/pablo/Trabajo/Panalab/pnlb_prod/looks/build
+
+looksDistribution:
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/looks/CLooks.jar
+
+init:
+     [echo] =========== Build dbPort
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/build
+
+makedir:
+
+compile:
+    [javac] Compiling 850 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/build
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/CConnectionEditor.java:289: warning: unmappable character for encoding UTF8
+    [javac]                     "Usted no tiene permisos para cambiar esta configuraci�n",
+    [javac]                                                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_ca.java:29: warning: unmappable character for encoding UTF8
+    [javac] 	{ "CConnectionDialog",  "Connexi� Compiere" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_ca.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "AppsHost",           "Servidor Aplicaci�" },
+    [javac]                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_ca.java:32: warning: unmappable character for encoding UTF8
+    [javac] 	{ "AppsPort",           "Port Aplicaci�" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_ca.java:33: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestApps",           "Provar Aplicaci�" },
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_ca.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BequeathConnection", "Delegar Connexi�" },
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_ca.java:50: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ConnectionError",    "Error Connexi�" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_de.java:44: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Overwrite",          "�berschreiben" },
+    [javac]                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_es.java:28: warning: unmappable character for encoding UTF8
+    [javac] 	{ "CConnectionDialog",  "Conexi�n Compiere" },
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_es.java:30: warning: unmappable character for encoding UTF8
+    [javac] 	{ "AppsHost",           "Servidor de Aplicaci�n" },
+    [javac]                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_es.java:36: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBUidPwd",           "Usuario / Contrase�a" },
+    [javac]                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fi.java:38: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBUidPwd", 			"K�ytt�j�tunnus / Salasana" },
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fi.java:38: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBUidPwd", 			"K�ytt�j�tunnus / Salasana" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fi.java:38: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBUidPwd", 			"K�ytt�j�tunnus / Salasana" },
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fi.java:39: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ViaFirewall", 		"Palomuurin l�pi" },
+    [javac]                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fi.java:44: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BequeathConnection", "Periytyv� yhteys" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fr.java:34: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBHost",                 "Hote Base de Donn�es" },
+    [javac]                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fr.java:35: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBPort",                 "Port Base de Donn�es" },
+    [javac]                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fr.java:36: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBName",                 "Nom Base de Donn�es" },
+    [javac]                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fr.java:41: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestConnection",         "Test Base de Donn�es" },
+    [javac]                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fr.java:42: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Type",                   "Type Base de Donn�es" },
+    [javac]                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fr.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BequeathConnection",     "Connexion d�di�e" },
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_fr.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BequeathConnection",     "Connexion d�di�e" },
+    [javac]                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_hr.java:49: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ConnectionError", 	"Gre�ka u vezi" },
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_no.java:21: warning: unmappable character for encoding UTF8
+    [javac]  *  @author     Olaf Slazak L�
+    [javac]                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:29: warning: unmappable character for encoding UTF8
+    [javac] 	{ "CConnectionDialog",  "Compiere Conex�o" },
+    [javac]                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "AppsHost",           "Servidor de Aplica��o" },
+    [javac]                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "AppsHost",           "Servidor de Aplica��o" },
+    [javac]                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:32: warning: unmappable character for encoding UTF8
+    [javac] 	{ "AppsPort",           "Porta TCP da Aplica��o" },
+    [javac]                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:32: warning: unmappable character for encoding UTF8
+    [javac] 	{ "AppsPort",           "Porta TCP da Aplica��o" },
+    [javac]                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:33: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestApps",           "Testar Aplica��o" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:33: warning: unmappable character for encoding UTF8
+    [javac] 	{ "TestApps",           "Testar Aplica��o" },
+    [javac]                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:37: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBUidPwd",           "Usu�rio / Senha" },
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BequeathConnection", "Conex�o Bequeath" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:50: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ConnectionError",    "Erro de Conex�o" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_pt.java:51: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ServerNotActive",    "Servidor n�o Ativo" }
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_sv.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "AppsHost",           "Program v�rddator" },
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_sv.java:34: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBHost",             "Databas v�rddator" },
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_sv.java:37: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBUidPwd",           "Anv�ndarnamn / l�senord" },
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_sv.java:37: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBUidPwd",           "Anv�ndarnamn / l�senord" },
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_sv.java:39: warning: unmappable character for encoding UTF8
+    [javac] 	{ "FWHost",             "Firewall v�rddator" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_sv.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "BequeathConnection", "Efterl�mna anslutning" },
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_sv.java:44: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Overwrite",          "Skriv �ver" },
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_vi.java:30: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Name",               "T�n" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_vi.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "AppsHost",           "M�y ch\u1EE7 \u1EE9ng d\u1EE5ng" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_vi.java:34: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBHost",             "M�y ch\u1EE7 CSDL" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_vi.java:36: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBName",             "T�n CSDL" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_vi.java:37: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DBUidPwd",           "Ng\u01B0\u1EDDi d�ng / M\u1EADt kh\u1EA9u" },
+    [javac]                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_vi.java:39: warning: unmappable character for encoding UTF8
+    [javac] 	{ "FWHost",             "M�y ch\u1EE7 b\u1EE9c t\u01B0\u1EDDng l\u1EEDa" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_vi.java:40: warning: unmappable character for encoding UTF8
+    [javac] 	{ "FWPort",             "C\u1ED5ng v�o b\u1EE9c t\u01B0\u1EDDng l\u1EEDa" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_vi.java:44: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Overwrite",          "Ghi \u0111�" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_vi.java:51: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ServerNotActive",    "M�y ch\u1EE7 hi\u1EC7n kh�ng ho\u1EA1t \u0111\u1ED9ng" }
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/db/DBRes_vi.java:51: warning: unmappable character for encoding UTF8
+    [javac] 	{ "ServerNotActive",    "M�y ch\u1EE7 hi\u1EC7n kh�ng ho\u1EA1t \u0111\u1ED9ng" }
+    [javac]                                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:224: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"GB","GBP","2","�",".","0","Pound Sterling"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:225: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"CY","CYP","2","�C",".","0","Cyprus Pound"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:226: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"EG","EGP","2","�E",".","2","Egyptian Pound"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:227: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"FK","FKP","2","�F",".","0","Falkland Islands Pound"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:228: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"GI","GIP","2","�G",".","0","Gibraltar Pound"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:229: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"SH","SHP","2","�S",".","0","Saint Helena Pound"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:230: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"SY","SYP","2","�S",".","2","Syrian Pound"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:231: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"JP","JPY","0","�",".","0","Yen"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:232: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"GH","GHC","2","�",".","0","Cedi"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:233: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"SV","SVC","2","�",".","0","El Salvador Colon"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:234: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"AD","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:235: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"AT","EUR","2","�",",","2","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:236: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"BE","EUR","2","�",",","3","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:237: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"DE","EUR","2","�",",","3","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:238: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"ES","EUR","2","�",",","3","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:239: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"FI","EUR","2","�",",","3","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:240: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"FR","EUR","2","�",",","3","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:241: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"GF","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:242: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"GP","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:243: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"GR","EUR","2","�",",","3","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:244: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"IE","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:245: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"IT","EUR","2","�",",","2","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:246: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"LU","EUR","2","�",",","3","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:247: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"MC","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:248: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"MQ","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:249: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"NL","EUR","2","�",",","2","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:250: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"PM","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:251: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"PT","EUR","2","�","$","3","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:252: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"RE","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:253: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"SM","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:254: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"VA","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:255: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"YT","EUR","2","�",".","0","euro"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MCurrency.java:382: warning: unmappable character for encoding UTF8
+    [javac] 		new String[]{"TO","TOP","2","T$",".","0","Pa�anga"},
+    [javac]                                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MLotCtlSincr.java:28: warning: unmappable character for encoding UTF8
+    [javac]          * M�todo que retorna el id correspondiente para un control de  
+    [javac]             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MLotCtlSincr.java:49: warning: unmappable character for encoding UTF8
+    [javac]             //creo uno nuevo si no exist�
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MLotCtlSincr.java:58: warning: unmappable character for encoding UTF8
+    [javac]         /** BISion - 29/10/2008 - Santiago Iba�
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MLotCtlSincr.java:59: warning: unmappable character for encoding UTF8
+    [javac]          * M�todo para chequear disponibilidad de un control de lote  y en caso de
+    [javac]             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MLotCtlSincr.java:61: warning: unmappable character for encoding UTF8
+    [javac]          * Si Active = 'Y' entonces est� disponible.
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MLotCtlSincr.java:65: warning: unmappable character for encoding UTF8
+    [javac]             //Si est� disponible...
+    [javac]                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MRegimRetenPercepRecib.java:14: warning: unmappable character for encoding UTF8
+    [javac]  * @author BISION - Mat�as Maenza
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MRegimRetenPercepRecib.java:75: warning: unmappable character for encoding UTF8
+    [javac]                     //ADialog.error(1, null, "","Debe seleccionar si es retenci�n o percepci�n.");
+    [javac]                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MRegimRetenPercepRecib.java:75: warning: unmappable character for encoding UTF8
+    [javac]                     //ADialog.error(1, null, "","Debe seleccionar si es retenci�n o percepci�n.");
+    [javac]                                                                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MRegimRetenPercepRecib.java:76: warning: unmappable character for encoding UTF8
+    [javac]                      JOptionPane.showMessageDialog(null,"Debe seleccionar si es retenci�n o percepci�n.", "Informaci�n", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MRegimRetenPercepRecib.java:76: warning: unmappable character for encoding UTF8
+    [javac]                      JOptionPane.showMessageDialog(null,"Debe seleccionar si es retenci�n o percepci�n.", "Informaci�n", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MRegimRetenPercepRecib.java:76: warning: unmappable character for encoding UTF8
+    [javac]                      JOptionPane.showMessageDialog(null,"Debe seleccionar si es retenci�n o percepci�n.", "Informaci�n", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MRegimRetenPercepRecib.java:81: warning: unmappable character for encoding UTF8
+    [javac]                     //ADialog.error(1, null, "","Debe seleccionar si es retenci�n o percepci�n, no ambas.");
+    [javac]                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/src/org/compiere/model/MRegimRetenPercepRecib.java:81: warning: unmappable character for encoding UTF8
+    [javac]                     //ADialog.error(1, null, "","Debe seleccionar si es retenci�n o percepci�n, no ambas.");
+    [javac]                                                                                             ^
+    [javac] Note: Some input files additionally use or override a deprecated API.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 100 warnings
+     [copy] Copying 5 files to /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/build
+
+dist:
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/dbPort.jar
+
+init:
+     [echo] =========== Build Print
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/print/build
+
+makedir:
+
+compile:
+    [javac] Compiling 39 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/print/build
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+     [copy] Copying 2 files to /home/pablo/Trabajo/Panalab/pnlb_prod/print/build
+
+dist:
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/print/Print.jar
+
+init:
+     [echo] =========== Build Base
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/base/build
+
+makedir:
+
+compile:
+    [javac] Compiling 507 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/base/build
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MREGPERCEPRECIB.java:26: warning: unmappable character for encoding UTF8
+    [javac]  *	R�gime de Percepciones Recibidas
+    [javac]          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MREGPERCEPRECIB.java:103: warning: unmappable character for encoding UTF8
+    [javac] 				JOptionPane.showMessageDialog(null,"Ingrese Jurisdicci�n","Error - Falta Par�metro", JOptionPane.ERROR_MESSAGE);
+    [javac]                                                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MREGPERCEPRECIB.java:103: warning: unmappable character for encoding UTF8
+    [javac] 				JOptionPane.showMessageDialog(null,"Ingrese Jurisdicci�n","Error - Falta Par�metro", JOptionPane.ERROR_MESSAGE);
+    [javac]                                                                                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MREGPERCEPRECIB.java:109: warning: unmappable character for encoding UTF8
+    [javac] 					JOptionPane.showMessageDialog(null,"Ingrese C�digo de Jurisdicci�n","Error - Falta Par�metro", JOptionPane.ERROR_MESSAGE);
+    [javac]                                                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MREGPERCEPRECIB.java:109: warning: unmappable character for encoding UTF8
+    [javac] 					JOptionPane.showMessageDialog(null,"Ingrese C�digo de Jurisdicci�n","Error - Falta Par�metro", JOptionPane.ERROR_MESSAGE);
+    [javac]                                                                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MREGPERCEPRECIB.java:109: warning: unmappable character for encoding UTF8
+    [javac] 					JOptionPane.showMessageDialog(null,"Ingrese C�digo de Jurisdicci�n","Error - Falta Par�metro", JOptionPane.ERROR_MESSAGE);
+    [javac]                                                                                                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MREGPERCEPRECIB.java:122: warning: unmappable character for encoding UTF8
+    [javac] 					JOptionPane.showMessageDialog(null,"Ingrese R�gimen para IVA","Error - Falta Par�metro", JOptionPane.ERROR_MESSAGE);
+    [javac]                                                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MREGPERCEPRECIB.java:122: warning: unmappable character for encoding UTF8
+    [javac] 					JOptionPane.showMessageDialog(null,"Ingrese R�gimen para IVA","Error - Falta Par�metro", JOptionPane.ERROR_MESSAGE);
+    [javac]                                                                                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MREGPERCEPRECIB.java:135: warning: unmappable character for encoding UTF8
+    [javac] 						JOptionPane.showMessageDialog(null,"Ingrese R�gimen para Ganancias","Error - Falta Par�metro", JOptionPane.ERROR_MESSAGE);
+    [javac]                                                                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MREGPERCEPRECIB.java:135: warning: unmappable character for encoding UTF8
+    [javac] 						JOptionPane.showMessageDialog(null,"Ingrese R�gimen para Ganancias","Error - Falta Par�metro", JOptionPane.ERROR_MESSAGE);
+    [javac]                                                                                                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/Percepciones.java:180: warning: unmappable character for encoding UTF8
+    [javac]     			 * 		BORRADO DE C�LCULO ANTERIOR
+    [javac]                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/Percepciones.java:453: warning: unmappable character for encoding UTF8
+    [javac] 	//  completa y muestra, segun corresponda, el combo del mes y del a�o. 
+    [javac]                                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:97: warning: unmappable character for encoding UTF8
+    [javac] 	        	//Asignaci�n de la factura por el campo Factura de la Ventana Pago.
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:138: warning: unmappable character for encoding UTF8
+    [javac]             	 *		Asignaci�n de la factura por la pesta�a Asignaci�n de la Ventana Pago.
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:138: warning: unmappable character for encoding UTF8
+    [javac]             	 *		Asignaci�n de la factura por la pesta�a Asignaci�n de la Ventana Pago.
+    [javac]                                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:138: warning: unmappable character for encoding UTF8
+    [javac]             	 *		Asignaci�n de la factura por la pesta�a Asignaci�n de la Ventana Pago.
+    [javac]                                                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:140: warning: unmappable character for encoding UTF8
+    [javac]             	 * 		Pago sin asignaci�n a Factura.
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:187: warning: unmappable character for encoding UTF8
+    [javac]          *      Al inicio deber�a borra todas las retenciones asociadas al pago.
+    [javac]                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:292: warning: unmappable character for encoding UTF8
+    [javac]     // ALMACENA EN LA BASE PARA LUEGO REALIZAR LOS COMPROBANTES DE RETENCI�N
+    [javac]                                                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:310: warning: unmappable character for encoding UTF8
+    [javac]              *      1 - En funci�n de los pagos anteriores verifico en que rango cae el pago actual.
+    [javac]                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:356: warning: unmappable character for encoding UTF8
+    [javac] 				//	INICIO - Buscar el Monto No Sujeto a Retenci�
+    [javac]                                                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:372: warning: unmappable character for encoding UTF8
+    [javac]    				//	FIN - Buscar el Monto No Sujeto a Retenci�
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:383: warning: unmappable character for encoding UTF8
+    [javac]                	// Conseguir Datos para realizar el c�lculo.
+    [javac]                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:432: warning: unmappable character for encoding UTF8
+    [javac]              *      Se verifica si al socio de negocio se aplica retenci�
+    [javac]                                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:561: warning: unmappable character for encoding UTF8
+    [javac] 			// Vit4B 14/03/2208 Actualizacion del neto en funci�n de el valor del pago menos las retenciones
+    [javac]                                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:629: warning: unmappable character for encoding UTF8
+    [javac] 	                        JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:629: warning: unmappable character for encoding UTF8
+    [javac] 	                        JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:729: warning: unmappable character for encoding UTF8
+    [javac]                 				JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:729: warning: unmappable character for encoding UTF8
+    [javac]                 				JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:787: warning: unmappable character for encoding UTF8
+    [javac] 	                        JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:787: warning: unmappable character for encoding UTF8
+    [javac] 	                        JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:867: warning: unmappable character for encoding UTF8
+    [javac]     	                        JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/RetencionesChanges.java:867: warning: unmappable character for encoding UTF8
+    [javac]     	                        JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:84: warning: unmappable character for encoding UTF8
+    [javac]                 // Definici�n de variables para crear los script de insert, consulta y borrado
+    [javac]                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InOutCreateInvoice.java:73: warning: unmappable character for encoding UTF8
+    [javac]                     JOptionPane.showMessageDialog(null,"Ingrese N�mero de Documento", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InOutCreateInvoice.java:81: warning: unmappable character for encoding UTF8
+    [javac]                     JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InOutCreateInvoice.java:81: warning: unmappable character for encoding UTF8
+    [javac]                     JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InOutCreateInvoice.java:101: warning: unmappable character for encoding UTF8
+    [javac]                         JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InOutCreateInvoice.java:101: warning: unmappable character for encoding UTF8
+    [javac]                         JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InOutCreateInvoice.java:130: warning: unmappable character for encoding UTF8
+    [javac]                         JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InOutCreateInvoice.java:130: warning: unmappable character for encoding UTF8
+    [javac]                         JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InvoiceCreateInOut.java:75: warning: unmappable character for encoding UTF8
+    [javac]                     JOptionPane.showMessageDialog(null,"Ingrese N�mero de Documento", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InvoiceCreateInOut.java:83: warning: unmappable character for encoding UTF8
+    [javac]                     JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InvoiceCreateInOut.java:83: warning: unmappable character for encoding UTF8
+    [javac]                     JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InvoiceCreateInOut.java:103: warning: unmappable character for encoding UTF8
+    [javac]                         JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InvoiceCreateInOut.java:103: warning: unmappable character for encoding UTF8
+    [javac]                         JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InvoiceCreateInOut.java:132: warning: unmappable character for encoding UTF8
+    [javac]                         JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InvoiceCreateInOut.java:132: warning: unmappable character for encoding UTF8
+    [javac]                         JOptionPane.showMessageDialog(null,"N�mero de Documento Inv�lido", "Info", JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/InvoiceCreateInOut.java:153: warning: unmappable character for encoding UTF8
+    [javac]                 **  Vit4B - 10/04/2007 Modificaci�n para que tome DocumentNo
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/Cuit.java:54: warning: unmappable character for encoding UTF8
+    [javac] 	* N� de CUIT/CUIL como String * *
+    [javac]            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/WebDoc.java:355: warning: unmappable character for encoding UTF8
+    [javac] 		doc.getBody().addElement(new b("111 <<< >>> &&& \\\\ \u0100 �"));
+    [javac]                                                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MInvoiceLine.java:818: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 	                    PreparedStatement pstmt = DB.prepareStatement(sqlQuery);
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MInvoiceLine.java:840: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 	                PreparedStatement pstmt = DB.prepareStatement(sqlQuery);
+    [javac]                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MInvoiceLine.java:848: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 	                    PreparedStatement pstmt2 = DB.prepareStatement(sql);
+    [javac]                                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/MInvoiceLine.java:861: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 	                pstmt = DB.prepareStatement(sqlQuery);
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/CalloutCFD.java:44: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 			PreparedStatement pstmt = DB.prepareStatement(SQL);
+    [javac]                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/CalloutInvoice.java:497: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                             PreparedStatement pstmt = DB.prepareStatement(sqlQuery);
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/CalloutInvoice.java:502: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                                PreparedStatement pstmt2 = DB.prepareStatement(sql);
+    [javac]                                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/CalloutInvoice.java:583: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                             PreparedStatement pstmt = DB.prepareStatement(sqlQuery);
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/CalloutInvoice.java:611: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                             PreparedStatement pstmt = DB.prepareStatement(sqlQuery);
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/model/CalloutInvoice.java:620: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                                         PreparedStatement pstmt1 = DB.prepareStatement(sqlQuery);
+    [javac]                                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:99: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 PreparedStatement pstm=DB.prepareStatement("Select * from ad_table where name="+table);
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:107: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement(query);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:115: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement(query);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:125: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement(query);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:136: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement(query);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:144: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                     pstm=DB.prepareStatement(query);
+    [javac]                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:158: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement(query);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:166: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement(query);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:175: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                         pstm=DB.prepareStatement(query);
+    [javac]                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:186: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                         pstm=DB.prepareStatement(query);
+    [javac]                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:196: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement("Select * from ad_process where name="+process);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:203: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement("Select * from ad_process_trl where ad_process_id="+processId);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:210: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement("Select * from ad_process_para where ad_process_id="+processId);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:218: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                     pstm=DB.prepareStatement("Select * from ad_process_para_trl where ad_process_para_id="+processParaId);
+    [javac]                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:226: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement("Select * from ad_process_access where ad_process_id="+processId);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:236: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                 pstm=DB.prepareStatement("Select * from ad_menu where ad_process_id="+processId);
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/CompiereExportData.java:244: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]                     pstm=DB.prepareStatement("Select * from ad_menu_trl where ad_menu_id="+menuId);
+    [javac]                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/process/ImportAccount.java:353: warning: [deprecation] prepareStatement(java.lang.String,int,int) in org.compiere.util.DB has been deprecated
+    [javac]                         PreparedStatement updateStmt = DB.prepareStatement(updateSQL, ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_UPDATABLE);
+    [javac]                                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:77: warning: [deprecation] getDate() in java.util.Date has been deprecated
+    [javac] 		if ((Integer.toString(ts.getDate()).length()==1) && (Integer.toString(ts.getMonth()+1).length()==1)) 
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:77: warning: [deprecation] getMonth() in java.util.Date has been deprecated
+    [javac] 		if ((Integer.toString(ts.getDate()).length()==1) && (Integer.toString(ts.getMonth()+1).length()==1)) 
+    [javac]                                                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:79: warning: [deprecation] getDate() in java.util.Date has been deprecated
+    [javac] 			Date = '0' + Integer.toString(ts.getDate()) + '0' + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:79: warning: [deprecation] getMonth() in java.util.Date has been deprecated
+    [javac] 			Date = '0' + Integer.toString(ts.getDate()) + '0' + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:79: warning: [deprecation] getYear() in java.util.Date has been deprecated
+    [javac] 			Date = '0' + Integer.toString(ts.getDate()) + '0' + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                                                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:82: warning: [deprecation] getDate() in java.util.Date has been deprecated
+    [javac] 			if ((Integer.toString(ts.getDate()).length()==1) && (Integer.toString(ts.getMonth()+1).length()>1)) 
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:82: warning: [deprecation] getMonth() in java.util.Date has been deprecated
+    [javac] 			if ((Integer.toString(ts.getDate()).length()==1) && (Integer.toString(ts.getMonth()+1).length()>1)) 
+    [javac]                                                                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:84: warning: [deprecation] getDate() in java.util.Date has been deprecated
+    [javac] 				Date = '0' + Integer.toString(ts.getDate()) + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:84: warning: [deprecation] getMonth() in java.util.Date has been deprecated
+    [javac] 				Date = '0' + Integer.toString(ts.getDate()) + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:84: warning: [deprecation] getYear() in java.util.Date has been deprecated
+    [javac] 				Date = '0' + Integer.toString(ts.getDate()) + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                                                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:87: warning: [deprecation] getDate() in java.util.Date has been deprecated
+    [javac] 				if ((Integer.toString(ts.getDate()).length()>1) && (Integer.toString(ts.getMonth()+1).length()==1)) 
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:87: warning: [deprecation] getMonth() in java.util.Date has been deprecated
+    [javac] 				if ((Integer.toString(ts.getDate()).length()>1) && (Integer.toString(ts.getMonth()+1).length()==1)) 
+    [javac]                                                                                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:89: warning: [deprecation] getDate() in java.util.Date has been deprecated
+    [javac] 					Date = Integer.toString(ts.getDate()) + '0' + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:89: warning: [deprecation] getMonth() in java.util.Date has been deprecated
+    [javac] 					Date = Integer.toString(ts.getDate()) + '0' + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:89: warning: [deprecation] getYear() in java.util.Date has been deprecated
+    [javac] 					Date = Integer.toString(ts.getDate()) + '0' + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                                                                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:93: warning: [deprecation] getDate() in java.util.Date has been deprecated
+    [javac] 					Date = Integer.toString(ts.getDate()) + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:93: warning: [deprecation] getMonth() in java.util.Date has been deprecated
+    [javac] 					Date = Integer.toString(ts.getDate()) + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:93: warning: [deprecation] getYear() in java.util.Date has been deprecated
+    [javac] 					Date = Integer.toString(ts.getDate()) + Integer.toString(ts.getMonth()+1) + Integer.toString(ts.getYear()+1900);	
+    [javac]                                                                                                                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:102: warning: [deprecation] getDate() in java.util.Date has been deprecated
+    [javac] 		if ((Integer.toString(date.getDate()).length()==1) && (Integer.toString(date.getMonth()+1).length()==1)) 
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:102: warning: [deprecation] getMonth() in java.util.Date has been deprecated
+    [javac] 		if ((Integer.toString(date.getDate()).length()==1) && (Integer.toString(date.getMonth()+1).length()==1)) 
+    [javac]                                                                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java:104: warning: [deprecation] getDate() in java.util.Date has been deprecated
+    [javac] 			Date = "0" + Integer.toString(date.getDate()) + "/0" + Integer.toString(date.getMonth()+1) + "/" + Integer.toString(date.getYear()+1900);	
+    [javac]                                                           ^
+    [javac] Note: /home/pablo/Trabajo/Panalab/pnlb_prod/base/src/org/compiere/util/ValueFormat.java has additional uses or overrides of a deprecated API.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 100 warnings
+
+dist:
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/base/Base.jar
+
+init:
+     [echo] =========== Build Extend
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/extend/build
+
+makedir:
+
+compile:
+    [javac] Compiling 4 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/extend/build
+
+dist:
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/extend/Extend.jar
+
+sqljInit:
+     [echo] =========== Build SQLJ
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/build
+     [copy] Copying 1 file to /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/build/deployment
+
+sqljCompile:
+    [javac] Compiling 10 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/build
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/Currency.java:189: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 		PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/Currency.java:245: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 		PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/Invoice.java:53: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]         PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/Invoice.java:110: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]             pstmt = DB.prepareStatement(sql);
+    [javac]                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/Invoice.java:204: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]         PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/Invoice.java:265: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]             pstmt = DB.prepareStatement(sql);
+    [javac]                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/Invoice.java:409: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]         PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/Invoice.java:458: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]         PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/Invoice.java:520: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]         PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/Invoice.java:557: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac]             pstmt = DB.prepareStatement(sql);
+    [javac]                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/PaymentTerm.java:56: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 		PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/PaymentTerm.java:103: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 		PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/PaymentTerm.java:139: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 		PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/PaymentTerm.java:185: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 		PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/src/org/compiere/sqlj/PaymentTerm.java:270: warning: [deprecation] prepareStatement(java.lang.String) in org.compiere.util.DB has been deprecated
+    [javac] 		PreparedStatement pstmt = DB.prepareStatement(sql);
+    [javac]                                             ^
+    [javac] 15 warnings
+
+sqljDist:
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/sqlj.jar
+
+clientInit:
+     [echo] =========== Build Client
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+
+clientMakedir:
+
+clientCompile:
+    [javac] Compiling 233 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_ca.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Connection",         "Connexi�" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_ca.java:33: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Login",              "Acc�s Compiere" },
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_ca.java:41: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterUser",          "Entrar ID Usuari Aplicaci�" },
+    [javac]                                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_ca.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterPassword",      "Entrar Contrasenya Usuari Aplicaci�" },
+    [javac]                                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_ca.java:48: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Organization",       "Organitzaci�" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_ca.java:55: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserPwdError",       "No coincid�ix l'Usuari i la Contrasenya" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_de.java:37: warning: unmappable character for encoding UTF8
+    [javac] 	{ "About",          "�ber" },
+    [javac]                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_de.java:45: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SelectLanguage", "Anwendungs-Sprache ausw�hlen" },
+    [javac]                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_de.java:55: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserPwdError",   "Benutzer und Kennwort stimmen nicht �berein" },
+    [javac]                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_es.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Connection", "Conexi�n" },
+    [javac]                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_es.java:42: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Password", "Contrase�a" },
+    [javac]                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_es.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterPassword", "Ingrese Contrase�a" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_es.java:50: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Warehouse", "Almac�n" },
+    [javac]                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_es.java:55: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserPwdError", "Usuario-Contrase�a no coincide" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:39: warning: unmappable character for encoding UTF8
+    [javac] 		{ "User", "K�ytt�j�tunnus"},
+    [javac]                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:39: warning: unmappable character for encoding UTF8
+    [javac] 		{ "User", "K�ytt�j�tunnus"},
+    [javac]                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:39: warning: unmappable character for encoding UTF8
+    [javac] 		{ "User", "K�ytt�j�tunnus"},
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:40: warning: unmappable character for encoding UTF8
+    [javac] 		{ "EnterUser", "Anna sovelluksen k�ytt�j�tunnus"},
+    [javac]                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:40: warning: unmappable character for encoding UTF8
+    [javac] 		{ "EnterUser", "Anna sovelluksen k�ytt�j�tunnus"},
+    [javac]                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:40: warning: unmappable character for encoding UTF8
+    [javac] 		{ "EnterUser", "Anna sovelluksen k�ytt�j�tunnus"},
+    [javac]                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:48: warning: unmappable character for encoding UTF8
+    [javac] 		{ "Date", "P�iv�m��r�"},
+    [javac]                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:48: warning: unmappable character for encoding UTF8
+    [javac] 		{ "Date", "P�iv�m��r�"},
+    [javac]                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:48: warning: unmappable character for encoding UTF8
+    [javac] 		{ "Date", "P�iv�m��r�"},
+    [javac]                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:48: warning: unmappable character for encoding UTF8
+    [javac] 		{ "Date", "P�iv�m��r�"},
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:48: warning: unmappable character for encoding UTF8
+    [javac] 		{ "Date", "P�iv�m��r�"},
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:52: warning: unmappable character for encoding UTF8
+    [javac] 		{ "NotConnected", "Ei yhteytt�"},
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:53: warning: unmappable character for encoding UTF8
+    [javac] 		{ "DatabaseNotFound", "Tietokantaa ei l�ydy"},
+    [javac]                                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:54: warning: unmappable character for encoding UTF8
+    [javac] 		{ "UserPwdError", "K�ytt�j�tunnus ja salasana eiv�t vastaa toisiaan"},
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:54: warning: unmappable character for encoding UTF8
+    [javac] 		{ "UserPwdError", "K�ytt�j�tunnus ja salasana eiv�t vastaa toisiaan"},
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:54: warning: unmappable character for encoding UTF8
+    [javac] 		{ "UserPwdError", "K�ytt�j�tunnus ja salasana eiv�t vastaa toisiaan"},
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:54: warning: unmappable character for encoding UTF8
+    [javac] 		{ "UserPwdError", "K�ytt�j�tunnus ja salasana eiv�t vastaa toisiaan"},
+    [javac]                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:55: warning: unmappable character for encoding UTF8
+    [javac] 		{ "RoleNotFound", "Roolia ei l�ydy tai se ei ole t�ydellinen"},
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:55: warning: unmappable character for encoding UTF8
+    [javac] 		{ "RoleNotFound", "Roolia ei l�ydy tai se ei ole t�ydellinen"},
+    [javac]                                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:57: warning: unmappable character for encoding UTF8
+    [javac] 		{ "Ok", "Hyv�ksy"},
+    [javac]                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:61: warning: unmappable character for encoding UTF8
+    [javac] 		{ "PleaseUpgrade", "Ole hyv� ja aja p�ivitysohjelma"}};
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fi.java:61: warning: unmappable character for encoding UTF8
+    [javac] 		{ "PleaseUpgrade", "Ole hyv� ja aja p�ivitysohjelma"}};
+    [javac]                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:32: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Defaults",               "D�fauts" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:39: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Database",               "Base de donn�es" },
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:45: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SelectLanguage",         "S�lectionnez votre langue" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:46: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Role",                   "R�le" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:47: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Client",                 "Soci�t�" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:47: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Client",                 "Soci�t�" },
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:48: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Organization",           "D�partement" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:52: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Connected",              "Connect�" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:53: warning: unmappable character for encoding UTF8
+    [javac] 	{ "NotConnected",           "Non Connect�" },
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:54: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DatabaseNotFound",       "Base de donn�es non trouv�e" },
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:54: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DatabaseNotFound",       "Base de donn�es non trouv�e" },
+    [javac]                                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:55: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserPwdError",           "L'utilisateur n'a pas entr� de mot de passe" },
+    [javac]                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:56: warning: unmappable character for encoding UTF8
+    [javac] 	{ "RoleNotFound",           "R�le non trouv�" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:56: warning: unmappable character for encoding UTF8
+    [javac] 	{ "RoleNotFound",           "R�le non trouv�" },
+    [javac]                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:57: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Authorized",             "Autoris�" },
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_fr.java:62: warning: unmappable character for encoding UTF8
+    [javac] 	{ "PleaseUpgrade",          "SVP, mettez � jour le programme" }
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_hr.java:32: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Defaults",           "Uobi�ajeno" },
+    [javac]                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_hr.java:36: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Help",               "Pomo�" },
+    [javac]                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_hr.java:50: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Warehouse",          "Skladi�te" },
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_no.java:21: warning: unmappable character for encoding UTF8
+    [javac]  * 	@author 	Olaf Slazak L�
+    [javac]                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_no.java:44: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Language",           "Spr�k" },
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_no.java:45: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SelectLanguage",     "Velg �nsket Spr�k" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_no.java:45: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SelectLanguage",     "Velg �nsket Spr�k" },
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_no.java:62: warning: unmappable character for encoding UTF8
+    [javac] 	{ "PleaseUpgrade",      "Vennligst kj�r oppdaterings programet" }
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:31: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Connection",         "Conex�o" },
+    [javac]                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:32: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Defaults",           "Padr�es" },
+    [javac]                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:40: warning: unmappable character for encoding UTF8
+    [javac] 	{ "User",               "ID Usu�rio" },
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:41: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterUser",          "Entre com o ID Usu�rio da Aplica��o" },
+    [javac]                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:41: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterUser",          "Entre com o ID Usu�rio da Aplica��o" },
+    [javac]                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:41: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterUser",          "Entre com o ID Usu�rio da Aplica��o" },
+    [javac]                                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterPassword",      "Entre com a Senha da Aplica��o" },
+    [javac]                                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterPassword",      "Entre com a Senha da Aplica��o" },
+    [javac]                                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:48: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Organization",       "Organiza��o" },
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:48: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Organization",       "Organiza��o" },
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:50: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Warehouse",          "Dep�sito" },
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:53: warning: unmappable character for encoding UTF8
+    [javac] 	{ "NotConnected",       "N�o conectado" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:54: warning: unmappable character for encoding UTF8
+    [javac] 	{ "DatabaseNotFound",   "Banco de Dados n�o encontrado" },
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:55: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserPwdError",       "Usu�rio/Senha inv�lidos" },
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:55: warning: unmappable character for encoding UTF8
+    [javac] 	{ "UserPwdError",       "Usu�rio/Senha inv�lidos" },
+    [javac]                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:56: warning: unmappable character for encoding UTF8
+    [javac] 	{ "RoleNotFound",       "Regra n�o encontrada/incorreta" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:60: warning: unmappable character for encoding UTF8
+    [javac] 	{ "VersionConflict",    "Conflito de Vers�es:" },
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:62: warning: unmappable character for encoding UTF8
+    [javac] 	{ "PleaseUpgrade",      "Favor executar o programa de atualiza��o" }
+    [javac]                                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_pt.java:62: warning: unmappable character for encoding UTF8
+    [javac] 	{ "PleaseUpgrade",      "Favor executar o programa de atualiza��o" }
+    [javac]                                                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sl.java:36: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Help",               "Pomo�?" },
+    [javac]                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sl.java:50: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Warehouse",          "Skladiš�?e" },
+    [javac]                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sl.java:59: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Cancel",             "Prekli�?i" },
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:32: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Defaults",           "Standardinst�llningar" },
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:36: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Help",               "Hj�lp" },
+    [javac]                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:38: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Host",               "V�rddatorn" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:40: warning: unmappable character for encoding UTF8
+    [javac] 	{ "User",               "Anv�ndarnamn" },
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:41: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterUser",          "Ange program anv�ndarnamn" },
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:42: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Password",           "L�senord" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:43: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterPassword",      "Ange program l�senord" },
+    [javac]                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:44: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Language",           "Spr�k" },
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:45: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SelectLanguage",     "V�lj ditt spr�k" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:45: warning: unmappable character for encoding UTF8
+    [javac] 	{ "SelectLanguage",     "V�lj ditt spr�k" },
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_sv.java:62: warning: unmappable character for encoding UTF8
+    [javac] 	{ "PleaseUpgrade",      "K�r updateringsprogram" }
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_vi.java:32: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Defaults",           "M\u1EB7c nhi�n" },
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_vi.java:35: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Exit",               "Tho�t" },
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_vi.java:36: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Help",               "Gi�p \u0111\u1EE1" },
+    [javac]                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_vi.java:38: warning: unmappable character for encoding UTF8
+    [javac] 	{ "Host",               "M�y ch\u1EE7" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_vi.java:40: warning: unmappable character for encoding UTF8
+    [javac] 	{ "User",               "T�n ng\u01B0\u1EDDi d�ng" },
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_vi.java:40: warning: unmappable character for encoding UTF8
+    [javac] 	{ "User",               "T�n ng\u01B0\u1EDDi d�ng" },
+    [javac]                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/apps/ALoginRes_vi.java:41: warning: unmappable character for encoding UTF8
+    [javac] 	{ "EnterUser",          "H�y nh\u1EADp t�n ng\u01B0\u1EDDi d�ng" },
+    [javac]                                   ^
+    [javac] Note: /home/pablo/Trabajo/Panalab/pnlb_prod/client/Src/org/compiere/grid/VPanel.java uses unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 100 warnings
+     [copy] Copying 399 files to /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+
+clientDistribute:
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/base/Base.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/dbPort/dbPort.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/looks/CLooks.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/print/Print.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/sqlj/sqlj.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/extend/Extend.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/interfaces/Interfaces.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/client/build
+   [delete] Deleting directory /home/pablo/Trabajo/Panalab/pnlb_prod/client/build/META-INF
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/Compiere.jar
+
+init:
+     [echo] =========== Build JasperReport
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/build
+
+makedir:
+
+compile:
+    [javac] Compiling 7 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/build
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/src/org/compiere/report/JasperViewer.java:72: warning: [deprecation] hide() in java.awt.Window has been deprecated
+    [javac]         hide();
+    [javac]         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/src/org/compiere/report/JasperViewer.java:82: warning: [deprecation] show() in java.awt.Window has been deprecated
+    [javac]         jasperViewer.show();
+    [javac]                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/src/org/compiere/report/JasperViewer.java:86: warning: [deprecation] show() in java.awt.Window has been deprecated
+    [javac]         jasperViewer.show();
+    [javac]                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/src/org/compiere/report/ReportStarter.java:398: warning: [deprecation] show() in java.awt.Window has been deprecated
+    [javac]                         jasperViewer.show();
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/src/org/compiere/report/ReportStarter.java:518: warning: [deprecation] prepareStatement(java.lang.String,int,int) in org.compiere.util.DB has been deprecated
+    [javac]             pstmt = DB.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+    [javac]                       ^
+    [javac] 5 warnings
+
+dist:
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/CompiereJasper.jar
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/jasperreports-1.2.0.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/commons-digester-1.7.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/commons-collections-3.1.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/commons-logging-1.4.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/commons-beanutils-1.7.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/barbecue-1.1.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/xercesImpl.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/xml-apis.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/itext-1.3.1.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/tools/lib/iReport.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/needed
+
+init:
+     [echo] =========== Build Manufacturing Kompiere
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/build
+
+makedir:
+
+compile:
+    [javac] Compiling 317 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/build
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:592: warning: unmappable character for encoding UTF8
+    [javac]                                 **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:592: warning: unmappable character for encoding UTF8
+    [javac]                                 **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:617: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:617: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:639: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:639: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:663: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:663: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:685: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:685: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:709: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:709: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:731: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:731: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:755: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:755: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:778: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:778: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:802: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:802: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:824: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:824: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:848: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:848: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:871: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:871: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:893: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:893: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:915: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/VSCRP.java:915: warning: unmappable character for encoding UTF8
+    [javac]                                                         **  Realizo la verificaci�n sobre que d�a me encuentro
+    [javac]                                                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:110: warning: unmappable character for encoding UTF8
+    [javac]                 **  En este punto es donde deber�a de generar los gr�ficoa cada 7 dias en el per�odo establecido  
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:110: warning: unmappable character for encoding UTF8
+    [javac]                 **  En este punto es donde deber�a de generar los gr�ficoa cada 7 dias en el per�odo establecido  
+    [javac]                                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:110: warning: unmappable character for encoding UTF8
+    [javac]                 **  En este punto es donde deber�a de generar los gr�ficoa cada 7 dias en el per�odo establecido  
+    [javac]                                                                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:111: warning: unmappable character for encoding UTF8
+    [javac]                 **  habr�a que considerar cuando end = dateTime que tal vez no es 7 dias y graficar ese ultimo per�odo.
+    [javac]                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:111: warning: unmappable character for encoding UTF8
+    [javac]                 **  habr�a que considerar cuando end = dateTime que tal vez no es 7 dias y graficar ese ultimo per�odo.
+    [javac]                                                                                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:119: warning: unmappable character for encoding UTF8
+    [javac]                     **  En este punto hago la verificac�n de la semana y tambien llamo a armar el arbol en funci�n del acumulado
+    [javac]                                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:119: warning: unmappable character for encoding UTF8
+    [javac]                     **  En este punto hago la verificac�n de la semana y tambien llamo a armar el arbol en funci�n del acumulado
+    [javac]                                                                                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:142: warning: unmappable character for encoding UTF8
+    [javac]                     // Aqu� no deberia de verificar por la disponibilidad en ese dia puesto que al ser una cumulado deber�a de registrarlo de todos modos.
+    [javac]                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:142: warning: unmappable character for encoding UTF8
+    [javac]                     // Aqu� no deberia de verificar por la disponibilidad en ese dia puesto que al ser una cumulado deber�a de registrarlo de todos modos.
+    [javac]                                                                                                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:255: warning: unmappable character for encoding UTF8
+    [javac]                 **  En este punto deber�a tomar la fecha y agregar los hijos correspondientes
+    [javac]                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/form/crp/CRPSDatasetFactory.java:290: warning: unmappable character for encoding UTF8
+    [javac]                              *      Modificaci�n para que tome la referencia a los nodos de la 
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/model/MCost.java:129: warning: unmappable character for encoding UTF8
+    [javac]         /* Bision - 29/07/2008 - Iba�ez Santiago
+    [javac]                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/model/MInvoice.java:176: warning: unmappable character for encoding UTF8
+    [javac] 				 * Ticket 118 (Los ajustes al d�bito y al cr�dito no es necesario que se impriman autom�ticamente)
+    [javac]                                                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/model/MInvoice.java:176: warning: unmappable character for encoding UTF8
+    [javac] 				 * Ticket 118 (Los ajustes al d�bito y al cr�dito no es necesario que se impriman autom�ticamente)
+    [javac]                                                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/model/MInvoice.java:176: warning: unmappable character for encoding UTF8
+    [javac] 				 * Ticket 118 (Los ajustes al d�bito y al cr�dito no es necesario que se impriman autom�ticamente)
+    [javac]                                                                                                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/model/MMPCCostDetail.java:30: warning: unmappable character for encoding UTF8
+    [javac]     /** BISion - 29/12/2008 - Santiago Iba�
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/model/MMPCCostDetail.java:57: warning: unmappable character for encoding UTF8
+    [javac]      /** BISion - 06/01/2009 - Santiago Iba�
+    [javac]                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/model/MMPCCostElement.java:116: warning: unmappable character for encoding UTF8
+    [javac]         /** BISion - 06/01/2009 - Santiago Iba�
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/CalculateLowLevel.java:83: warning: unmappable character for encoding UTF8
+    [javac]                         /** BISion - 19/11/2008 - Santiago Iba�
+    [javac]                                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/ClosePurchaseOrders.java:138: warning: unmappable character for encoding UTF8
+    [javac]             System.out.println("Orden de compra n�: "+order.getDocumentNo());
+    [javac]                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/ClosePurchaseOrders.java:140: warning: unmappable character for encoding UTF8
+    [javac]                 System.out.println("Orden de compra n�: "+order.getDocumentNo());
+    [javac]                                                      ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/ClosePurchaseOrders.java:219: warning: unmappable character for encoding UTF8
+    [javac]     /** BISion - 17/03/2010 - Santiago Iba�
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/CompiereExportData.java:87: warning: unmappable character for encoding UTF8
+    [javac]                 // Definici�n de variables para crear los script de insert, consulta y borrado
+    [javac]                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateBalancePresentacion.java:175: warning: unmappable character for encoding UTF8
+    [javac]         		JOptionPane.showMessageDialog(null,"El rango de fechas no pertenece a un �nico ejercicio comercial.","Par�metros",JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateBalancePresentacion.java:175: warning: unmappable character for encoding UTF8
+    [javac]         		JOptionPane.showMessageDialog(null,"El rango de fechas no pertenece a un �nico ejercicio comercial.","Par�metros",JOptionPane.INFORMATION_MESSAGE);
+    [javac]                                                                                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateComposicionSaldos.java:184: warning: unmappable character for encoding UTF8
+    [javac]         log.info("Comienzo del proceso de composici�n de saldos");
+    [javac]                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateComposicionSaldos.java:217: warning: unmappable character for encoding UTF8
+    [javac]                             UtilProcess.initViewer("Composici�n de saldos",p_PInstance_ID,getProcessInfo());
+    [javac]                                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateComposicionSaldos.java:238: warning: unmappable character for encoding UTF8
+    [javac]             UtilProcess.initViewer("Composici�n de saldos",p_PInstance_ID,getProcessInfo());
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateDiarioDeCaja.java:20: warning: unmappable character for encoding UTF8
+    [javac]  * @author BISION - Mat�as Maenza
+    [javac]                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateDiarioDeCaja.java:182: warning: unmappable character for encoding UTF8
+    [javac]         else if(status.equals("WC")) return "Esperando Confirmaci�n";
+    [javac]                                                                  ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIndirectCosts.java:34: warning: unmappable character for encoding UTF8
+    [javac]  *  @author Santiago Iba�ez, Bision
+    [javac]                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIndirectCosts.java:69: warning: unmappable character for encoding UTF8
+    [javac]      * Funcion que retorna un registro de costo de la OM en cuesti�n con un
+    [javac]                                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIndirectCosts.java:94: warning: unmappable character for encoding UTF8
+    [javac]     /* Bision - 19/02/2009 - Santiago Iba�
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIndirectCosts.java:124: warning: unmappable character for encoding UTF8
+    [javac]     /** BISion - 19/02/2009 - Santiago Iba�
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIndirectCosts.java:162: warning: unmappable character for encoding UTF8
+    [javac]     /** BISion - 19/02/2009 - Santiago Iba�
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:354: warning: unmappable character for encoding UTF8
+    [javac]                     /** BISion - 25/03/2009 - Santiago Iba�
+    [javac]                                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:438: warning: unmappable character for encoding UTF8
+    [javac]    /** BISion - 17/03/2009 - Santiago Iba�
+    [javac]                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:507: warning: unmappable character for encoding UTF8
+    [javac]                      * BISion - 17/02/2010 - Santiago Iba�
+    [javac]                                                          ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:570: warning: unmappable character for encoding UTF8
+    [javac]                 /** BISion - 26/03/2009 - Santiago Iba�
+    [javac]                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:613: warning: unmappable character for encoding UTF8
+    [javac]                   //Si el producto de la l�nea NO es el producto terminado
+    [javac]                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:638: warning: unmappable character for encoding UTF8
+    [javac]                           //obtengo la orden de manufactura para el producto de la l�nea y su partida
+    [javac]                                                                                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:660: warning: unmappable character for encoding UTF8
+    [javac]                               //le agrego adem�s el costo real de recursos
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:706: warning: unmappable character for encoding UTF8
+    [javac]       /** BISion - 30/03/2009 - Santiago Iba�
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:723: warning: unmappable character for encoding UTF8
+    [javac]       /** BISion - 30/03/2009 - Santiago Iba�
+    [javac]                                             ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:1012: warning: unmappable character for encoding UTF8
+    [javac]         /** BISion - 17/02/2010 - Santiago Iba�
+    [javac]                                               ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:1066: warning: unmappable character for encoding UTF8
+    [javac]             /** BISion - 25/03/2009 - Santiago Iba�
+    [javac]                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:1105: warning: unmappable character for encoding UTF8
+    [javac]         /* Bision - 17/07/2008 - Santiago Iba�
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIntegracionCostos.java:1459: warning: unmappable character for encoding UTF8
+    [javac]         /* Bision - 23/02/2010 - Santiago Iba�
+    [javac]                                              ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateInterfaceSIFEREPercepciones.java:131: warning: unmappable character for encoding UTF8
+    [javac]     // modificado - BiSion - Mat�as Maenza 16/05/08
+    [javac]                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateIterface_SICORE.java:105: warning: unmappable character for encoding UTF8
+    [javac]    // modificado - BiSion - Mat�as Maenza 16/05/08
+    [javac]                                ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroDiario.java:189: warning: unmappable character for encoding UTF8
+    [javac] 										detalle = "Asignaci�n / " + allocate.getDocumentNo();
+    [javac]                                                                                                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaComprasAnt.java:33: warning: unmappable character for encoding UTF8
+    [javac]     //M�ximo que permite la base de datos para los campos String
+    [javac]        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaComprasAnt.java:106: warning: unmappable character for encoding UTF8
+    [javac]             log.info("Comienzo del proceso de generaci�n de LIBRO IVA DE COMPRAS");
+    [javac]                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaComprasAnt.java:208: warning: unmappable character for encoding UTF8
+    [javac]                        // para la columna Iva cr�dito fiscal
+    [javac]                                                 ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaComprasAnt.java:257: warning: unmappable character for encoding UTF8
+    [javac]                        //Agregar D�
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaComprasAnt.java:263: warning: unmappable character for encoding UTF8
+    [javac]                        //Agregar A�
+    [javac]                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaComprasAnt.java:315: warning: unmappable character for encoding UTF8
+    [javac]          // Definici�n de variables para crear los script de insert, consulta y borrado
+    [javac]                     ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaComprasAnt.java:424: warning: unmappable character for encoding UTF8
+    [javac]              sqlInsert = "insert into T_LIBRO_IVA_COMPRAS2 values("+CLIENT_ID+","+ORG_ID+",'Y',"+p_PInstance_ID+",'Percepci�n IVA',null,null,null,null,null,null,6)";pstmtInsert=DB.prepareStatement(sqlInsert);pstmtInsert.executeQuery();
+    [javac]                                                                                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaComprasAnt.java:425: warning: unmappable character for encoding UTF8
+    [javac]              sqlInsert = "insert into T_LIBRO_IVA_COMPRAS2 values("+CLIENT_ID+","+ORG_ID+",'Y',"+p_PInstance_ID+",'Percepci�n IB',null,null,null,null,null,null,7)";pstmtInsert=DB.prepareStatement(sqlInsert);pstmtInsert.executeQuery();
+    [javac]                                                                                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaComprasAnt.java:426: warning: unmappable character for encoding UTF8
+    [javac]              sqlInsert = "insert into T_LIBRO_IVA_COMPRAS2 values("+CLIENT_ID+","+ORG_ID+",'Y',"+p_PInstance_ID+",'Percepci�n Ganancias',null,null,null,null,null,null,8)";pstmtInsert=DB.prepareStatement(sqlInsert);pstmtInsert.executeQuery();
+    [javac]                                                                                                                            ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaVentas.java:33: warning: unmappable character for encoding UTF8
+    [javac]     //M�ximo que permite la base de datos para los campos String
+    [javac]        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaVentas.java:96: warning: unmappable character for encoding UTF8
+    [javac] 		// Verificar que no se solicite desde el princiopio de per�odo
+    [javac]                                                                           ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaVentas.java:188: warning: unmappable character for encoding UTF8
+    [javac]             log.info("Comienzo del proceso de generaci�n de LIBRO IVA DE VENTAS");
+    [javac]                                                       ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaVentas.java:446: warning: unmappable character for encoding UTF8
+    [javac]         	 " WHERE C_Invoice.DATEINVOICED between ? and ? AND C_InvoiceTax.IsActive = 'Y' AND C_Tax.RATE = 0 and C_Tax.IsActive = 'Y' and C_Tax.NAME <> 'EXPORTACI�N' and C_DocType.DocBaseType in ('ARI','ARF') AND C_Invoice.DOCSTATUS IN ('CO','CL')" +
+    [javac]                                                                                                                                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaVentas.java:457: warning: unmappable character for encoding UTF8
+    [javac]         	 " WHERE C_Invoice.DATEINVOICED between ? and ? AND C_InvoiceTax.IsActive = 'Y' AND C_Tax.RATE = 0 and C_Tax.IsActive = 'Y' and C_Tax.NAME = 'EXPORTACI�N' and C_DocType.DocBaseType in ('ARI','ARF') AND C_Invoice.DOCSTATUS IN ('CO','CL')" +
+    [javac]                                                                                                                                                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaVentas.java:545: warning: unmappable character for encoding UTF8
+    [javac]         	 " WHERE C_Invoice.DATEINVOICED between ? and ? AND C_InvoiceTax.IsActive = 'Y' AND C_Tax.RATE = 0 and C_Tax.IsActive = 'Y' and C_Tax.NAME <> 'EXPORTACI�N' and C_DocType.DocBaseType in ('ARC') AND C_Invoice.DOCSTATUS IN ('CO','CL')" +
+    [javac]                                                                                                                                                                         ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateLibroIvaVentas.java:556: warning: unmappable character for encoding UTF8
+    [javac]         	 " WHERE C_Invoice.DATEINVOICED between ? and ? AND C_InvoiceTax.IsActive = 'Y' AND C_Tax.RATE = 0 and C_Tax.IsActive = 'Y' and C_Tax.NAME = 'EXPORTACI�N' and C_DocType.DocBaseType in ('ARC') AND C_Invoice.DOCSTATUS IN ('CO','CL')" +
+    [javac]                                                                                                                                                                        ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateListProductsPeriod.java:59: warning: unmappable character for encoding UTF8
+    [javac]         // Definici�n de variables para crear los script de insert, consulta y borrado
+    [javac]                    ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateListProductsPeriod.java:66: warning: unmappable character for encoding UTF8
+    [javac]         log.info("Comienzo del proceso de generaci�n de listado por periodo de las unidades y montos de productos");
+    [javac]                                                   ^
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/src/org/eevolution/process/GenerateListSales.java:86: warning: unmappable character for encoding UTF8
+    [javac]                 UtilProcess.initViewer("Informe de ventas por per�odo",p_PInstance_ID,this.getProcessInfo());
+    [javac]                                                                  ^
+    [javac] Note: Some input files additionally use or override a deprecated API.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 100 warnings
+     [copy] Copying 1 file to /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/build
+
+dist:
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/FreeQueryBuilder/fqb.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/JasperReports/CompiereJasperReqs.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/lib/jfreechart-1.0.0/lib/jcommon-1.0.0.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/lib/jfreechart-1.0.0/lib/jfreechart-1.0.0.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/lib/qsopt.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/build
+    [unjar] Expanding: /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/lib/swingx.jar into /home/pablo/Trabajo/Panalab/pnlb_prod/kompiere/build
+      [jar] Building jar: /home/pablo/Trabajo/Panalab/pnlb_prod/lib/Kompiere.jar
+      [jar] Warning: selected jar files include a META-INF/INDEX.LIST which will be replaced by a newly generated one.
+
+init:
+     [echo] =========== Build Manufacturing ZynCompiere
+    [mkdir] Created dir: /home/pablo/Trabajo/Panalab/pnlb_prod/zynnia/build
+
+makedir:
+
+compile:
+    [javac] Compiling 54 source files to /home/pablo/Trabajo/Panalab/pnlb_prod/zynnia/build
+    [javac] /home/pablo/Trabajo/Panalab/pnlb_prod/zynnia/src/org/zynnia/reports/ZynReports.java:614: cannot find symbol
+    [javac] symbol  : constructor FieldDynamicReport(java.lang.String,boolean,boolean,boolean,int)
+    [javac] location: class org.compiere.model.FieldDynamicReport
+    [javac]             FieldDynamicReport instField = new FieldDynamicReport(fieldCalc.getName(), fieldCalc.isSUM(), fieldCalc.isTRANSP(), fieldCalc.isOrderBy(), fieldCalc.getORDERVIEW());
+    [javac]                                            ^
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 1 error
+MailLogger failed to send e-mail!
+Done ...
