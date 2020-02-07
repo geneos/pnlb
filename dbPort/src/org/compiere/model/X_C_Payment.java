@@ -309,6 +309,20 @@ public class X_C_Payment extends PO {
 			return 0;
 		return ii.intValue();
 	}
+        
+                /**
+	 * Set Business Partner . Identifies a Business Partner
+	 */
+	public void setC_BPartner_Location_ID(int C_BPartner_Location_ID) {
+		if (C_BPartner_Location_ID < 1)
+			throw new IllegalArgumentException("C_BPartner_Location_ID is mandatory.");
+		set_Value("C_BPartner_Location_ID", new Integer(C_BPartner_Location_ID));
+	}
+        
+          
+	public void setC_JURISDICCION_ID(int C_JURISDICCION_ID){
+		set_Value("C_JURISDICCION_ID", new Integer(C_JURISDICCION_ID));
+	}
 
 	/**
 	 * Set Business Partner . Identifies a Business Partner

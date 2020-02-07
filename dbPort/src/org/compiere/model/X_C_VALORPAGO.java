@@ -271,7 +271,7 @@ public class X_C_VALORPAGO extends PO {
             throw new IllegalArgumentException("TIPO is mandatory");
         }
         MZYNDYNAMICMOVFONDOS dynMovFondos = MZYNDYNAMICMOVFONDOS.get(Env.getCtx(), TIPO);
-        if (TIPO.equals("B") || TIPO.equals("C") || TIPO.equals("D")
+        if (TIPO.equals("B") || TIPO.equals("C") || TIPO.equals("D") || TIPO.equals("Q")  || TIPO.equals("P")
                 || TIPO.equals("M") || TIPO.equals("O") || dynMovFondos != null)
 			; else {
             throw new IllegalArgumentException("TIPO Invalid value - " + TIPO

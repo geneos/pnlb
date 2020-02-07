@@ -38,3 +38,20 @@
 #Version 20190222
 - Fix para crear conciliaciones con cuentas bancarias y cuentas contables nuevas.
 - Fix en la validacion de que el pago este balanceado al completar un pago. (Solo tenia en cuenta 1 decimal)
+#Version 20190527
+- Fix para habilitar fecha de vencimiento al hacer recepcion de producto terminado para articulos de nivel superior a 2. (redmine 229)
+#Version 20190801
+- Fix al exportar reporte dinamico para los campos del tipo yesNo siempre salian en NO. (redmine 340)
+#Version 20190912
+- Fix reversa - correccion de Diario CG (458)
+- Fix reversa - devengar de Diario CG (458)
+- Importador de lineas de Diario CG (464)
+#Version 20191018
+- No se ven todas las cuentas contables. (503)
+- Modificacion a balance para asientos creados por inflacion (474)
+#Version 20191109
+- Modificacion a reportes dinamicos para soporte de columnas virtuales
+#Version xxxxxxxx
+- Fix de decimales en el calculo de el balance al completar Libro Diaro (629)
+- Importador de cheques ICBC
+- Fix Importador de Lineas de diario cg (629)

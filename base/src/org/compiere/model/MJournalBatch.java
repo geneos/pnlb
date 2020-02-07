@@ -582,7 +582,14 @@ public class MJournalBatch extends X_GL_JournalBatch implements DocAction
 			}
 			journal.save();
 		}
-		return true;
+                
+                                
+		setDocAction(DOCACTION_None);
+                                reverse.setProcessed(true);
+                                reverse.setDocAction(DOCACTION_None);
+                                reverse.setDocStatus(DocAction.STATUS_Reversed);
+                                reverse.save();
+                        return true;
 	}	//	reverseCorrectionIt
 	
 	/**
@@ -636,6 +643,12 @@ public class MJournalBatch extends X_GL_JournalBatch implements DocAction
 			}
 			journal.save();
 		}
+                                
+		setDocAction(DOCACTION_None);
+                                reverse.setProcessed(true);
+                                reverse.setDocAction(DOCACTION_None);
+                                reverse.setDocStatus(DocAction.STATUS_Reversed);
+                                reverse.save();
 		return true;
 	}	//	reverseAccrualIt
 	

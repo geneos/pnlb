@@ -87,10 +87,10 @@ public class Retenciones extends CalloutEngine {
     }
     //FIN IVA
 
-    BigDecimal getMSR(int C_Payment_ID, BigDecimal TotalPago, BigDecimal tIVA) {
+    BigDecimal getMSR(int C_Payment_ID, BigDecimal TotalPago, BigDecimal tIVA, String trxName) {
 
 
-        MPayment payment = new MPayment(Env.getCtx(), C_Payment_ID, null);
+        MPayment payment = new MPayment(Env.getCtx(), C_Payment_ID, trxName);
         MCurrency moneda = MCurrency.get(Env.getCtx(), payment.getC_Currency_ID());
 
 
@@ -213,7 +213,7 @@ public class Retenciones extends CalloutEngine {
                 // 05/02/2015
                 // José Fantasia Cooperativa GENEOS
 
-                BigDecimal Divisor = Env.ONE.add((tIVA.add(getSumIIBB(payment.getC_BPartner_ID()))).divide(BigDecimal.valueOf(100)));
+                BigDecimal Divisor = Env.ONE.add((tIVA.add(getSumIIBB(payment.getC_BPartner_ID(),trxName))).divide(BigDecimal.valueOf(100)));
 
                 if (moneda != null) {
                     Divisor = Divisor.setScale(moneda.getStdPrecision(), BigDecimal.ROUND_HALF_UP);
@@ -229,12 +229,8 @@ public class Retenciones extends CalloutEngine {
 
             }
 
-
-
-
-
         } catch (Exception exc) {
-
+            exc.printStackTrace();
             System.out.println(exc.toString());
         }
 
@@ -492,7 +488,7 @@ public class Retenciones extends CalloutEngine {
 
 
         } catch (Exception exc) {
-
+            exc.printStackTrace();
             System.out.println(exc.toString());
         }
 
@@ -512,7 +508,7 @@ public class Retenciones extends CalloutEngine {
         if (convenio) {
             try {
                 String consulta = "SELECT C_JURISDICCION_ID FROM C_BPARTNER_JURISDICCION WHERE SIMULTANEO='Y' AND C_BPartner_ID = " + bpartner.getC_BPartner_ID();
-                PreparedStatement pstmt = DB.prepareStatement(consulta, null);
+                PreparedStatement pstmt = DB.prepareStatement(consulta, trxName);
                 ResultSet rs = pstmt.executeQuery();
 
                 int i = 0;
@@ -532,7 +528,7 @@ public class Retenciones extends CalloutEngine {
         return jurisdicciones.toArray(jurisResult);
     }
 
-    private static BigDecimal calcularRetencionIB(MPayment payment, MJURISDICCION jurisdiccion, BigDecimal MSR) {
+    private static BigDecimal calcularRetencionIB(MPayment payment, MJURISDICCION jurisdiccion, BigDecimal MSR, String trxName) {
 
         BigDecimal tTotalminimoIB = BigDecimal.ZERO;
         BigDecimal tLimiteminimoIB = BigDecimal.ZERO;
@@ -541,7 +537,7 @@ public class Retenciones extends CalloutEngine {
                 + " FROM  C_BPartner_Jurisdiccion "
                 + " WHERE  C_BPartner_ID = ? AND C_JURISDICCION_ID = ?";
         try {
-            PreparedStatement pstmt = DB.prepareStatement(consulta, null);
+            PreparedStatement pstmt = DB.prepareStatement(consulta, trxName);
             pstmt.setInt(1, payment.getC_BPartner_ID());
             pstmt.setInt(2, jurisdiccion.getC_Jurisdiccion_ID());
             ResultSet rs = pstmt.executeQuery();
@@ -625,7 +621,7 @@ public class Retenciones extends CalloutEngine {
             String excluido = "SELECT EXENCIONGANANCIAS,EXENCIONIB,EXENCIONIVA,EXENCIONSUSS "
                     + "FROM C_BPARTNER WHERE C_BPARTNER_ID = ?";
 
-            PreparedStatement pstmt = DB.prepareStatement(excluido, null);
+            PreparedStatement pstmt = DB.prepareStatement(excluido, trxName);
             pstmt.setLong(1, payment.getC_BPartner_ID());
 
             ResultSet rs = pstmt.executeQuery();
@@ -641,7 +637,7 @@ public class Retenciones extends CalloutEngine {
                     + "FROM C_BPartner "
                     + "WHERE C_BPartner_ID = ?";
 
-            pstmt = DB.prepareStatement(consulta, null);
+            pstmt = DB.prepareStatement(consulta, trxName);
             pstmt.setInt(1, payment.getC_BPartner_ID());
 
             rs = pstmt.executeQuery();
@@ -688,7 +684,7 @@ public class Retenciones extends CalloutEngine {
                 tPayamt = tPayamt.setScale(moneda.getStdPrecision(), BigDecimal.ROUND_HALF_UP);
             }
 
-            BigDecimal MSR = ret.getMSR(C_Payment_ID, tPayamt, tIVA);
+            BigDecimal MSR = ret.getMSR(C_Payment_ID, tPayamt, tIVA, trxName);
 
             /*
              *  Modificado para que haga el control de los decimales de presición (a dos decimales)
@@ -747,7 +743,7 @@ public class Retenciones extends CalloutEngine {
                         + "AND to_char(pago.datetrx, 'mm') = to_char(?, 'mm') "
                         + "AND pago.C_Payment_ID <> ? AND (pago.DOCSTATUS = 'CO' OR pago.DOCSTATUS = 'CL') AND pago.C_BPARTNER_ID = " + payment.getC_BPartner_ID();
 
-                pstmt = DB.prepareStatement(consulta, null);
+                pstmt = DB.prepareStatement(consulta, trxName);
                 pstmt.setTimestamp(1, payment.getDateTrx());
                 pstmt.setTimestamp(2, payment.getDateTrx());
                 pstmt.setInt(3, C_Payment_ID);
@@ -763,7 +759,7 @@ public class Retenciones extends CalloutEngine {
                      * 
                      */
 
-                    paymentAnt = new MPayment(Env.getCtx(), rs.getInt(1), null);
+                    paymentAnt = new MPayment(Env.getCtx(), rs.getInt(1), trxName);
 
                     //totalAnt = rs.getFloat(2) * paymentAnt.getCotizacion().floatValue();
 
@@ -780,7 +776,7 @@ public class Retenciones extends CalloutEngine {
                         valueRoundAnt = valueRoundAnt.setScale(monedaAnt.getStdPrecision(), BigDecimal.ROUND_HALF_UP);
                     }
 
-                    tSumant = tSumant.add(ret.getMSR(rs.getInt(1), valueRoundAnt, tIVA));
+                    tSumant = tSumant.add(ret.getMSR(rs.getInt(1), valueRoundAnt, tIVA,trxName));
                     tSumretencionganancias = tSumretencionganancias.add(rs.getBigDecimal(3));
 
                 }
@@ -794,7 +790,7 @@ public class Retenciones extends CalloutEngine {
                         + "FROM C_WITHHOLDING "
                         + "WHERE ISACTIVE='Y' AND REGIMENGANANCIAS = ? AND NAME = 'RETGAN'";
 
-                pstmt = DB.prepareStatement(consulta, null);
+                pstmt = DB.prepareStatement(consulta, trxName);
                 pstmt.setString(1, payment.getC_REGIMENGANANCIAS_V_ID());
 
                 rs = pstmt.executeQuery();
@@ -846,7 +842,7 @@ public class Retenciones extends CalloutEngine {
 
                 }
 
-                pstmt = DB.prepareStatement(consulta, null);
+                pstmt = DB.prepareStatement(consulta, trxName);
                 pstmt.setString(1, payment.getC_REGIMENGANANCIAS_V_ID());
 
                 rs = pstmt.executeQuery();
@@ -918,7 +914,7 @@ public class Retenciones extends CalloutEngine {
 
                 for (int i = 0; i < jurisdicciones.length; i++) {
                     tAlicuotaIB = BigDecimal.ZERO;
-                    BigDecimal cRETENCIONIBJur = calcularRetencionIB(payment, jurisdicciones[i], MSR);
+                    BigDecimal cRETENCIONIBJur = calcularRetencionIB(payment, jurisdicciones[i], MSR, trxName);
 
 
 
@@ -1244,7 +1240,7 @@ public class Retenciones extends CalloutEngine {
 
 
                     String sqlactualizacion = "select c_paymentret_id from c_paymentret where c_payment_id=" + C_Payment_ID + " and tipo_ret='G'";
-                    PreparedStatement pstmtact = DB.prepareStatement(sqlactualizacion, null);
+                    PreparedStatement pstmtact = DB.prepareStatement(sqlactualizacion, trxName);
                     ResultSet rsact = pstmtact.executeQuery();
                     if (rsact.next() == true) {
                         /*  for (PO payret : payment.getRetenciones())
@@ -1284,13 +1280,13 @@ public class Retenciones extends CalloutEngine {
 
                 if (cRETENCIONSUSS.compareTo(Env.ZERO) == 1) {
                     String sqlactualizacion = "select c_paymentret_id from c_paymentret where c_payment_id=" + C_Payment_ID + " and tipo_ret='S'";
-                    PreparedStatement pstmtact = DB.prepareStatement(sqlactualizacion, null);
+                    PreparedStatement pstmtact = DB.prepareStatement(sqlactualizacion, trxName);
                     ResultSet rsact = pstmtact.executeQuery();
                     if (rsact.next() == true) {
                         String sqlib = new String("update c_paymentret set importe=" + cRETENCIONSUSS + " where tipo_ret='S' and c_payment_id=" + C_Payment_ID);
                         DB.executeUpdate(sqlib, trxName);
                     } else {
-                        String documentNo = MSequence.getDocumentNo(DOCTYPE_SUSS, null).toString();
+                        String documentNo = MSequence.getDocumentNo(DOCTYPE_SUSS, trxName).toString();
                         String prefix = documentNo.substring(10, documentNo.length());
 
                         String prefixIni = documentNo.substring(0, 10);
@@ -1368,6 +1364,7 @@ public class Retenciones extends CalloutEngine {
 
             payment.save();
         } catch (Exception exc) {
+            exc.printStackTrace();
             System.out.println(exc.toString());
         };
 
@@ -1610,7 +1607,7 @@ public class Retenciones extends CalloutEngine {
      * @date 05/02/2015
      * @author José Fantasia - Cooperativa GENEOS
      */
-    private static BigDecimal getSumIIBB(int C_BPartner_ID) throws SQLException {
+    private static BigDecimal getSumIIBB(int C_BPartner_ID, String trxName) throws SQLException {
 
         String query = "SELECT sum(ALIPER) FROM C_BPARTNER_JURISDICCION "
                 + "WHERE C_BPartner_ID = ?";
@@ -1622,7 +1619,8 @@ public class Retenciones extends CalloutEngine {
         BigDecimal sum = Env.ZERO;
 
         if (rs.next()) {
-            sum = rs.getBigDecimal(1);
+            if ( rs.getBigDecimal(1) != null)
+                sum = rs.getBigDecimal(1);
         }
 
         rs.close();

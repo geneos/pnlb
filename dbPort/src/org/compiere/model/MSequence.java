@@ -649,6 +649,48 @@ public class MSequence extends X_AD_Sequence
 		}
 		return retValue;
 	}	//	get
+        
+                /**
+	 * 	Get Sequence
+	 *	@param ctx context
+	 *	@param tableName table name
+                 *              @param trxName transaction
+	 */
+	public static MSequence get (Properties ctx, String tableName, String trxName)
+	{
+                    String sql = "SELECT * FROM AD_Sequence "
+                            + "WHERE UPPER(Name)=?";
+                    MSequence retValue = null;
+                    PreparedStatement pstmt = null;
+                    try
+                    {
+                            pstmt = DB.prepareStatement (sql, trxName);
+                            pstmt.setString (1, tableName.toUpperCase());
+                            ResultSet rs = pstmt.executeQuery ();
+                            if (rs.next ())
+                                    retValue = new MSequence (ctx, rs, trxName);
+                            if (rs.next())
+                                    s_log.log(Level.SEVERE, "More then one sequence for " + tableName);
+                            rs.close ();
+                            pstmt.close ();
+                            pstmt = null;
+                    }
+                    catch (Exception e)
+                    {
+                            s_log.log(Level.SEVERE, "get", e);
+                    }
+                    try
+                    {
+                            if (pstmt != null)
+                                    pstmt.close ();
+                            pstmt = null;
+                    }
+                    catch (Exception e)
+                    {
+                            pstmt = null;
+                    }
+                    return retValue;
+	}	//	get
 	
 	
 	/**	Sequence for Table Document No's	*/
@@ -916,7 +958,7 @@ public class MSequence extends X_AD_Sequence
 			
 
 			PreparedStatement pstmt = conn.prepareStatement(sql,
-				ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+				ResultSet.TYPEg_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
 			ResultSet rs = pstmt.executeQuery();
 			System.out.println("AC=" + conn.getAutoCommit() + ", RO=" + conn.isReadOnly()
 				+ " - Isolation=" + conn.getTransactionIsolation() + "(" + Connection.TRANSACTION_READ_COMMITTED
@@ -1032,14 +1074,14 @@ public class MSequence extends X_AD_Sequence
 		}
 	}	//	GetIDs
         
-        /** BISion - 28/10/2008 - Santiago Ibañez
-         * Método para chequear disponibilidad de una secuencia y en caso de
+        /** BISion - 28/10/2008 - Santiago Ibaï¿½ez
+         * Mï¿½todo para chequear disponibilidad de una secuencia y en caso de
          * estar disponible establecerla como NO disponible.
-         * Si Active = 'Y' entonces está disponible.
+         * Si Active = 'Y' entonces estï¿½ disponible.
          * @return
          */
         public synchronized boolean estaDisponible(){
-            //Si está disponible...
+            //Si estï¿½ disponible...
             if (isActive()){
                 //lo bloquea para que nadie lo utilice.
                 setIsActive(false);

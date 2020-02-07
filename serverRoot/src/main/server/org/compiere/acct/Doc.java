@@ -247,7 +247,13 @@ public abstract class Doc {
         }
         //
         Doc doc = null;
+        
         StringBuffer sql = new StringBuffer("SELECT * FROM ").append(TableName).append(" WHERE ").append(TableName).append("_ID=? AND Processed='Y'").append(" AND ").append("DocStatus in ('CL','CO')");
+        
+        //Fix for accountability of reversed GL Journals
+        if (TableName.equals("GL_Journal"))
+            sql = new StringBuffer("SELECT * FROM ").append(TableName).append(" WHERE ").append(TableName).append("_ID=? AND Processed='Y'").append(" AND ").append("DocStatus in ('CL','CO','RE')");
+        
         PreparedStatement pstmt = null;
         try {
             pstmt = DB.prepareStatement(sql.toString(), trxName);
@@ -795,6 +801,7 @@ public abstract class Doc {
             if (fact == null) {
                 return STATUS_Error;
             }
+             
             m_fact.add(fact);
             //
             p_Status = STATUS_PostPrepared;
@@ -867,7 +874,13 @@ public abstract class Doc {
                     return STATUS_NotBalanced;
                 }
             }
-
+            
+                        
+             if (!fact.numerateFactLines()) {
+                log.info("No se pudieron generar numeros de asientos");
+                return STATUS_Error;
+            }
+            
         }	//	for all facts
 
         return STATUS_Posted;
@@ -1063,6 +1076,26 @@ public abstract class Doc {
         return retValue;
     }	//	isBalanced
 
+    public static int getDefaultCLCategory(int AD_Client_ID){
+        //  We have a document Type, but no GL info - search for DocType
+        int m_GL_Category_ID = 0;
+        String sql = "SELECT GL_Category_ID FROM GL_Category "
+                    + "WHERE AD_Client_ID=? "
+                    + "ORDER BY IsDefault DESC";
+        try {
+            PreparedStatement pstmt = DB.prepareStatement(sql, null);
+            pstmt.setInt(1, AD_Client_ID);
+            ResultSet rsDT = pstmt.executeQuery();
+            if (rsDT.next()) {
+                m_GL_Category_ID = rsDT.getInt(1);
+            }
+            rsDT.close();
+            pstmt.close();
+        } catch (SQLException e) {
+           
+        }
+        return m_GL_Category_ID;
+    }
     /**
      *  Is Document convertible to currency and Conversion Type
      *  @param acctSchema accounting schema

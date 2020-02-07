@@ -105,7 +105,16 @@ public class MJournal extends X_GL_Journal implements DocAction
 		//
 		setC_AcctSchema_ID(original.getC_AcctSchema_ID());
 		setGL_Budget_ID(original.getGL_Budget_ID());
-		setGL_Category_ID(original.getGL_Category_ID());
+		//setGL_Category_ID(original.getGL_Category_ID());
+                                /**
+                                 * GENEOS - Pablo Velazquez
+                                 * Fix para poder revertir Diario CG sin GL Category.    
+                                 */
+                                 if (original.getGL_Category_ID() == 0) {
+                                     int m_GL_Category_ID = getDefaultCLCategory(getAD_Client_ID());
+                                     setGL_Category_ID(m_GL_Category_ID);
+                                 }
+                                 
 		setPostingType(original.getPostingType());
 		setDescription(original.getDescription());
 		setC_DocType_ID(original.getC_DocType_ID());
@@ -429,8 +438,8 @@ public class MJournal extends X_GL_Journal implements DocAction
 				return DocAction.STATUS_Invalid;
 			}
 			//
-			AmtSourceDr = AmtSourceDr.add(line.getAmtSourceDr());
-			AmtSourceCr = AmtSourceCr.add(line.getAmtSourceCr());
+			AmtSourceDr = AmtSourceDr.add(line.getAmtSourceDr().setScale(2));
+			AmtSourceCr = AmtSourceCr.add(line.getAmtSourceCr().setScale(2));
 		}
 		setTotalDr(AmtSourceDr);
 		setTotalCr(AmtSourceCr);
@@ -586,6 +595,14 @@ public class MJournal extends X_GL_Journal implements DocAction
 		//
 		setProcessed(true);
 		setDocAction(DOCACTION_None);
+                
+                                reverse.setProcessed(true);
+                                reverse.setDocAction(DOCACTION_None);
+                                reverse.setDocStatus(DocAction.STATUS_Reversed);
+                                
+                                if (!reverse.save())
+			return null;
+                                
 		return reverse;
 	}	//	reverseCorrectionIt
 	
@@ -611,7 +628,6 @@ public class MJournal extends X_GL_Journal implements DocAction
 		//	Journal
 		MJournal reverse = new MJournal (this);
 		reverse.setGL_JournalBatch_ID(GL_JournalBatch_ID);
-		reverse.setC_Period_ID(0);
 		reverse.setDateDoc(new Timestamp(System.currentTimeMillis()));
 		reverse.setDateAcct(reverse.getDateDoc());
 		//	Reverse indicator
@@ -621,6 +637,7 @@ public class MJournal extends X_GL_Journal implements DocAction
 		else
 			description += " ** " + getDocumentNo() + " **";
 		reverse.setDescription(description);
+                
 		if (!reverse.save())
 			return null;
 		
@@ -629,6 +646,13 @@ public class MJournal extends X_GL_Journal implements DocAction
 		//
 		setProcessed(true);
 		setDocAction(DOCACTION_None);
+                                reverse.setProcessed(true);
+                                reverse.setDocAction(DOCACTION_None);
+                                reverse.setDocStatus(DocAction.STATUS_Reversed);
+                                
+                                if (!reverse.save())
+			return null;
+                                
 		return reverse;
 	}	//	reverseAccrualIt
 	
@@ -745,5 +769,26 @@ public class MJournal extends X_GL_Journal implements DocAction
 	{
 		return getTotalDr();
 	}	//	getApprovalAmt
+        
+         public static int getDefaultCLCategory(int AD_Client_ID){
+            //  We have a document Type, but no GL info - search for DocType
+            int m_GL_Category_ID = 0;
+            String sql = "SELECT GL_Category_ID FROM GL_Category "
+                        + "WHERE AD_Client_ID=? "
+                        + "ORDER BY IsDefault DESC";
+            try {
+                PreparedStatement pstmt = DB.prepareStatement(sql, null);
+                pstmt.setInt(1, AD_Client_ID);
+                ResultSet rsDT = pstmt.executeQuery();
+                if (rsDT.next()) {
+                    m_GL_Category_ID = rsDT.getInt(1);
+                }
+                rsDT.close();
+                pstmt.close();
+            } catch (SQLException e) {
+
+            }
+            return m_GL_Category_ID;
+        }
 	
 }	//	MJournal

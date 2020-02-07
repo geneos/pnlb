@@ -308,7 +308,8 @@ public class ZynReportsGenerator extends Thread {
                     TableColumn column = columnModel.getColumnByModelIndex(colIndex);
                     FieldDynamicReport fCalc = new FieldDynamicReport(colcalc.getName(),
                                                                       colcalc.isSUM(), colcalc.isTRANSP(),
-                                                                      colcalc.isOrderBy(), colcalc.getORDERVIEW());
+                                                                      //TODO: Revisar!
+                                                                      colcalc.isOrderBy(), colcalc.getORDERVIEW(),0);
                     fieldsInReport.put(column, fCalc);
                 }
             }

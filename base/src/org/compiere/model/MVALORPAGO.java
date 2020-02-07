@@ -166,6 +166,8 @@ public class MVALORPAGO extends X_C_VALORPAGO {
     private int LEY_DIAS_FA = 30;
     private int LEY_DIAS_FE = 360;
     public static String COMUN = "C";
+    public static String DIFERIDO = "D";
+
 
     protected boolean beforeSave(boolean newRecord) {
 
@@ -485,7 +487,7 @@ public class MVALORPAGO extends X_C_VALORPAGO {
             throw new IllegalArgumentException("IMPORTE is mandatory.");
         }
        
-        MPayment pay = new MPayment(Env.getCtx(),getC_Payment_ID(),null);
+        MPayment pay = new MPayment(Env.getCtx(),getC_Payment_ID(),get_TrxName());
         
         /*
          *  Modificado para que haga el control de los decimales de presición (a dos decimales)

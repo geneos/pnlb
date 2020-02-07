@@ -624,6 +624,7 @@ public final class FactLine extends X_Fact_Acct
 		StringBuffer sb = new StringBuffer("FactLine=[");
 		sb.append(getAD_Table_ID()).append(":").append(getRecord_ID())
 			.append(",").append(m_acct)
+                                                .append(",FactNo=").append(getFactNo())
 			.append(",Cur=").append(getC_Currency_ID())
 			.append(", DR=").append(getAmtSourceDr()).append("|").append(getAmtAcctDr())
 			.append(", CR=").append(getAmtSourceCr()).append("|").append(getAmtAcctCr())

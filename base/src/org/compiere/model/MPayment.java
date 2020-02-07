@@ -800,8 +800,9 @@ public class MPayment extends X_C_Payment
          *  28/08/2013 Maria Jesus
          *  Verificacion de la existencia de la direccion de un socio de negocio.
          */
-        MBPartnerLocation bPartnerLocation = new MBPartnerLocation(getCtx(), getC_BPartner_ID(), null);
-        if (bPartnerLocation == null) {
+        MBPartnerLocation[] locations = MBPartnerLocation.getForBPartner(getCtx(),  getC_BPartner_ID());
+        
+        if (locations.length == 0) {
             JOptionPane.showMessageDialog(null, "El Socio de Negocio no tiene Localización. Por favor agregue estos datos en la Ventana del Socio de Negocio.", "Error - Socio de Negocio", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -2025,29 +2026,7 @@ public class MPayment extends X_C_Payment
             //	MProject project = new MProject(getCtx(), getC_Project_ID());
         }
 
-        /**
-         * 	@author Daniel - 28/05/2009 - REQ-055
-         *
-         *  - PAGO ASIGNADO => SALDO ACTUAL Actualizado.
-         *  - PAGO PARCIALMENTE ASIGNADO => SALDO ACTUAL Agrega el monto No Asignado.
-         *	- PAGO NO ASIGNADO => SALDO ACTUAL Agregar monto del pago.
-         */
-        if (!isReceipt() && getC_BPartner_ID() != 0 && !isAllocated()) {
-            MBPartner bp = new MBPartner(getCtx(), getC_BPartner_ID(), get_TrxName());
-            BigDecimal previo = bp.getTotalOpenBalance();
-            BigDecimal actual = Env.ZERO;
-
-            BigDecimal monto = getAllocatedAmt();
-            if (monto == null) {
-                monto = Env.ZERO;
-            }
-
-            //	Suma el monto no asignado del pago, al saldo del proveedor
-            actual = previo.add(getPayAmt().add(monto));
-
-            bp.setTotalOpenBalance(actual);
-            bp.save();
-        }
+        actualizarBPartner();
 
         //	Counter Doc
         MPayment counter = createCounterDoc();
@@ -2074,7 +2053,7 @@ public class MPayment extends X_C_Payment
         for (int i = 0; i < valoresPago.size(); i++) {
             //MVALORPAGO nuevoValorPago = new MVALORPAGO(getCtx(),valoresPago.get(i).getC_VALORPAGO_ID(),get_TrxName());//
             //Trx trx = Trx.get(Trx.createTrxName("ValorPago"), true);
-            MVALORPAGO nuevoValorPago = new MVALORPAGO(getCtx(), valoresPago.get(i).getC_VALORPAGO_ID(), null);
+            MVALORPAGO nuevoValorPago = new MVALORPAGO(getCtx(), valoresPago.get(i).getC_VALORPAGO_ID(), get_TrxName());
             if (nuevoValorPago.getTIPO().equals(MVALORPAGO.PROPIO)
                     || nuevoValorPago.getTIPO().equals(MVALORPAGO.PCBANKING)) {
 
@@ -2174,7 +2153,9 @@ public class MPayment extends X_C_Payment
                         + " WHERE C_Payment_ID = " + getC_Payment_ID(), get_TrxName());
             }
         } catch (Exception e) {
-            // Que pasa si falla ver !!
+            e.printStackTrace();
+            m_processMsg = "No se pudieron procesar los valores. Por favor intente nuevamente";
+            return DocAction.STATUS_Drafted;
         };
 
 
@@ -2194,6 +2175,9 @@ public class MPayment extends X_C_Payment
                     + " WHERE C_Payment_ID = " + getC_Payment_ID(), get_TrxName());
 
         } catch (Exception e) {
+            e.printStackTrace();
+            m_processMsg = "No se pudieron procesar las retenciones. Por favor intente nuevamente";
+            return DocAction.STATUS_Drafted;
             // Que pasa si falla ver !!
         };
 
@@ -2974,6 +2958,11 @@ public class MPayment extends X_C_Payment
         CQChangeStateVP(MVALORPAGO.EMITIDO, MVALORPAGO.ANULADO);
         CQChangeStateVP(MVALORPAGO.IMPRESO, MVALORPAGO.ANULADO);
     }
+    
+    private void unDeleteValoresPago() {
+        // Cambiar Valores del Pago
+        CQChangeStateVP( MVALORPAGO.ANULADO,MVALORPAGO.EMITIDO);
+    }
 
     private void deleteValoresCobranza() {
         // Eliminar Valores de la Cobranza
@@ -3372,7 +3361,7 @@ public class MPayment extends X_C_Payment
                     + "FROM C_VALORPAGO "
                     + "WHERE C_Payment_ID = ? AND IsActive = 'Y'";
 
-            PreparedStatement pstmt = DB.prepareStatement(sql, null);
+            PreparedStatement pstmt = DB.prepareStatement(sql, get_TrxName());
             pstmt.setLong(1, getC_Payment_ID());
 
             ResultSet rs = pstmt.executeQuery();
@@ -3514,6 +3503,29 @@ public class MPayment extends X_C_Payment
             }
         } catch (SQLException ex) {
             Logger.getLogger(MPayment.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return true;
+
+    }
+    
+    
+    protected boolean verificarDesanularPago() {
+        log.info(toString());
+        MDocType dt = MDocType.get(getCtx(), getC_DocType_ID());
+        if (!MPeriod.isOpen(getCtx(), getDateAcct(), dt.getDocBaseType())) {
+            m_processMsg = "@PeriodClosed@";
+            return false;
+        }
+
+        List chProp = getChequesPropios();
+
+        for (int i = 0; i < chProp.size(); i++) {
+            MVALORPAGO payval = (MVALORPAGO) chProp.get(i);
+            if (!payval.getEstado().equals(MVALORPAGO.ANULADO) ) {
+                m_processMsg = "@Existe un cheque (" + payval.getNroCheque() + ") que no se encuentra Anulado@";
+                return false;
+            }
         }
 
         return true;
@@ -3768,4 +3780,76 @@ public class MPayment extends X_C_Payment
         int ret = DB.getSQLValue(get_TrxName(), sql);
         return ret == -1;
     }
+    
+    
+    /**
+     * 	UnVoid Document.
+     * 	@return true if success
+     */
+    public boolean unVoidIt() {
+        if (!DOCSTATUS_Voided.equals(getDocStatus())) {
+            m_processMsg = "Document not Voided: " + getDocStatus();
+            setDocAction(DOCACTION_None);
+            return false;
+        }
+        //	If on Bank Statement, don't void it - reverse it
+        if (getC_BankStatementLine_ID() > 0) {
+            m_processMsg = "Not supported C_BankStatementLine_ID != 0";
+            return false;
+        }
+
+            if (isReceipt()) {
+                m_processMsg = "Not supported IsReceipt = Y ";
+                return false;
+            } else if (!isReceipt()) {
+                if (verificarDesanularPago()) {
+                    // Eliminar Valores
+                    unDeleteValoresPago();
+
+                   //Retenciones se deberian regenerar al guardar el pago
+     
+                   //Las asignaciones no se pueden recuperar. Queda sin asignar.
+                    
+                   // La contabilidad deberia generarse sola nuevamente
+                    
+                    setProcessed(true);
+                    setIsAllocated(false);
+                    setPosted(false);
+                    setIsApproved(false);
+                    setDocStatus(DOCSTATUS_Completed);
+                    setDocAction(DOCACTION_Close);
+                } else {
+                    setDocAction(DOCACTION_None);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    private boolean actualizarBPartner() {
+        /**
+         *  - PAGO ASIGNADO => SALDO ACTUAL Actualizado.
+         *  - PAGO PARCIALMENTE ASIGNADO => SALDO ACTUAL Agrega el monto No Asignado.
+         *	- PAGO NO ASIGNADO => SALDO ACTUAL Agregar monto del pago.
+         */
+        if (!isReceipt() && getC_BPartner_ID() != 0 && !isAllocated()) {
+            MBPartner bp = new MBPartner(getCtx(), getC_BPartner_ID(), get_TrxName());
+            BigDecimal previo = bp.getTotalOpenBalance();
+            BigDecimal actual = Env.ZERO;
+
+            BigDecimal monto = getAllocatedAmt();
+            if (monto == null) {
+                monto = Env.ZERO;
+            }
+
+            //	Suma el monto no asignado del pago, al saldo del proveedor
+            actual = previo.add(getPayAmt().add(monto));
+
+            bp.setTotalOpenBalance(actual);
+            return bp.save();
+        }
+        else
+            return false;
+    }	//	voidIt
+    
 }   //  MPayment

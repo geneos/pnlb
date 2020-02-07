@@ -3206,12 +3206,13 @@ public class VOrderReceiptIssue extends CPanel
     /** BISion - 19/10/2009 - Santiago Ibañez
      * COM-PAN-REQ-08.001.01
      * Metodo que retorna si el campo fecha de Vencimiento debe ser de solo lectura o no.
+     * El campo fecha de vencimiento se podra editar solo si el producto no es TERMINADO
      * @return
      */
     private boolean esSoloLecturaVencimiento(){
         //Obtengo el producto recibido
         MProduct producto = new MProduct(Env.getCtx(), (Integer) product.getValue(), null);
-        if (producto.getLowLevel()==1||producto.getLowLevel()==2)
+        if (producto.getLowLevel()>0)
             return false;
         else
             return true;

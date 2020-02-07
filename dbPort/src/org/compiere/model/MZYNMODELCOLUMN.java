@@ -138,8 +138,17 @@ public class MZYNMODELCOLUMN extends X_ZYN_MODEL_COLUMN {
                 completeColumName = zModelColumn.getCompleteNameForQuery();
             } else {
                 StringBuilder sqlQueryBuilder = new StringBuilder();
-                sqlQueryBuilder.append(getAD_TABLE_NAME());
-                sqlQueryBuilder.append(".").append(getAD_COLUMN_NAME());
+
+                MColumn col = new MColumn(Env.getCtx(), getAD_Column_ID(), null);
+                                                
+                if (col.getColumnSQL() != null && !col.getColumnSQL().equals("")){
+                    sqlQueryBuilder.append(col.getColumnSQL());
+                }
+                else {
+                    sqlQueryBuilder.append(getAD_TABLE_NAME());
+                    sqlQueryBuilder.append(".").append(getAD_COLUMN_NAME());
+                }
+  
                 completeColumName = sqlQueryBuilder.toString();
             }
         }

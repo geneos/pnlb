@@ -819,4 +819,23 @@ public class X_Fact_Acct extends PO {
 			return 0;
 		return ii.intValue();
 	}
+        
+                /**
+	 * Get FactNo
+	 */
+	public int getFactNo() {
+		Integer bd = (Integer) get_Value("FactNo");
+		if (bd == null)
+			return 0;
+		return bd;
+	}
+
+	/**
+	 * Set FactNo
+	 */
+	public void setFactNo(int FactNo) {
+		if (FactNo == 0)
+                                    throw new IllegalArgumentException("FactNo is mandatory.");
+		set_ValueNoCheck("FACTNO", FactNo);
+	}
 }

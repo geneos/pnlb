@@ -15,7 +15,7 @@ fi
 SECURE=
 
 # headless option if you don't have X installed on the server
-JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8089 -server $COMPIERE_JAVA_OPTIONS $SECURE -Djava.awt.headless=true"
+JAVA_OPTS="-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8089 -server $COMPIERE_JAVA_OPTIONS $SECURE -Djava.awt.headless=true"
 
 export JAVA_OPTS
 

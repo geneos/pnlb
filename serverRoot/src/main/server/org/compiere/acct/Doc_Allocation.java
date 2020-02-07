@@ -82,6 +82,7 @@ public class Doc_Allocation extends Doc {
             //	Get Payment Conversion Rate
             if (line.getC_Payment_ID() != 0) {
                 MPayment payment = new MPayment(getCtx(), line.getC_Payment_ID(), getTrxName());
+                
                 int C_ConversionType_ID = payment.getC_ConversionType_ID();
                 docLine.setC_ConversionType_ID(C_ConversionType_ID);
             }
@@ -264,6 +265,7 @@ public class Doc_Allocation extends Doc {
                 }
             } //	Purchase Invoice
             else {
+                
                 allocationSource = allocationSource.negate();	//	allocation is negative
                 //	AP Invoice Amount	DR
                 if (as.isAccrual()) {
@@ -272,14 +274,20 @@ public class Doc_Allocation extends Doc {
                     } else {
                         bpAcct = getAccount(Doc.ACCTTYPE_V_Liability, as);
                     }
-                    fl = fact.createLine(line, bpAcct,
+                    //Aca se crea el registro principal para la Factura.
+                    //Omito en caso de pagos asignados.
+                    if (payment == null || payment.isPrepayment()){
+                        fl = fact.createLine(line, bpAcct,
                             getInvoiceRate(invoice), getC_Currency_ID(), allocationSource, null);		//	payment currency
-                    if (fl != null) {
-                        allocationAccounted = fl.getAcctBalance();
+                        if (fl != null) {
+                            //AllocationAccounted me va a quedar en 0
+                            allocationAccounted = fl.getAcctBalance();
+                        }
+                        if (fl != null && invoice != null) {
+                            fl.setAD_Org_ID(invoice.getAD_Org_ID());
+                        }
                     }
-                    if (fl != null && invoice != null) {
-                        fl.setAD_Org_ID(invoice.getAD_Org_ID());
-                    }
+                    
                 } else //	Cash Based
                 {
                     allocationAccounted = createCashBasedAcct(as, fact,
@@ -303,18 +311,25 @@ public class Doc_Allocation extends Doc {
                     }
                 }
                 //	Payment/Cash	CR
+                
                 if (line.getC_Payment_ID() != 0) {
-                    /**
-                     * 
-                     * 	Agregado por DANIEL GINI
-                     * 
-                     * 		Modifica contabilidad en Pago
-                     */
-                    fl = fact.createLine(line, getAccount(Doc.ACCTTYPE_V_Prepayment, as), //getPaymentAcct(as, line.getC_Payment_ID()),
-                            getPaymentRate(payment), getC_Currency_ID(), null, line.getAmtSource().negate());
-                    if (fl != null && payment != null) {
-                        fl.setAD_Org_ID(payment.getAD_Org_ID());
+                    
+                    //Aca se crea el registro principal para El pago
+                    //Omito en caso de pagos asignados.
+                    if (payment.isPrepayment()) {
+                         /**
+                         * 
+                         * 	Agregado por DANIEL GINI
+                         * 
+                         * 		Modifica contabilidad en Pago
+                         */
+                        fl = fact.createLine(line, getAccount(Doc.ACCTTYPE_V_Prepayment, as), //getPaymentAcct(as, line.getC_Payment_ID()),
+                                getPaymentRate(payment), getC_Currency_ID(), null, line.getAmtSource().negate());
+                        if (fl != null && payment != null) {
+                            fl.setAD_Org_ID(payment.getAD_Org_ID());
+                        }
                     }
+                   
                 } else if (line.getC_CashLine_ID() != 0) {
                     fl = fact.createLine(line, getCashAcct(as, line.getC_CashLine_ID()),
                             getC_Currency_ID(), null, line.getAmtSource().negate());

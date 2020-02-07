@@ -430,64 +430,71 @@ public class ExcelEngine {
     private void addCellToSheet(PrintDataElement pde, int row, int col, WritableCellFormat dateDf, WritableCellFormat cellFormat, WritableCellFormat numberFormat) throws WriteException {
         WritableCell cell;
 
-        // Tipo de dato fecha
-        if (pde.getDisplayType() == DisplayType.Date) {
-            java.sql.Date date = (java.sql.Date) pde.getValue();
-            cell = new jxl.write.DateTime(col, row, new Timestamp(date.getTime()), dateDf);
-        } else if (pde.getDisplayType() == DisplayType.DateTime) {
-            if (pde.getValue() instanceof java.sql.Date) {
-                java.sql.Date time = (java.sql.Date) pde.getValue();
-                cell = new jxl.write.DateTime(col, row, new Timestamp(time.getTime()));
-            } else {
-                Timestamp time = (Timestamp) pde.getValue();
-                //i+1 porque en la primer fila van los labels
-                cell = new jxl.write.DateTime(col, row, time);
-            }
-            cell.setCellFormat(dateDf);
-        } // Tipo de dato numerico
-        else if (pde.isNumeric()) {
-            BigDecimal number = (BigDecimal) pde.getValue();
-            cell = new jxl.write.Number(col, row, number.doubleValue(), numberFormat);
-        } // Tipo de dato nulo
-        else if (pde.isNull()) {
-            cell = new jxl.write.Label(col, row, "", cellFormat);
-        } else if (pde.isYesNo()) {
-            java.lang.Boolean yesNo = (java.lang.Boolean) pde.getValue();
-            if (yesNo.booleanValue()) {
-                cell = new jxl.write.Label(col, row, "SI", cellFormat);
-            } else {
-                cell = new jxl.write.Label(col, row, "NO", cellFormat);
-            }
-        } // Tipo de dato string (pueden haber números que son
-        // representados por Strings)
-        // Se los va a considerar para que se les de el formato
-        // adecuado.
-        // Si se puede parsear a Int se lo parsea
-        else {
-            // COMPARO SI ES UN ENTERO DENTRO DE UN STRING
-            String valueStr = pde.getValueDisplay(language);
-            // Comparo con una expresion regular si el String es
-            // entero
-            if (valueStr.matches("[0-9]+")) {
-                try {
-                    int val = Integer.valueOf(valueStr).intValue();
-                    BigDecimal number = new BigDecimal(val);
-                    cell = new jxl.write.Number(col, row, number.doubleValue(), cellFormat);
+        try {
+            // Tipo de dato fecha
+            if (pde.getDisplayType() == DisplayType.Date) {
+                java.sql.Date date = (java.sql.Date) pde.getValue();
+                cell = new jxl.write.DateTime(col, row, new Timestamp(date.getTime()), dateDf);
+            } else if (pde.getDisplayType() == DisplayType.DateTime) {
+                if (pde.getValue() instanceof java.sql.Date) {
+                    java.sql.Date time = (java.sql.Date) pde.getValue();
+                    cell = new jxl.write.DateTime(col, row, new Timestamp(time.getTime()));
+                } else {
+                    Timestamp time = (Timestamp) pde.getValue();
+                    //i+1 porque en la primer fila van los labels
+                    cell = new jxl.write.DateTime(col, row, time);
                 }
-                //Capturo error al transformar a integer, entonces lo guado como string
-                catch (NumberFormatException e) {
-                   log.log(Level.SEVERE, "Error parseando valor "+valueStr+", se parsea entonces como texto", e);
+                cell.setCellFormat(dateDf);
+            } // Tipo de dato numerico
+            else if (pde.isNumeric()) {
+                BigDecimal number = (BigDecimal) pde.getValue();
+                cell = new jxl.write.Number(col, row, number.doubleValue(), numberFormat);
+            } // Tipo de dato nulo
+            else if (pde.isNull()) {
+                cell = new jxl.write.Label(col, row, "", cellFormat);
+            } else if (pde.isYesNo()) {
+                java.lang.Boolean yesNo = (java.lang.Boolean) pde.getValue();
+                if (yesNo.booleanValue()) {
+                    cell = new jxl.write.Label(col, row, "SI", cellFormat);
+                } else {
+                    cell = new jxl.write.Label(col, row, "NO", cellFormat);
+                }
+            } // Tipo de dato string (pueden haber números que son
+            // representados por Strings)
+            // Se los va a considerar para que se les de el formato
+            // adecuado.
+            // Si se puede parsear a Int se lo parsea
+            else {
+                // COMPARO SI ES UN ENTERO DENTRO DE UN STRING
+                String valueStr = pde.getValueDisplay(language);
+                // Comparo con una expresion regular si el String es
+                // entero
+                if (valueStr.matches("[0-9]+")) {
+                    try {
+                        int val = Integer.valueOf(valueStr).intValue();
+                        BigDecimal number = new BigDecimal(val);
+                        cell = new jxl.write.Number(col, row, number.doubleValue(), cellFormat);
+                    }
+                    //Capturo error al transformar a integer, entonces lo guado como string
+                    catch (NumberFormatException e) {
+                       log.log(Level.SEVERE, "Error parseando valor "+valueStr+", se parsea entonces como texto", e);
+                        cell = new jxl.write.Label(col, row, valueStr, cellFormat);
+                    }
+                } else if (valueStr.matches("[0-9]+,[0-9]+")
+                           || valueStr.matches("[0-9]+\\.[0-9]+")) {
+                    double valD = Double.valueOf(valueStr).doubleValue();
+                    cell = new jxl.write.Number(col, row, valD, cellFormat);
+                } else {
                     cell = new jxl.write.Label(col, row, valueStr, cellFormat);
                 }
-            } else if (valueStr.matches("[0-9]+,[0-9]+")
-                       || valueStr.matches("[0-9]+\\.[0-9]+")) {
-                double valD = Double.valueOf(valueStr).doubleValue();
-                cell = new jxl.write.Number(col, row, valD, cellFormat);
-            } else {
-                cell = new jxl.write.Label(col, row, valueStr, cellFormat);
             }
+           sheet.addCell(cell);
         }
-        sheet.addCell(cell);
+        catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(pde.getValue());
+        }
+        
     }
 
     /**

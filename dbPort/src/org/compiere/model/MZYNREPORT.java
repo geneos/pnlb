@@ -52,7 +52,7 @@ public class MZYNREPORT extends X_ZYN_REPORT {
 	}
 
 	public ArrayList<FieldDynamicReport> getFieldsForReport() {
-		String sql = "SELECT tbl.ad_table_name, col.ad_column_name, vi.issum, vi.istransp, tbl.ad_table_id, vi.name, vi.isorderby, vi.orderview "
+		String sql = "SELECT tbl.ad_table_name, col.ad_column_name, vi.issum, vi.istransp, tbl.ad_table_id, vi.name, vi.isorderby, vi.orderview, col.ad_column_id "
 				+ "FROM zyn_view vi "
 				+ "INNER JOIN zyn_model_column col ON (vi.zyn_model_column_id = col.zyn_model_column_id) "
 				+ "INNER JOIN zyn_model_table tbl ON (vi.zyn_model_table_id = tbl.zyn_model_table_id) "
@@ -69,7 +69,7 @@ public class MZYNREPORT extends X_ZYN_REPORT {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				FieldDynamicReport pair = new FieldDynamicReport(rs.getBigDecimal(5), rs.getString(6), rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(7), rs.getInt(8));
+				FieldDynamicReport pair = new FieldDynamicReport(rs.getBigDecimal(5), rs.getString(6), rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(7), rs.getInt(8),rs.getInt(9));
 				ret.add(pair);
 			}
 		} catch (Exception ex) {
@@ -135,7 +135,7 @@ public class MZYNREPORT extends X_ZYN_REPORT {
 	}
 
 	public ArrayList<FieldDynamicReport> getFieldsForOrder() {
-		String sql = "SELECT tbl.ad_table_name, col.ad_column_name, vi.issum, vi.istransp, tbl.ad_table_id, vi.name, vi.isorderby, vi.orderview "
+		String sql = "SELECT tbl.ad_table_name, col.ad_column_name, vi.issum, vi.istransp, tbl.ad_table_id, vi.name, vi.isorderby, vi.orderview, col.AD_Column_ID "
 				+ "FROM zyn_view vi "
 				+ "INNER JOIN zyn_model_column col ON (vi.zyn_model_column_id = col.zyn_model_column_id) "
 				+ "INNER JOIN zyn_model_table tbl ON (vi.zyn_model_table_id = tbl.zyn_model_table_id) "
@@ -151,7 +151,7 @@ public class MZYNREPORT extends X_ZYN_REPORT {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				FieldDynamicReport pair = new FieldDynamicReport(rs.getBigDecimal(5), rs.getString(6), rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(7), rs.getInt(8));
+				FieldDynamicReport pair = new FieldDynamicReport(rs.getBigDecimal(5), rs.getString(6), rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(7), rs.getInt(8),rs.getInt(9));
 				ret.add(pair);
 			}
 		} catch (Exception ex) {

@@ -611,7 +611,7 @@ public class ZynReports extends CPanel implements FormPanel, ActionListener, Vet
         }
 
         for (MZYNVIEWCALC fieldCalc : fieldsCalc) {
-            FieldDynamicReport instField = new FieldDynamicReport(fieldCalc.getName(), fieldCalc.isSUM(), fieldCalc.isTRANSP(), fieldCalc.isOrderBy(), fieldCalc.getORDERVIEW());
+            FieldDynamicReport instField = new FieldDynamicReport(fieldCalc.getName(), fieldCalc.isSUM(), fieldCalc.isTRANSP(), fieldCalc.isOrderBy(), fieldCalc.getORDERVIEW(),0);
             modelCombo.add(new ShowHideComboBoxItem(column, instField));
             modelProp.add(new FieldComboBoxItem(column, instField));
             column++;

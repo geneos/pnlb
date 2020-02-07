@@ -336,11 +336,10 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                                 int nextNroCheque = Integer.valueOf(unNumeroCheque).intValue() + 1;
                                 try {
                                     DB.executeUpdate("UPDATE C_BankAccountDoc SET CURRENTNEXT = " + nextNroCheque + " WHERE C_BankAccount_ID = " + key, null);
-
-
                                 } catch (Exception e) {
                                     JOptionPane.showMessageDialog(null, "No se pudo generar el siguiente numero de cheque para: " + nextNroCheque + ", cuenta: " + key, "Error al Actualizar", JOptionPane.INFORMATION_MESSAGE);
                                     System.out.println("No se pudo generar el siguiente numero de cheque para: " + nextNroCheque + ", cuenta: " + key);
+                                    return DocAction.STATUS_Drafted;
                                 }
                             } else {
                                 JOptionPane.showMessageDialog(null, "No se pudo actualizar Nro. de Cheque", "Error al Actualizar", JOptionPane.INFORMATION_MESSAGE);

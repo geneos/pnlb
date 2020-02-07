@@ -21,7 +21,6 @@ import java.util.logging.*;
 import javax.swing.JOptionPane;
 
 import org.compiere.util.*;
-import org.eevolution.model.MMPCMRP;
 
 /**
  *  Order Line Model.

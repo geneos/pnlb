@@ -123,7 +123,7 @@ public class MPAYMENTRET extends X_C_PAYMENTRET {
                 JOptionPane.showMessageDialog(null,"Ingrese Número de Documento", "Info", JOptionPane.INFORMATION_MESSAGE);
                 return false;                
         }
-		MPayment payment = new MPayment(getCtx(),getC_Payment_ID(),null);
+		MPayment payment = new MPayment(getCtx(),getC_Payment_ID(),get_TrxName());
 		
 		/*
 		 * 26/11/2010 Camarzana Mariano

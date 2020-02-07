@@ -534,7 +534,7 @@ public class XLSExporter extends Exporter {
         } else if (value == null || value.length() == 0) { // Tipo de dato nulo
             cell = new Label(col, row, "", commonDataFormat);
         } else if (fdr.isYesNo()) {
-            Boolean yesNo = Boolean.valueOf(value);
+            Boolean yesNo = ( (String ) value).equals("Y");
             if (yesNo.booleanValue()) {
                 cell = new Label(col, row, "SI", commonDataFormat);
             } else {
