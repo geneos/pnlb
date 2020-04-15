@@ -2185,15 +2185,17 @@ public class MPayment extends X_C_Payment
          * 	COBRANZA:
          * 			La cotización se ingresa en la ventana.
          * 	PAGO:
-         * 			La cotización es: - Uno, si se trabaja en moneda nacional.
-         * 							  - Tasa del Sistema, si no se trabaja en moneda nacional.
+         * 			La cotización es: 
+         *                                       - Uno, si se trabaja en moneda nacional.
+         *                                       - Tasa manual, y sino se ingreso entonces Tasa del Sistema
          */
         if (!isReceipt()) {
             MAcctSchema acct = new MAcctSchema(getCtx(), Env.getContextAsInt(getCtx(), "$C_AcctSchema_ID"), get_TrxName());
             if (acct.getC_Currency_ID() == getC_Currency_ID()) {
                 setCotizacion(BigDecimal.ONE);
             } else {
-                setCotizacion(TasaCambio.rate(getC_Currency_ID(), acct.getC_Currency_ID(), getDateTrx(), getC_ConversionType_ID(), getAD_Client_ID(), getAD_Org_ID()));
+                if (getCotizacion().equals(BigDecimal.ONE))
+                    setCotizacion(TasaCambio.rate(getC_Currency_ID(), acct.getC_Currency_ID(), getDateTrx(), getC_ConversionType_ID(), getAD_Client_ID(), getAD_Org_ID()));
             }
         }
 
@@ -3417,6 +3419,47 @@ public class MPayment extends X_C_Payment
         if (payAll != null) {
             for (int i = 0; i < payAll.size(); i++) {
                 amount = amount.add(payAll.get(i).getAmount());
+            }
+        }
+
+        return amount;
+    }	// getAmountAllocate
+    
+    public BigDecimal getAmountAllocateForInvoice(int C_Invoice_ID) {
+        BigDecimal amount = Env.ZERO;
+        
+        MInvoice inv = new MInvoice(getCtx(),C_Invoice_ID,get_TrxName());
+        
+        //Nota Credito ID
+        int NC_C_Invoice_ID = 0; 
+       
+        //Busco notas de credito con mismo numero
+         try {
+            String sql = "SELECT C_Invoice_ID "
+                    + "FROM C_Invoice "
+                    + "WHERE C_DocType_ID in (select C_Doctype_ID from C_DocType where DocBaseType = 'APC')"
+                    + "AND documentno = ? AND IsActive = 'Y'";
+
+            PreparedStatement pstmt = DB.prepareStatement(sql, null);
+            pstmt.setString(1, inv.getDocumentNo());
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                NC_C_Invoice_ID = rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        //Tengo en cuenta la invoice y sus notas de credito que sean parte de esta allocation.
+        List<MPaymentAllocate> payAll = getAllocate();
+        if (payAll != null) {
+            for (int i = 0; i < payAll.size(); i++) {
+                if (payAll.get(i).getC_Invoice_ID() == C_Invoice_ID 
+                        || (NC_C_Invoice_ID != 0 && payAll.get(i).getC_Invoice_ID() == NC_C_Invoice_ID) )
+                    amount = amount.add(payAll.get(i).getAmount());
             }
         }
 

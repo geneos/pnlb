@@ -181,7 +181,7 @@ public class GenerateComposicionSaldos extends SvrProcess{
 
     protected String doIt() throws Exception {
         page = 1;
-        log.info("Comienzo del proceso de composición de saldos");
+        log.info("Comienzo del proceso de composiciï¿½n de saldos");
         log.info("borrado de la tabla temporal T_COMPOSICION_SALDOS");
         String sqlRemove = "delete from T_COMPOSICION_SALDOS";
         DB.executeUpdate(sqlRemove, null);
@@ -214,7 +214,7 @@ public class GenerateComposicionSaldos extends SvrProcess{
                                 pagos(rs.getLong(1));
                                 composicion(rs.getLong(1),rs.getString(2));
                             }
-                            UtilProcess.initViewer("Composición de saldos",p_PInstance_ID,getProcessInfo());
+                            UtilProcess.initViewer("Composiciï¿½n de saldos",p_PInstance_ID,getProcessInfo());
                         }
                         } catch (SQLException ex) {
                             Logger.getLogger(GenerateComposicionSaldos.class.getName()).log(Level.SEVERE, null, ex);
@@ -235,7 +235,7 @@ public class GenerateComposicionSaldos extends SvrProcess{
             facturas(partner);
             pagos(partner);            
             composicion(partner,name);
-            UtilProcess.initViewer("Composición de saldos",p_PInstance_ID,getProcessInfo());
+            UtilProcess.initViewer("ComposiciÃ³n de saldos",p_PInstance_ID,getProcessInfo());
         }       
         return "sucess";
     }

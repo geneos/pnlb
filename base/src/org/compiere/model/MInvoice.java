@@ -2925,6 +2925,7 @@ public class MInvoice extends X_C_Invoice implements DocAction {
                      * Al borrarse el Match PO, se modifica automaticamente la linea de la OC
                      * asociada
                      */ else if (!mPO[i].delete(true, get_TrxName())) {
+                        m_processMsg = "Error eliminando cotejamiento";
                         return false;
                     }
                 }

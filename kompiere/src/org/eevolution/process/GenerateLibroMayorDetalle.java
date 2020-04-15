@@ -110,8 +110,8 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
         for(int ind=0;ind<5;ind++) {
             
             try {
-                valFrom = Integer.parseInt(val_cta_from[ind]);
-                valTo = Integer.parseInt(val_cta_to[ind]);
+                valFrom = Integer.parseInt(val_cta_from[ind].trim());
+                valTo = Integer.parseInt(val_cta_to[ind].trim());
             }
             catch (Exception e) {
                 return "Error en la parametrización de cuentas contables para " + fromCta + " hasta " + toCta;
@@ -235,7 +235,7 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
                         debeTotal = debeTotal.add(rs.getBigDecimal(3));
                     }
                     ps.setDate(7, rs.getDate(5));				// 	FECHA
-                    ps.setString(8, getDescripcion(rs.getInt(12), rs.getInt(6), rs.getString(7)));	//	CONCEPTO
+                    ps.setString(8, getDescripcion(rs.getInt(12), rs.getInt(15), rs.getString(7)));	//	CONCEPTO
                     ps.setBigDecimal(9, saldo);					//	SALDO
                     ps.setInt(10, rs.getInt(9));				//	ELEMENT VALUE
                     ps.setInt(11, rs.getInt(14));               //	ACCT SCHEMA
@@ -316,7 +316,7 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
                 "fa.AMTACCTDR," + //DEBE
                 "fa.AMTACCTCR," + //HABER
                 "fa.DATEACCT," + //FECHA ASIENTO
-                "fa.RECORD_ID," + //NUMERO DE ASIENTO
+                "fa.FACTNO," + //NUMERO DE ASIENTO
                 "fa.DESCRIPTION, "
                 + "ev.NAME, "
                 + "fa.ACCOUNT_ID, "
@@ -324,7 +324,8 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
                 + "ev.VALUE, "
                 + "fa.AD_TABLE_ID, "
                 + "fa.FACTNO, "
-                + "fa.C_AcctSchema_ID "
+                + "fa.C_AcctSchema_ID, "
+                + "fa.RECORD_ID "
                 + "FROM FACT_ACCT fa "
                 + "LEFT JOIN C_ELEMENTVALUE ev ON (ev.C_ELEMENTVALUE_ID = fa.ACCOUNT_ID) ";
                 
@@ -431,7 +432,7 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
     }
 
      private String getDescripcion(int AD_TABLE_ID, int RECORD_ID, String nro) {
-        String detalle = null;
+        String detalle = "";
 
         try {
             if (AD_TABLE_ID == MJournal.getTableId(MJournal.Table_Name)) {
@@ -445,6 +446,7 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
                 // José Fantasia
                 MBPartner prov = new MBPartner(getCtx(), invoice.getC_BPartner_ID(), null);
                 detalle = docType.getPrintName() + " - " + invoice.getDocumentNo() + " - (Código de Proveedor): " + prov.getValue() + " " + prov.getName();
+                detalle += " - Descripción: " + invoice.getDescription();
             } else if (AD_TABLE_ID == MFactAcct.getTableId(MFactAcct.Table_Name)) {
 
                 String sqlQuery = "SELECT RECORD_FACT_ID FROM FACT_ACCT_RESUMEN WHERE RECORD_RES_ID = ? AND TABLE_FACT_ID = " + MPayment.getTableId(MPayment.Table_Name);
@@ -479,7 +481,6 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
                 movFondos.getStringTipo();
                 MZYNDYNAMICMOVFONDOS dynMovFondos = MZYNDYNAMICMOVFONDOS.get(Env.getCtx(), movFondos.getTIPO());
                 detalle = movFondos.getStringTipo() + "_" + movFondos.getDocumentNo();
-                
                 
                 
                 if (dynMovFondos == null) {
@@ -788,7 +789,7 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
                         }
                     }
                     
-                    
+                    detalle += " - Descripción: " + movFondos.getDescription();
                 }
 
             } else if (AD_TABLE_ID == MPayment.getTableId(MPayment.Table_Name)) {
@@ -798,6 +799,7 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
                 if (nro != null && nro.trim().length() > 0) {
                     detalle += " - " + nro;
                 }
+                detalle += " - Descripción: " + payment.getDescription();
             } else if (AD_TABLE_ID == MAllocationHdr.getTableId(MAllocationHdr.Table_Name)) {
                 MAllocationHdr allocate = new MAllocationHdr(getCtx(), RECORD_ID, null);
                 String desc = allocate.getDescription();
@@ -832,7 +834,7 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (detalle.length() > 3000)
+        if (detalle != null && detalle.length() > 3000)
             detalle = detalle.substring(0, 2999);
         return detalle;
     }

@@ -1194,6 +1194,9 @@ public abstract class Doc {
      */
     public boolean isPeriodOpen() {
         setPeriod();
+        if (Env.getContext(Env.getCtx(), "OmitPeriod").equals("Y"))
+            return true;
+
         boolean open = m_C_Period_ID > 0;
         if (open) {
             log.fine("Yes - " + toString());

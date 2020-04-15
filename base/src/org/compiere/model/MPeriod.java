@@ -416,6 +416,7 @@ public class MPeriod extends X_C_Period
 	 */
 	public boolean isOpen (String DocBaseType)
 	{
+                   
 		MAcctSchema as = MClient.get(getCtx(), getAD_Client_ID()).getAcctSchema();
 		if (as != null && as.isAutoPeriodControl())
 		{
@@ -457,6 +458,10 @@ public class MPeriod extends X_C_Period
 			return false;
 		}
 		log.fine(getName() + ": " + DocBaseType);
+                
+                                if (Env.getContext(Env.getCtx(), "OmitPeriod").equals("Y"))
+                                    return true;
+                                 
 		return pc.isOpen();
 	}	//	isOpen
 

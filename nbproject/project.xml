@@ -12,7 +12,6 @@
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <explicit-platform explicit-source-supported="true"/>
             <source-roots>
-                <root id="src.src8.dir"/>
                 <root id="src.src.dir"/>
                 <root id="src.Src.dir"/>
                 <root id="src.src2.dir"/>
@@ -27,6 +26,7 @@
                 <root id="src.src14.dir"/>
                 <root id="src.ejb.dir"/>
                 <root id="src.server.dir"/>
+                <root id="src.src8.dir"/>
                 <root id="src.src15.dir"/>
                 <root id="src.Src2.dir"/>
                 <root id="src.src12.dir"/>

@@ -51,7 +51,12 @@
 - Modificacion a balance para asientos creados por inflacion (474)
 #Version 20191109
 - Modificacion a reportes dinamicos para soporte de columnas virtuales
-#Version xxxxxxxx
+#Version 20200124
 - Fix de decimales en el calculo de el balance al completar Libro Diaro (629)
 - Importador de cheques ICBC
 - Fix Importador de Lineas de diario cg (629)
+- Ajustes contables (NO PASAR A SERVER CONTABLE DE PRODUCCION AUN)
+#Version 20200214
+- Fix para pasar a la contabilidad Diario de CG (617)
+- Fix para notificar correctamente periodo cerrado al reactivar una factura (666)
+- Fix para parseo de cuenta contable cuando existen espacios en blanco en informe de libro mayor (670)

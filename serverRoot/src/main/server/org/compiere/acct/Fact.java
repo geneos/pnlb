@@ -925,7 +925,7 @@ public final class Fact {
      * 	Set Transaction name
      * 	@param trxName
      */
-    private void set_TrxName(String trxName) {
+    public void set_TrxName(String trxName) {
         m_trxName = trxName;
     }	//	set_TrxName
 

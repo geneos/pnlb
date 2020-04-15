@@ -30,6 +30,8 @@ import org.compiere.util.*;
  *  @version  $Id: Doc_Allocation.java,v 1.17 2005/10/28 01:00:53 jjanke Exp $
  */
 public class Doc_Allocation extends Doc {
+    private  List<MInvoice> creditMemos = null;
+    private  BigDecimal creditMemosAllocatedAmountAvailable = BigDecimal.ZERO;
 
     /**
      *  Constructor
@@ -180,7 +182,7 @@ public class Doc_Allocation extends Doc {
             }
             MInvoice invoice = null;
             if (line.getC_Invoice_ID() != 0) {
-                invoice = new MInvoice(getCtx(), line.getC_Invoice_ID(), null);
+                invoice = new MInvoice(getCtx(), line.getC_Invoice_ID(), getTrxName());
             }
 
             //	No Invoice
@@ -275,8 +277,10 @@ public class Doc_Allocation extends Doc {
                         bpAcct = getAccount(Doc.ACCTTYPE_V_Liability, as);
                     }
                     //Aca se crea el registro principal para la Factura.
-                    //Omito en caso de pagos asignados.
-                    if (payment == null || payment.isPrepayment()){
+                    //Omito en caso de pagos asignados
+                    // O notas de credito
+                    //if (payment == null || payment.isPrepayment()){
+                    if (payment != null && payment.isPrepayment()){
                         fl = fact.createLine(line, bpAcct,
                             getInvoiceRate(invoice), getC_Currency_ID(), allocationSource, null);		//	payment currency
                         if (fl != null) {
@@ -315,7 +319,7 @@ public class Doc_Allocation extends Doc {
                 if (line.getC_Payment_ID() != 0) {
                     
                     //Aca se crea el registro principal para El pago
-                    //Omito en caso de pagos asignados.
+                    //Solo para pagos Prepagos
                     if (payment.isPrepayment()) {
                          /**
                          * 
@@ -366,20 +370,47 @@ public class Doc_Allocation extends Doc {
             }
 
             //	Realized Gain & Loss
+            // Solo lo hacemos cuando no es PrePago o es nota de credito
             if (invoice != null
                     && (getC_Currency_ID() != as.getC_Currency_ID() //	payment allocation in foreign currency
-                    || getC_Currency_ID() != line.getInvoiceC_Currency_ID())) //	allocation <> invoice currency
+                    || getC_Currency_ID() != line.getInvoiceC_Currency_ID()) 
+                    && (
+                        (payment == null && invoice.isCreditMemo()) 
+                        || (payment != null && !payment.isPrepayment() )) ) //	allocation <> invoice currency
             {
-                p_Error = createRealizedGainLoss(as, fact, bpAcct, invoice,
-                        allocationSource, allocationAccounted);
+                MInvoice allocatedInvoice = null;
+
+                //Si es un pago entonces tomo source y accounted de el pago
+                if (!invoice.isCreditMemo() && payment != null && !payment.isPrepayment()) {
+                    allocationSource = getAmountAllocated(line.getAmtSourceDr());
+                    //allocationAccounted calculated from payment rate
+                    allocationAccounted =  allocationSource.multiply(getPaymentRate(payment));
+                }
+                else {
+                     //Si es nota de credito el allocation source lo cambio de signo
+                    if (invoice.isCreditMemo()){
+                        allocationSource = allocationSource.negate();
+                        allocationAccounted =  allocationSource.multiply(invoice.getCotizacion());
+                    }
+                }
+
+                /**
+                 * createRealizedGainLoss se pasa :
+                 * - monto asignado en moneda original
+                 * - monto asignado convertido (Segun tasa de documento original)
+                 */
+
+                 p_Error = createRealizedGainLossAcum(as, fact, bpAcct,
+                        allocationSource, allocationAccounted, invoice.isSOTrx(), invoice.getC_Currency_ID());
+                
                 if (p_Error != null) {
                     return null;
-                }
-            }
+                }            }
 
 
             // Begin e-Evolution ogi-cd 07/Oct/2004 --------------------------------------------------------------------------
-            if (invoice.getC_CashLine_ID() != 0 || invoice.getC_Payment_ID() != 0) // 31052006 solo aplica para pagos/cobros
+           // Fix for null payment on assignment
+            if (invoice.getC_CashLine_ID() != 0 || (invoice.getC_Payment_ID() != 0 && payment != null )) // 31052006 solo aplica para pagos/cobros
             {
                 if (invoice != null
                         && (getC_Currency_ID() != as.getC_Currency_ID() //	payment allocation in foreign currency
@@ -617,6 +648,140 @@ public class Doc_Allocation extends Doc {
         }
         return getAccount(Doc.ACCTTYPE_CashTransfer, as);
     }	//	getCashAcct
+    
+    /**************************************************************************
+     * 	Create Realized Gain & Loss Acumulated (For more than one invoice).
+     * 	Compares the Accounted Amount of the Invoice(S) to the
+     * 	Accounted Amount of the Allocation
+     *	@param as accounting schema
+     *	@param fact fact
+     *	@param allocationSource source amt
+     *	@param allocationAccounted acct amt
+     *  *	@param isSOTrx is sales transaction
+     *          @param invoiceSourceAcum source amt of invoices
+     *	@param invoiceAccountedAcum acct amt of invoices
+     *	@return Error Message or null if OK
+     */
+    private String createRealizedGainLossAcum(MAcctSchema as, Fact fact, MAccount acct,
+          BigDecimal allocationSource, BigDecimal allocationAccounted, boolean isSOTrx, 
+          int C_Currency_ID) { 
+        
+         BigDecimal invoiceSourceAcum = BigDecimal.ZERO;
+         BigDecimal invoiceAccountedAcum = BigDecimal.ZERO;
+         
+         List<MInvoice> invoices = getAllocationInvoices();
+         for(int i = 0 ; i < invoices.size() ; i++) {
+             MInvoice currInv = invoices.get(i);
+             BigDecimal invoiceSource = null;
+             BigDecimal invoiceAccounted = null;
+                    
+             String sql = "SELECT "
+                + (isSOTrx
+                ? "SUM(AmtSourceDr), SUM(AmtAcctDr)" //	so 
+                : "SUM(AmtSourceCr), SUM(AmtAcctCr)") //	po
+                + " FROM Fact_Acct "
+                + "WHERE AD_Table_ID=318 AND Record_ID=?" //	Invoice
+                + " AND C_AcctSchema_ID=?"
+                + " AND PostingType='A'";
+            PreparedStatement pstmt = null;
+            try {
+                pstmt = DB.prepareStatement(sql, getTrxName());
+                pstmt.setInt(1, currInv.getC_Invoice_ID());
+                pstmt.setInt(2, as.getC_AcctSchema_ID());
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    invoiceSource = rs.getBigDecimal(1);
+                    invoiceAccounted = rs.getBigDecimal(2);
+                }
+                rs.close();
+                pstmt.close();
+                pstmt = null;
+            } catch (Exception e) {
+                log.log(Level.SEVERE, sql, e);
+            }
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                pstmt = null;
+            } catch (Exception e) {
+                pstmt = null;
+            }
+            // 	Requires that Invoice is Posted
+            if (invoiceSource == null || invoiceAccounted == null) {
+                return "Gain/Loss - Invoice not posted yet";
+            }
+            //Acumulo montos
+            else {
+                 invoiceSourceAcum = invoiceSourceAcum.add(invoiceSource);
+                 invoiceAccountedAcum = invoiceAccountedAcum.add(invoiceAccounted);
+            }
+        }
+     
+        //
+        String description = "Invoice=(" + C_Currency_ID + ")" + invoiceSourceAcum + "/" + invoiceAccountedAcum
+                + " - Allocation=(" + getC_Currency_ID() + ")" + allocationSource + "/" + allocationAccounted;
+        log.fine(description);
+        //	Allocation not Invoice Currency
+        if (getC_Currency_ID() != C_Currency_ID) {
+            return "Gain/Loss - Allocation with different currencies not supported!";
+        }
+
+        BigDecimal acctDifference = null;	//	gain is negative
+        //	Full Payment in currency
+        if (allocationSource.compareTo(invoiceSourceAcum) == 0) {
+            System.out.println("Full payment");
+            acctDifference = invoiceAccountedAcum.subtract(allocationAccounted);	//	gain is negative
+            String d2 = "(full) = " + acctDifference;
+            log.fine(d2);
+            description += " - " + d2;
+        } else //	partial or MC
+        {
+            //	percent of total payment
+            double multiplier = allocationSource.doubleValue() / invoiceSourceAcum.doubleValue();
+
+            //	Reduce Orig Invoice Accounted
+            invoiceAccountedAcum = invoiceAccountedAcum.multiply(new BigDecimal(multiplier));
+            System.out.println("Partial payment, invoiceAccounted:"+invoiceAccountedAcum);
+            //	Difference based on percentage of Orig Invoice
+            acctDifference = invoiceAccountedAcum.subtract(allocationAccounted);	//	gain is negative
+            System.out.println("acctDifference:"+acctDifference);
+            //	ignore Tolerance
+            if (acctDifference.abs().compareTo(TOLERANCE) < 0) {
+                acctDifference = Env.ZERO;
+            }
+            //	Round
+            int precision = as.getStdPrecision();
+            if (acctDifference.scale() > precision) {
+                acctDifference = acctDifference.setScale(precision, BigDecimal.ROUND_HALF_UP);
+            }
+            String d2 = "(partial) = " + acctDifference + " - Multiplier=" + multiplier;
+            log.fine(d2);
+            description += " - " + d2;
+        }
+
+        acctDifference = acctDifference.setScale(2, BigDecimal.ROUND_HALF_UP);
+        if (acctDifference.setScale(2, BigDecimal.ROUND_HALF_UP).signum() == 0) {
+            log.fine("No Difference");
+            return null;
+        }
+
+        int moneda = C_Currency_ID;
+
+        MAccount gain = MAccount.get(as.getCtx(), as.getAcctSchemaDefault().getRealizedGain_Acct(moneda));
+        MAccount loss = MAccount.get(as.getCtx(), as.getAcctSchemaDefault().getRealizedLoss_Acct(moneda));
+        //
+        if (isSOTrx) {
+            FactLine fl = fact.createLineDiff(loss, gain, as.getC_Currency_ID(), acctDifference);
+            fl.setDescription(description);
+        } else {
+            fact.createLine(null, acct,
+                    as.getC_Currency_ID(), acctDifference);
+            FactLine fl = fact.createLine(null, loss, gain,
+                    as.getC_Currency_ID(), acctDifference.negate());
+        }
+        return null;
+    }	//	createRealizedGainLossAcum
 
     /**************************************************************************
      * 	Create Realized Gain & Loss.
@@ -630,7 +795,7 @@ public class Doc_Allocation extends Doc {
      *	@return Error Message or null if OK
      */
     private String createRealizedGainLoss(MAcctSchema as, Fact fact, MAccount acct,
-            MInvoice invoice, BigDecimal allocationSource, BigDecimal allocationAccounted) {
+            MInvoice invoice, BigDecimal allocationSource, BigDecimal allocationAccounted) { 
         BigDecimal invoiceSource = null;
         BigDecimal invoiceAccounted = null;
         //
@@ -694,6 +859,7 @@ public class Doc_Allocation extends Doc {
         BigDecimal acctDifference = null;	//	gain is negative
         //	Full Payment in currency
         if (allocationSource.compareTo(invoiceSource) == 0) {
+            System.out.println("Full payment");
             acctDifference = invoiceAccounted.subtract(allocationAccounted);	//	gain is negative
             String d2 = "(full) = " + acctDifference;
             log.fine(d2);
@@ -702,10 +868,13 @@ public class Doc_Allocation extends Doc {
         {
             //	percent of total payment
             double multiplier = allocationSource.doubleValue() / invoiceSource.doubleValue();
+
             //	Reduce Orig Invoice Accounted
             invoiceAccounted = invoiceAccounted.multiply(new BigDecimal(multiplier));
+            System.out.println("Partial payment, invoiceAccounted:"+invoiceAccounted);
             //	Difference based on percentage of Orig Invoice
             acctDifference = invoiceAccounted.subtract(allocationAccounted);	//	gain is negative
+            System.out.println("acctDifference:"+acctDifference);
             //	ignore Tolerance
             if (acctDifference.abs().compareTo(TOLERANCE) < 0) {
                 acctDifference = Env.ZERO;
@@ -720,7 +889,8 @@ public class Doc_Allocation extends Doc {
             description += " - " + d2;
         }
 
-        if (acctDifference.signum() == 0) {
+        acctDifference = acctDifference.setScale(2, BigDecimal.ROUND_HALF_UP);
+        if (acctDifference.setScale(2, BigDecimal.ROUND_HALF_UP).signum() == 0) {
             log.fine("No Difference");
             return null;
         }
@@ -951,6 +1121,152 @@ public class Doc_Allocation extends Doc {
         return cotizacion;
          */
     }
+
+    private BigDecimal getAmountAllocated(BigDecimal allocationLineAmount) {
+        
+        allocationLineAmount = allocationLineAmount.negate();
+        
+        if (creditMemos == null) {
+            creditMemos = getCreditMemo();
+        }
+        
+        if (creditMemosAllocatedAmountAvailable.equals(BigDecimal.ZERO))
+            return allocationLineAmount;
+
+        //La logica es que tengo el acumulado total de las notas de credito y lo voy descontando de las asignaciones
+        if (allocationLineAmount.compareTo(creditMemosAllocatedAmountAvailable) >= 0) {
+            BigDecimal allocatedAmount = allocationLineAmount.subtract(creditMemosAllocatedAmountAvailable);
+            creditMemosAllocatedAmountAvailable = BigDecimal.ZERO;
+            return allocatedAmount;
+        }
+        else {
+            creditMemosAllocatedAmountAvailable = creditMemosAllocatedAmountAvailable.subtract(allocationLineAmount);
+             return BigDecimal.ZERO;
+        }
+  
+    }
+
+
+      private List<MInvoice> getCreditMemo() {
+
+        List<MInvoice> listAll = new ArrayList<MInvoice>();
+        try {
+            String sql = "SELECT allocl.C_Invoice_ID "
+                    + " FROM C_AllocationLine allocl "
+                    + " JOIN C_Invoice inv on inv.c_invoice_id = allocl.C_Invoice_ID "
+                    + " WHERE C_AllocationHdr_ID = "+get_ID()
+                    + " AND allocl.IsActive = 'Y' "
+                    + " AND inv.C_DocType_ID in (select C_Doctype_ID from C_DocType where DocBaseType = 'APC')";
+
+            PreparedStatement pstmt = DB.prepareStatement(sql, null);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MInvoice creditMemo = new MInvoice(getCtx(), rs.getInt(1), null);
+                listAll.add(creditMemo);
+                creditMemosAllocatedAmountAvailable = creditMemosAllocatedAmountAvailable.add(creditMemo.getGrandTotal());
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return listAll;
+        }
+
+        return listAll;
+    }	// getCreditMemo
+
+    private MInvoice findAllocatedInvoiceForPayment(int C_Payment_ID) {
+        MInvoice retValue = null;
+        try {
+            String sql = "SELECT allocl.C_Invoice_ID "
+                    + " FROM C_AllocationLine allocl "
+                    + " JOIN C_Invoice inv on inv.c_invoice_id = allocl.C_Invoice_ID "
+                    + " WHERE C_AllocationHdr_ID = "+get_ID()
+                    + " AND allocl.IsActive = 'Y' "
+                    + " AND allocl.C_Payment_ID = "+C_Payment_ID
+                    + " AND inv.C_DocType_ID in (select C_Doctype_ID from C_DocType where DocBaseType <> 'APC')";
+
+            PreparedStatement pstmt = DB.prepareStatement(sql, null);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                retValue = new MInvoice(getCtx(), rs.getInt(1), null);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return retValue;
+    }
+
+    /**
+     * Calcula un promedio de cotizacion de todos los documentos cancelables involucrados en la operacion
+     * @return 
+     */
+    private BigDecimal getCotizacionAllocation() {
+        BigDecimal acumCotizacion = BigDecimal.ZERO;
+        BigDecimal acumMonto = BigDecimal.ZERO;
+        //Busco Facturas o notas de debito de la asignacion
+        try {
+            String sql = "SELECT allocl.C_Invoice_ID "
+                    + " FROM C_AllocationLine allocl "
+                    + " JOIN C_Invoice inv on inv.c_invoice_id = allocl.C_Invoice_ID "
+                    + " WHERE C_AllocationHdr_ID = "+get_ID()
+                    + " AND allocl.IsActive = 'Y' "
+                    + " AND inv.C_DocType_ID in (select C_Doctype_ID from C_DocType where DocBaseType <> 'APC' and DocBaseType <> 'ARC'  )";
+
+            PreparedStatement pstmt = DB.prepareStatement(sql, null);
+
+            ResultSet rs = pstmt.executeQuery();
+           
+            while (rs.next()) {
+                MInvoice aux = new MInvoice(getCtx(),rs.getInt(1),null);
+                acumCotizacion = acumCotizacion.add(aux.getCotizacion().multiply(aux.getGrandTotal().setScale(2)));
+                acumMonto = acumMonto.add(aux.getGrandTotal().setScale(2));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return acumCotizacion.divide(acumMonto).setScale(2);
+    }
+    
+    /**
+     * Obtiene todas las facturas (Cancelables) correspondientes a una asignacion
+     * @return 
+     */
+    private List<MInvoice> getAllocationInvoices() {
+        
+        List<MInvoice> listAll = new ArrayList<MInvoice>();
+        try {
+            String sql = "SELECT allocl.C_Invoice_ID "
+                    + " FROM C_AllocationLine allocl "
+                    + " JOIN C_Invoice inv on inv.c_invoice_id = allocl.C_Invoice_ID "
+                    + " WHERE C_AllocationHdr_ID = "+get_ID()
+                    + " AND allocl.IsActive = 'Y' "
+                    + " AND inv.C_DocType_ID not in (select C_Doctype_ID from C_DocType where DocBaseType = 'APC' OR DocBaseType = 'ARC')";
+
+            PreparedStatement pstmt = DB.prepareStatement(sql, null);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MInvoice invoice = new MInvoice(getCtx(), rs.getInt(1), null);
+                listAll.add(invoice);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return listAll;
+        }
+        
+        return listAll;
+    }
+  
 }   //  Doc_Allocation
 
 /**

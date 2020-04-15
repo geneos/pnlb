@@ -161,7 +161,6 @@ public class ImportICBCCheck extends SvrProcess {
             while (rs.next()) {
                 X_I_ICBC_CHECK imp = new X_I_ICBC_CHECK(getCtx(), rs, get_TrxName());
                 MPayment payment = null;
-                System.out.println(imp.getBENEFICIARIO());
 
                 if (imp.getC_Payment_ID() == 0) //Create new Payment
                 {
@@ -174,7 +173,7 @@ public class ImportICBCCheck extends SvrProcess {
                 payment.setC_DocType_ID(false);
                 payment.setTrxType(MPayment.TRXTYPE_CreditPayment);
                 payment.setAmount(118, imp.getMONTO());
-                payment.setPAYNET(imp.getMONTO());
+                //payment.setPAYNET(imp.getMONTO());
                 payment.setDateTrx(imp.getUpdated());
                 payment.setDateAcct(imp.getUpdated());
                 payment.setIsPrepayment(true);
@@ -331,5 +330,178 @@ public class ImportICBCCheck extends SvrProcess {
     private String removePrefix(String value) {
         String regex = "^0+";
         return value.replaceAll(regex, "");
+    }
+    
+    private BigDecimal getGananciasRate(MPayment payment, boolean tExencionGAN, BigDecimal MSR){
+        
+        String consulta = "SELECT CONDICIONGAN_ID, IVA "
+                    + "FROM C_BPartner "
+                    + "WHERE C_BPartner_ID = ?";
+
+        PreparedStatement pstmt = DB.prepareStatement(consulta, get_TrxName());
+       
+        ResultSet rs;
+        
+        boolean tExento = false;
+        boolean tRespInsc = false;
+        boolean tNoContr = false;
+        
+        try {
+            pstmt.setInt(1, payment.getC_BPartner_ID());
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                if (rs.getInt(1) == MBPartner.CGAN_EXENTO) {
+                    tExento = true;
+                } else if (rs.getInt(1) == MBPartner.CGAN_RESPINSCRIPTO) {
+                    tRespInsc = true;
+                } else if (rs.getInt(1) == MBPartner.CGAN_NOCATEGORIZADO) {
+                    tNoContr = true;
+                }
+            }
+       
+        
+         if ((!tExencionGAN) && (!tExento) && (tRespInsc || tNoContr)) {
+                /*
+                 *      Calculo de los pagos anteriores con ese tipo de retencion.
+                 */
+
+                consulta = "SELECT pago.C_Payment_Id, pago.PAYAMT, pago.RETENCIONGANANCIAS FROM C_PAYMENT pago "
+                        + "INNER JOIN AD_ORGINFO orginfo ON pago.AD_ORG_ID = orginfo.AD_ORG_ID "
+                        + "WHERE pago.C_REGIMENGANANCIAS_V_ID = '116 Profesionales' AND orginfo.AGENTE = 'Y' "
+                        + "AND pago.C_DocType_ID = 1000138 AND to_char(pago.datetrx, 'yy') = to_char(?, 'yy') "
+                        + "AND to_char(pago.datetrx, 'mm') = to_char(?, 'mm') "
+                        + "AND pago.C_Payment_ID <> ? AND (pago.DOCSTATUS = 'CO' OR pago.DOCSTATUS = 'CL') AND pago.C_BPARTNER_ID = " + payment.getC_BPartner_ID();
+
+                pstmt = DB.prepareStatement(consulta, get_TrxName());
+                pstmt.setTimestamp(1, payment.getDateTrx());
+                pstmt.setTimestamp(2, payment.getDateTrx());
+                pstmt.setInt(3, payment.getC_Payment_ID());
+
+                rs = pstmt.executeQuery();
+
+                MPayment paymentAnt;
+                BigDecimal tSumant = BigDecimal.ZERO;
+                BigDecimal tSumretencionganancias =  BigDecimal.ZERO;
+
+                while (rs.next()) {
+
+
+                    paymentAnt = new MPayment(Env.getCtx(), rs.getInt(1), get_TrxName());
+
+                    BigDecimal valueRoundAnt = rs.getBigDecimal(2).multiply(paymentAnt.getCotizacion());
+
+                    tSumant = tSumant.add(valueRoundAnt);
+                    tSumretencionganancias = tSumretencionganancias.add(rs.getBigDecimal(3));
+
+                }
+
+                rs.close();
+                pstmt.close();
+                
+                // INICIO - Buscar el Monto No Sujeto a Retenci�n.
+                consulta = "SELECT MNSR "
+                        + "FROM C_WITHHOLDING "
+                        + "WHERE ISACTIVE='Y' AND REGIMENGANANCIAS = ? AND NAME = 'RETGAN'";
+
+                pstmt = DB.prepareStatement(consulta, get_TrxName());
+                pstmt.setString(1, payment.getC_REGIMENGANANCIAS_V_ID());
+
+                rs = pstmt.executeQuery();
+
+                BigDecimal MNSR = Env.ZERO;
+
+                if (rs.next()) {
+                    MNSR = rs.getBigDecimal(1);
+                }
+                //	FIN - Buscar el Monto No Sujeto a Retenci�n.
+                
+                /*
+                 *  MSRFINAL - MONTO SUJETO A RETENER FINAL PARA GANANCIAS, TENIENDO EN CUENTA
+                 *  		LOS PAGOS ANTERIORES Y EL MONTO NO SUJETO A RETENER.	
+                 */
+                BigDecimal MSRFINAL = tSumant.add(MSR).subtract(MNSR);
+
+                /*
+                 *  Modificado para que haga el control de los decimales de presición (a dos decimales)
+                 *  Zynnia - José Fantasia
+                 *  19/03/2012
+                 * 
+                 */
+
+                // Conseguir Datos para realizar el c�lculo.
+                if (tRespInsc) {
+
+                    consulta = "SELECT FIXAMT, PERCENT, MINAMT, THRESHOLDMIN, THRESHOLDMAX "
+                            + "FROM C_WITHHOLDING "
+                            + "WHERE ISACTIVE='Y' AND REGIMENGANANCIAS = ? AND NAME = 'RETGAN' "
+                            + "ORDER BY THRESHOLDMIN";
+
+                } else {
+
+                    consulta = "SELECT FIXAMT, PERCENT, MINAMT, THRESHOLDMIN, THRESHOLDMAX "
+                            + "FROM C_WITHHOLDING "
+                            + "WHERE ISACTIVE='Y' AND REGIMENGANANCIAS = ? AND NAME = 'RETGANNC' "
+                            + "ORDER BY THRESHOLDMIN";
+
+                }
+
+                pstmt = DB.prepareStatement(consulta, get_TrxName());
+                pstmt.setString(1, payment.getC_REGIMENGANANCIAS_V_ID());
+
+                rs = pstmt.executeQuery();
+
+                boolean cont = true;
+
+                while (rs.next() && cont) {
+
+                    BigDecimal tTotalfijoGAN = rs.getBigDecimal(1);
+                    BigDecimal tPorcentajeGAN = rs.getBigDecimal(2);
+                    BigDecimal tTotalminimoGAN = rs.getBigDecimal(3);
+                    BigDecimal tLimiteminimoGAN = rs.getBigDecimal(4);
+                    BigDecimal tLimitemaximoGAN = rs.getBigDecimal(5);
+
+                    int compararLimiteMinimo = MSRFINAL.compareTo(tLimiteminimoGAN);
+                    int compararLimiteMaximo = MSRFINAL.compareTo(tLimitemaximoGAN);
+
+
+
+                    if (((compararLimiteMinimo == 0 || compararLimiteMinimo == 1)
+                            && compararLimiteMaximo == -1) || (tLimiteminimoGAN.equals(Env.ZERO)
+                            && tLimitemaximoGAN.equals(Env.ZERO))) {
+
+                        //Necesito saber de cuanto sera la retencion teniendo en cuenta el monto final
+                        BigDecimal RETGAN = ((MSR.subtract(tLimiteminimoGAN)).multiply((tPorcentajeGAN.divide(BigDecimal.valueOf(100))))).add(tTotalfijoGAN).subtract(tSumretencionganancias);
+
+                        // Si mi pago es de 5000 neto, y la retencion me da 1000 entonces el monto final debe ser 6000?
+                        // NO -> Con 6000 la retencion ganancias ya seria distinta
+                        // GANANCIAS = ( ( SUMAANT + NETO/1,21 + GANANCIAS/1,21 - MNSR - tLimiteminimoGAN ) *  tPorcentajeGAN/100  ) + tTotalfijoGAN - tSumretencionganancias
+                        // GANANCIAS = ( ( GANANCIAS + NETO - tLimiteminimoGAN ) *  tPorcentajeGAN/100  ) + tTotalfijoGAN - tSumretencionganancias
+                        // GANANCIAS = GANANCIAS  *  tPorcentajeGAN/100 + ( ( NETO - tLimiteminimoGAN ) *  tPorcentajeGAN/100  ) + tTotalfijoGAN - tSumretencionganancias
+                        // GANANCIAS - ( GANANCIAS  *  tPorcentajeGAN/100 )  = ( ( NETO - tLimiteminimoGAN ) *  tPorcentajeGAN/100  ) + tTotalfijoGAN - tSumretencionganancias
+                        // GANANCIAS * ( 1/1,21 -  tPorcentajeGAN/100 )  = ( ( SUMAANT + NETO/1,21 - MNSR - tLimiteminimoGAN ) *  tPorcentajeGAN/100  ) + tTotalfijoGAN - tSumretencionganancias
+                        
+                        // GANANCIAS  = ( ( ( SUMAANT + NETO/1,21 - MNSR - tLimiteminimoGAN ) *  tPorcentajeGAN/100  ) + tTotalfijoGAN - tSumretencionganancias) / ( 1/1,21 -  tPorcentajeGAN/100 )
+                        //   (( 49356 - 32000 ) * 0,19 + 3280 + 0 ) / 0,81 = 8120,54
+                        // TOTAL PAGO = 49.356,00 + 8120,54
+                        
+                        // MODIFICACION TENIENDO EN CUENTA MSRFINAL
+                        // GANANCIAS  = ( ( ( SUMAANT + NETO/1,21 - MNSR - tLimiteminimoGAN ) *  tPorcentajeGAN/100  ) + tTotalfijoGAN - tSumretencionganancias) / ( 1/1,21 -  tPorcentajeGAN/100 )
+                        //   (( 8264,46 + 49356/1,21 - 16830 - 32000 ) * 0,19 + 3280 + 0 ) / 0,64 = 8120,54
+                        //   (( 8264,46 + 40790,08 - 16830 - 32000 ) * 0,19 + 3280 + 0 ) / 0,64 = 5191,66   
+                        
+                         // TOTAL PAGO = 49.356,00 +  5191,66= 
+
+                        
+                    }
+                }
+                
+            }
+                
+        } catch (SQLException ex) {
+            Logger.getLogger(ImportICBCCheck.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+       
+        return BigDecimal.ZERO;
     }
 }	//	ImportGLJournalLines

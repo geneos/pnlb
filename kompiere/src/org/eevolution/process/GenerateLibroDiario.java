@@ -19,6 +19,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.logging.*;
 
 import org.compiere.util.*;
@@ -36,24 +39,35 @@ public class GenerateLibroDiario extends SvrProcess {
     private BigDecimal schema;
     private int table_id = -1;
     private boolean withTotalEachLine = false;
-    private Long num_hoja = new Long(0);
+    private Long num_hoja = new Long(1);
+    int count = 0;
     long org;
+    int secuencia = 100;
+    
+    private static int ASIENTO_COMUN = 0;
+    private static int ASIENTO_APERTURA = 1;
+    private static int ASIENTO_CIERRE = 2;
+    private static int ASIENTO_RESULTADO = 3;
 
     protected String doIt() throws Exception {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        Date date = new Date(System.currentTimeMillis());
+
         try {
 
             String sqlQuery = "";
             PreparedStatement pstmt;
 
             if (table_id != -1) {
-                sqlQuery = "select Distinct AD_CLIENT_ID,AD_ORG_ID,C_ACCTSCHEMA_ID,DATEACCT,RECORD_ID,COMPANIA,ANO,AD_TABLE_ID,FACTNO from RV_LIBRODIARIO where C_ACCTSCHEMA_ID = ? AND DATEACCT between ? and ? AND AD_TABLE_ID = ? Order By DATEACCT, FACTNO";
+                sqlQuery = "select Distinct AD_CLIENT_ID,AD_ORG_ID,C_ACCTSCHEMA_ID,DATEACCT,RECORD_ID,COMPANIA,ANO,AD_TABLE_ID,FACTNO from RV_LIBRODIARIO where C_ACCTSCHEMA_ID = ? AND DATEACCT between ? and ? AND AD_TABLE_ID = ? and TIPO_ASIENTO = "+ASIENTO_COMUN+" Order By DATEACCT, FACTNO";
                 pstmt = DB.prepareStatement(sqlQuery, get_TrxName());
                 pstmt.setInt(1, schema.intValue());
                 pstmt.setTimestamp(2, fromDate);
                 pstmt.setTimestamp(3, toDate);
                 pstmt.setInt(4, table_id);
             } else {
-                sqlQuery = "select Distinct AD_CLIENT_ID,AD_ORG_ID,C_ACCTSCHEMA_ID,DATEACCT,RECORD_ID,COMPANIA,ANO,AD_TABLE_ID,FACTNO from RV_LIBRODIARIO where C_ACCTSCHEMA_ID = ? AND DATEACCT between ? and ? Order By DATEACCT, FACTNO";
+                sqlQuery = "select Distinct AD_CLIENT_ID,AD_ORG_ID,C_ACCTSCHEMA_ID,DATEACCT,RECORD_ID,COMPANIA,ANO,AD_TABLE_ID,FACTNO from RV_LIBRODIARIO where C_ACCTSCHEMA_ID = ? AND DATEACCT between ? and ? and TIPO_ASIENTO = "+ASIENTO_COMUN+" Order By DATEACCT, FACTNO";
                 pstmt = DB.prepareStatement(sqlQuery, get_TrxName());
                 pstmt.setInt(1, schema.intValue());
                 pstmt.setTimestamp(2, fromDate);
@@ -61,6 +75,7 @@ public class GenerateLibroDiario extends SvrProcess {
             }
 
             ResultSet rs = pstmt.executeQuery();
+            System.out.println("[" + formatter.format(date) + "] Start!: ");
 
             try {
 
@@ -69,16 +84,40 @@ public class GenerateLibroDiario extends SvrProcess {
 
                     DB.executeUpdate("DELETE from T_LIBRODIARIOASIENTO", null);
                     DB.executeUpdate("DELETE from T_LIBRODIARIO_LINE", null);
-                    int secuencia = 100;
-                    int asientoid = 1000000;
 
+                    int asientoid = 1000000;
+                    
+                    //Inserto asiento de APERTURA (Si corresponde)
+                    if (asientoCuentasPatrimoniales(ASIENTO_APERTURA,asientoid));
+                        asientoid++;
+                        
+                    count = 0;
                     do {
-                        asiento(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(5), rs.getDate(4), rs.getInt(8), rs.getString(9),asientoid);
-                        secuencia = renglon(rs.getInt(1), rs.getInt(2),rs.getInt(5), secuencia, rs.getInt(8),asientoid,rs.getString(9));
-                        DB.commit(true, get_TrxName());
+                        System.out.println("Asiento con fecha: "+rs.getDate(4));
+                        if (asiento(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(5), rs.getDate(4), rs.getInt(8), rs.getString(9), asientoid)) {
+                            secuencia = renglon(rs.getInt(1), rs.getInt(2), rs.getInt(5), secuencia, rs.getInt(8), asientoid, rs.getString(9));
+                        }
+
+                        if (count >= 100) {
+                            count = 0;
+                            DB.commit(true, get_TrxName());
+
+                            date = new Date(System.currentTimeMillis());
+                            System.out.println("[" + formatter.format(date) + "] Commit!: " + asientoid);
+                        }
+
                         asientoid++;
                     } while (rs.next());
-                     DB.commit(true, get_TrxName());
+                    
+                    //Inserto asiento RESULTADO (Si corresponde)
+                    if (asientoCuentasPatrimoniales(ASIENTO_RESULTADO,asientoid));
+                        asientoid++;
+                    
+                    //Inserto asiento CIERRE (Si corresponde)
+                    if (asientoCuentasPatrimoniales(ASIENTO_CIERRE,asientoid));
+                        asientoid++;
+                        
+                    DB.commit(true, get_TrxName());
                     UtilProcess.initViewer("Libro Diario General", p_instance, getProcessInfo());
                 }
 
@@ -91,89 +130,112 @@ public class GenerateLibroDiario extends SvrProcess {
             Logger.getLogger(GenerateLibroDiario.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        date = new Date(System.currentTimeMillis());
+        System.out.println("[" + formatter.format(date) + "] Finish!");
         return "success";
     }
 
-    protected void asiento(int ad_client_id, int ad_org_id, int c_acctschema_id, int record_id, Date date, int AD_Table_ID, String nroAsiento, int asientoid) {
+    protected boolean asiento(int ad_client_id, int ad_org_id, int c_acctschema_id, int record_id, Date date, int AD_Table_ID, String nroAsiento, int asientoid) {
         try {
             if (nroAsiento == null) {
                 nroAsiento = "00000000";
             }
 
-            String detalle = null;
-            String sqlInsert = "";
+            //Check non ZERO amount
+            String sqlQueryCheck = "SELECT SUM(CREDITO),SUM(DEBITO) FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ?";
 
-            String sqlQuery = "SELECT CONCEPTO,AD_TABLE_ID,RECORD_ID,DESCRIPTION FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ? ORDER BY DATEACCT";
-            PreparedStatement pstmtInsert = DB.prepareStatement(sqlQuery, get_TrxName());
+            PreparedStatement pstmtInsert = DB.prepareStatement(sqlQueryCheck, get_TrxName());
             pstmtInsert.setInt(1, record_id);
             pstmtInsert.setInt(2, AD_Table_ID);
 
             ResultSet rs = pstmtInsert.executeQuery();
 
             if (rs.next()) {
+                BigDecimal credito = rs.getBigDecimal(1);
+                BigDecimal debito = rs.getBigDecimal(1);
+                if (credito.equals(BigDecimal.ZERO) && debito.equals(BigDecimal.ZERO)) {
+                    pstmtInsert.close();
+                    return false;
+                }
+
+            }
+
+            String detalle = null;
+            String sqlInsert = "";
+
+            String sqlQuery = "SELECT CONCEPTO,AD_TABLE_ID,RECORD_ID,DESCRIPTION FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ?";
+
+            pstmtInsert = DB.prepareStatement(sqlQuery, get_TrxName());
+            pstmtInsert.setInt(1, record_id);
+            pstmtInsert.setInt(2, AD_Table_ID);
+
+            rs = pstmtInsert.executeQuery();
+
+
+            if (rs.next()) {
+                detalle = rs.getString(1);
+
                 if (rs.getInt(2) == MJournal.getTableId(MJournal.Table_Name)) {
-                    sqlQuery = "SELECT jb.DESCRIPTION FROM GL_JournalBatch jb INNER JOIN GL_Journal j"
-                            + " ON ( j.GL_JournalBatch_ID = jb.GL_JournalBatch_ID and  j.GL_Journal_ID = ?)";
+                    /*sqlQuery = "SELECT jb.DESCRIPTION FROM GL_JournalBatch jb INNER JOIN GL_Journal j"
+                    + " ON ( j.GL_JournalBatch_ID = jb.GL_JournalBatch_ID and  j.GL_Journal_ID = ?)";
                     PreparedStatement ps = DB.prepareStatement(sqlQuery, get_TrxName());
                     ps.setInt(1, rs.getInt(3));
                     ResultSet set = ps.executeQuery();
                     if (set.next())
-                        detalle = set.getString(1);
-                    set.close();
-
+                    detalle = set.getString(1);
+                    set.close();*/
                 } else if (rs.getInt(2) == MInvoice.getTableId(MInvoice.Table_Name)) {
-                    MInvoice invoice = new MInvoice(getCtx(), rs.getInt(3), null);
-                    /*MDocType docType = new MDocType(getCtx(), invoice.getC_DocTypeTarget_ID(), null);
-                    detalle = docType.getName() + " - " + invoice.getDocumentNo();*/
-                     detalle ="FC  " + invoice.getDocumentNo();
-                    
+                    /*MInvoice invoice = new MInvoice(getCtx(), rs.getInt(3), null);
+                    MDocType docType = new MDocType(getCtx(), invoice.getC_DocTypeTarget_ID(), null);
+                    detalle = docType.getName() + " - " + invoice.getDocumentNo();
+                    detalle ="FC  " + invoice.getDocumentNo();*/
                     //Esto no se que es!
                 } else if (rs.getInt(2) == MFactAcct.getTableId(MFactAcct.Table_Name)) {
-                    detalle = rs.getString(4);
-
+                    /*detalle = rs.getString(4);
+                    
                     sqlQuery = "SELECT RECORD_FACT_ID FROM FACT_ACCT_RESUMEN WHERE RECORD_RES_ID = ? AND TABLE_FACT_ID = " + MPayment.getTableId(MPayment.Table_Name);
                     PreparedStatement ps = DB.prepareStatement(sqlQuery, get_TrxName());
                     ps.setInt(1, rs.getInt(3));
                     ResultSet set = ps.executeQuery();
-
+                    
                     if (set.next()) {
-                        MPayment payment = new MPayment(getCtx(), set.getInt(1), null);
-                        if (detalle != null) {
-                            detalle += " - " + payment.getDocumentNo();
-                        } else {
-                            detalle = payment.getDocumentNo();
-                        }
+                    /*MPayment payment = new MPayment(getCtx(), set.getInt(1), null);
+                    if (detalle != null) {
+                    detalle += " - " + payment.getDocumentNo();
                     } else {
-                        sqlQuery = "SELECT RECORD_FACT_ID FROM FACT_ACCT_RESUMEN WHERE RECORD_RES_ID = ? AND TABLE_FACT_ID = " + MInvoice.getTableId(MInvoice.Table_Name);
-                        ps = DB.prepareStatement(sqlQuery, get_TrxName());
-                        ps.setInt(1, rs.getInt(3));
-                        set = ps.executeQuery();
-
-                        if (set.next()) {
-                            MInvoice invoice = new MInvoice(getCtx(), set.getInt(1), null);
-                            if (detalle != null) {
-                                detalle += " - " + invoice.getDocumentNo();
-                            } else {
-                                detalle = invoice.getDocumentNo();
-                            }
-                        }
+                    detalle = payment.getDocumentNo();
                     }
+                    } else {
+                    /*sqlQuery = "SELECT RECORD_FACT_ID FROM FACT_ACCT_RESUMEN WHERE RECORD_RES_ID = ? AND TABLE_FACT_ID = " + MInvoice.getTableId(MInvoice.Table_Name);
+                    ps = DB.prepareStatement(sqlQuery, get_TrxName());
+                    ps.setInt(1, rs.getInt(3));
+                    set = ps.executeQuery();
+                    
+                    if (set.next()) {
+                    MInvoice invoice = new MInvoice(getCtx(), set.getInt(1), null);
+                    if (detalle != null) {
+                    detalle += " - " + invoice.getDocumentNo();
+                    } else {
+                    detalle = invoice.getDocumentNo();
+                    }
+                    }
+                    }*/
                 } else if (rs.getInt(2) == MMOVIMIENTOFONDOS.getTableId(MMOVIMIENTOFONDOS.Table_Name)) {
-                    MMOVIMIENTOFONDOS movFondos = new MMOVIMIENTOFONDOS(getCtx(), rs.getInt(3), null);
+                    /*MMOVIMIENTOFONDOS movFondos = new MMOVIMIENTOFONDOS(getCtx(), rs.getInt(3), null);
                     //detalle = movFondos.getStringTipo() + "_" + movFondos.getDocumentNo();
-                    detalle ="MF " + movFondos.getDocumentNo();
+                    detalle ="MF " + movFondos.getDocumentNo();*/
                 } else if (rs.getInt(2) == MPayment.getTableId(MPayment.Table_Name)) {
-                    MPayment payment = new MPayment(getCtx(), rs.getInt(3), null);
+                    /*MPayment payment = new MPayment(getCtx(), rs.getInt(3), null);
                     if (payment.isReceipt()) {
-                        detalle = "RC " + payment.getDocumentNo();
+                    detalle = "RC " + payment.getDocumentNo();
                     } else {
-                        detalle = "OP " + payment.getDocumentNo();
-                    }
+                    detalle = "OP " + payment.getDocumentNo();
+                    }*/
                 } else if (rs.getInt(2) == MAllocationHdr.getTableId(MAllocationHdr.Table_Name)) {
-                    MAllocationHdr allocate = new MAllocationHdr(getCtx(), rs.getInt(3), null);
-                    detalle = "AS " + allocate.getDocumentNo();
+                    /*MAllocationHdr allocate = new MAllocationHdr(getCtx(), rs.getInt(3), null);
+                    detalle = "AS " + allocate.getDocumentNo();*/
                 } else {
-                    detalle = rs.getString(1);
+                    detalle = "";
                 }
             }
             rs.close();
@@ -184,7 +246,7 @@ public class GenerateLibroDiario extends SvrProcess {
             try {
                 Timestamp ts = new Timestamp(date.getTime());
 
-                sqlInsert = "insert into T_LIBRODIARIOASIENTO values(?,?,?,?,?,?,?,'Y',?,?,?)";
+                sqlInsert = "insert into T_LIBRODIARIOASIENTO values(?,?,?,?,?,?,?,'Y',?,?,?,?)";
                 pstmtInsert = DB.prepareStatement(sqlInsert, get_TrxName());
 
                 pstmtInsert.setInt(1, asientoid);
@@ -197,19 +259,26 @@ public class GenerateLibroDiario extends SvrProcess {
                 pstmtInsert.setString(8, rellenarNro(nroAsiento));
                 pstmtInsert.setLong(9, num_hoja);
                 pstmtInsert.setInt(10, AD_Table_ID);
+                pstmtInsert.setString(11, withTotalEachLine ? "Y" : "N");
 
                 pstmtInsert.executeQuery();
-                //DB.commit(true, get_TrxName());
 
                 pstmtInsert.close();
+                count++;
+                //DB.commit(true, get_TrxName());
 
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
+            
+            rs.close();
+            pstmtInsert.close();
 
         } catch (SQLException ex) {
             Logger.getLogger(GenerateLibroDiario.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return true;
 
     }
 
@@ -246,7 +315,7 @@ public class GenerateLibroDiario extends SvrProcess {
             BigDecimal sumaCR = new BigDecimal(0);
             PreparedStatement pstmtInsert = null;
 
-            sqlQuery = "SELECT NROCUENTA,CUENTA,DEBITO,DESCRIPTION FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ? AND CREDITO = 0";
+            sqlQuery = "SELECT NROCUENTA,CUENTA,DEBITO,CONCEPTO FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ? AND CREDITO = 0";
             PreparedStatement pstmt = DB.prepareStatement(sqlQuery, get_TrxName());
             pstmt.setInt(1, record_id);
             pstmt.setInt(2, ad_table_id);
@@ -255,38 +324,43 @@ public class GenerateLibroDiario extends SvrProcess {
 
             if (rs.next()) {
                 do {
-                    String descripcion = "";
+                    String descripcion = rs.getString(4);
                     if (ad_table_id == MPayment.getTableId(MPayment.Table_Name) && rs.getString(4) != null) {
-                        MPayment pay = new MPayment(getCtx(), record_id, null);
+                        //Optimization
+                        /*MPayment pay = new MPayment(getCtx(), record_id, null);
                         if (!rs.getString(4).equals(pay.getDocumentNo())) {
-                            descripcion = rs.getString(4);
-                        }
+                        descripcion = rs.getString(4);
+                        }*/
                     } else if (ad_table_id == MMOVIMIENTOFONDOS.getTableId(MMOVIMIENTOFONDOS.Table_Name) && rs.getString(4) != null) {
                         descripcion = rs.getString(4);
                     }
+                    
+                    if (rs.getBigDecimal(3).compareTo(BigDecimal.ZERO) >= 1){
+                        sqlInsert = "insert into T_LIBRODIARIO_LINE values(?,?,?,?,?,?,?,?,?,?,'Y',?)";
+                        pstmtInsert = DB.prepareStatement(sqlInsert, get_TrxName());
 
-                    sqlInsert = "insert into T_LIBRODIARIO_LINE values(?,?,?,?,?,?,?,?,?,?,'Y',?)";
-                    pstmtInsert = DB.prepareStatement(sqlInsert, get_TrxName());
+                        pstmtInsert.setInt(1, secuencia);
+                        pstmtInsert.setInt(2, asientoid);
+                        pstmtInsert.setInt(3, asientoid);
+                        pstmtInsert.setString(4, rs.getString(1));
+                        pstmtInsert.setString(5, rs.getString(2));
+                        pstmtInsert.setBigDecimal(6, rs.getBigDecimal(3));
+                        pstmtInsert.setBigDecimal(7, null);
+                        pstmtInsert.setInt(8, p_instance);
+                        pstmtInsert.setInt(9, ad_client_id);
+                        pstmtInsert.setInt(10, ad_org_id);
+                        pstmtInsert.setString(11, descripcion);
 
-                    pstmtInsert.setInt(1, secuencia);
-                    pstmtInsert.setInt(2, asientoid);
-                    pstmtInsert.setInt(3, asientoid);
-                    pstmtInsert.setString(4, rs.getString(1));
-                    pstmtInsert.setString(5, rs.getString(2));
-                    pstmtInsert.setBigDecimal(6, rs.getBigDecimal(3));
-                    pstmtInsert.setBigDecimal(7, null);
-                    pstmtInsert.setInt(8, p_instance);
-                    pstmtInsert.setInt(9, ad_client_id);
-                    pstmtInsert.setInt(10, ad_org_id);
-                    pstmtInsert.setString(11, descripcion);
+                        pstmtInsert.executeQuery();
+                        count++;
+                        //DB.commit(true, get_TrxName());
 
-                    pstmtInsert.executeQuery();
-                    //DB.commit(true, get_TrxName());
+                        pstmtInsert.close();
 
-                    pstmtInsert.close();
-
-                    secuencia++;
-                    sumaDR = sumaDR.add(rs.getBigDecimal(3));
+                        secuencia++;
+                        sumaDR = sumaDR.add(rs.getBigDecimal(3));
+                    }
+                    
 
                 } while (rs.next());
             }
@@ -294,7 +368,7 @@ public class GenerateLibroDiario extends SvrProcess {
             rs.close();
             pstmt.close();
 
-            sqlQuery = "SELECT NROCUENTA,CUENTA,CREDITO,DESCRIPTION FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ? AND DEBITO = 0";
+            sqlQuery = "SELECT NROCUENTA,CUENTA,CREDITO,CONCEPTO FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ? AND DEBITO = 0";
             pstmt = DB.prepareStatement(sqlQuery, get_TrxName());
             pstmt.setInt(1, record_id);
             pstmt.setInt(2, ad_table_id);
@@ -305,51 +379,55 @@ public class GenerateLibroDiario extends SvrProcess {
                 do {
                     String descripcion = "";
                     if (ad_table_id == MPayment.getTableId(MPayment.Table_Name) && rs.getString(4) != null) {
-                        MPayment pay = new MPayment(getCtx(), record_id, null);
+                        //Optimization
+                        /*MPayment pay = new MPayment(getCtx(), record_id, null);
                         if (!rs.getString(4).equals(pay.getDocumentNo())) {
-                            descripcion = rs.getString(4);
-                        }
+                        descripcion = rs.getString(4);
+                        }*/
                     } else if (ad_table_id == MMOVIMIENTOFONDOS.getTableId(MMOVIMIENTOFONDOS.Table_Name) && rs.getString(4) != null) {
                         descripcion = rs.getString(4);
                     }
 
-                    sqlInsert = "insert into T_LIBRODIARIO_LINE values(?,?,?,?,?,?,?,?,?,?,'Y',?)";
-                    pstmtInsert = DB.prepareStatement(sqlInsert, get_TrxName());
+                    if (rs.getBigDecimal(3).compareTo(BigDecimal.ZERO) >= 1){
+                        sqlInsert = "insert into T_LIBRODIARIO_LINE values(?,?,?,?,?,?,?,?,?,?,'Y',?)";
+                        pstmtInsert = DB.prepareStatement(sqlInsert, get_TrxName());
 
-                    pstmtInsert.setInt(1, secuencia);
-                    pstmtInsert.setInt(2, asientoid);
-                    pstmtInsert.setInt(3, asientoid);
-                    pstmtInsert.setString(4, rs.getString(1));
-                    pstmtInsert.setString(5, rs.getString(2));
-                    pstmtInsert.setBigDecimal(6, null);
-                    pstmtInsert.setBigDecimal(7, rs.getBigDecimal(3));
-                    pstmtInsert.setInt(8, p_instance);
-                    pstmtInsert.setInt(9, ad_client_id);
-                    pstmtInsert.setInt(10, ad_org_id);
-                    pstmtInsert.setString(11, descripcion);
+                        pstmtInsert.setInt(1, secuencia);
+                        pstmtInsert.setInt(2, asientoid);
+                        pstmtInsert.setInt(3, asientoid);
+                        pstmtInsert.setString(4, rs.getString(1));
+                        pstmtInsert.setString(5, rs.getString(2));
+                        pstmtInsert.setBigDecimal(6, null);
+                        pstmtInsert.setBigDecimal(7, rs.getBigDecimal(3));
+                        pstmtInsert.setInt(8, p_instance);
+                        pstmtInsert.setInt(9, ad_client_id);
+                        pstmtInsert.setInt(10, ad_org_id);
+                        pstmtInsert.setString(11, descripcion);
 
-                    pstmtInsert.executeQuery();
-                    //DB.commit(true, get_TrxName());
+                        pstmtInsert.executeQuery();
+                        count++;
+                        //DB.commit(true, get_TrxName());
 
-                    pstmtInsert.close();
+                        pstmtInsert.close();
 
-                    secuencia++;
-                    sumaCR = sumaCR.add(rs.getBigDecimal(3));
+                        secuencia++;
+                        sumaCR = sumaCR.add(rs.getBigDecimal(3));
+                    }
 
                 } while (rs.next());
             }
 
             rs.close();
             pstmt.close();
-            
-            if (sumaDR.compareTo(sumaCR) != 0){
-                String message = "Asiento #" + nroAsiento +" no balanceado";
+
+            if (sumaDR.compareTo(sumaCR) != 0) {
+                String message = "Asiento #" + nroAsiento + " no balanceado";
                 Exception ex = new Exception(message);
                 Logger.getLogger(GenerateLibroDiario.class.getName()).log(Level.SEVERE, message, ex);
                 throw ex;
             }
-                
-            
+
+
             if (withTotalEachLine) {
                 sqlInsert = "insert into T_LIBRODIARIO_LINE values(?,?,?,?,?,?,?,?,?,?,'Y',?)";
                 pstmtInsert = DB.prepareStatement(sqlInsert, get_TrxName());
@@ -364,16 +442,18 @@ public class GenerateLibroDiario extends SvrProcess {
                 pstmtInsert.setInt(8, p_instance);
                 pstmtInsert.setInt(9, ad_client_id);
                 pstmtInsert.setInt(10, ad_org_id);
-                pstmtInsert.setString(11, "");
+                pstmtInsert.setString(11, "TOTAL");
 
                 pstmtInsert.executeQuery();
-                //DB.commit(true, get_TrxName());
+
 
                 secuencia++;
+                count++;
 
+                rs.close();
                 pstmtInsert.close();
             }
-            
+
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -424,12 +504,45 @@ public class GenerateLibroDiario extends SvrProcess {
             } else if (name.equals("PAGINA")) {
                 num_hoja = ((BigDecimal) para[i].getParameter()).longValue();
             } else if (name.equals("WITHTOTAL")) {
-                withTotalEachLine = para[i].getParameter().equals('Y');
+                withTotalEachLine = para[i].getParameter().equals("Y");
             }
         }
         Env.getCtx().put("typePrint", "LIBRO");
         Env.getCtx().put("startPage", num_hoja);
 
         p_instance = getAD_PInstance_ID();
+    }
+
+    
+
+    private boolean asientoCuentasPatrimoniales(int TIPO, int asientoid) throws Exception {
+        boolean found = false;
+        String sql = "select Distinct AD_CLIENT_ID,AD_ORG_ID,C_ACCTSCHEMA_ID,DATEACCT,RECORD_ID,COMPANIA,ANO,AD_TABLE_ID,FACTNO from RV_LIBRODIARIO where C_ACCTSCHEMA_ID = ? AND DATEACCT between ? and ? AND TIPO_ASIENTO = ? ";
+
+        PreparedStatement pstmt = DB.prepareStatement(sql, get_TrxName());
+        
+        try {
+            pstmt.setInt(1, schema.intValue());
+            pstmt.setTimestamp(2, fromDate);
+            pstmt.setTimestamp(3, toDate);
+            pstmt.setInt(4, TIPO);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                found = true;
+                if (asiento(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(5), rs.getDate(4), rs.getInt(8), rs.getString(9), asientoid)) {
+                    secuencia = renglon(rs.getInt(1), rs.getInt(2), rs.getInt(5), secuencia, rs.getInt(8), asientoid, rs.getString(9));
+                }
+            }
+            
+            rs.close();
+            pstmt.close();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(GenerateLibroDiario.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return found;
     }
 }
