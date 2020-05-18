@@ -829,7 +829,15 @@ public class MMPCOrder extends X_MPC_Order implements DocAction {
             		MPC_Order_NodeNext.setAD_WF_Node_ID(AD_WF_NodeNext[n].getAD_WF_Node_ID());
             		MPC_Order_NodeNext.setAD_WF_Next_ID(AD_WF_NodeNext[n].getAD_WF_Next_ID());
             		MPC_Order_NodeNext.setMPC_Order_Node_ID(MPC_Order_Node.getMPC_Order_Node_ID());
-            		MPC_Order_NodeNext.setMPC_Order_Next_ID(0);
+            		MPC_Order_NodeNext.setAD_WF_Next_ID(AD_WF_NodeNext[n].getAD_WF_Next_ID());
+
+                                MPC_Order_NodeNext.setMPC_Order_Next_ID(n);
+                        
+                                //Get MPC Order Node Next
+                                /*MWFNode nodeNext = new MWFNode(getCtx(),AD_WF_NodeNext[n].getAD_WF_Next_ID(),get_TrxName());
+                                MPC_Order_NodeNext.setMPC_Order_Next_ID(nodeNext.get);*/
+                        
+                        
             		MPC_Order_NodeNext.setDescription(AD_WF_NodeNext[n].getDescription());
             		MPC_Order_NodeNext.setEntityType(AD_WF_NodeNext[n].getEntityType());
             		MPC_Order_NodeNext.setIsStdUserWorkflow(AD_WF_NodeNext[n].isStdUserWorkflow());

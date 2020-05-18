@@ -272,10 +272,10 @@ public class X_C_VALORPAGO extends PO {
         }
         MZYNDYNAMICMOVFONDOS dynMovFondos = MZYNDYNAMICMOVFONDOS.get(Env.getCtx(), TIPO);
         if (TIPO.equals("B") || TIPO.equals("C") || TIPO.equals("D") || TIPO.equals("Q")  || TIPO.equals("P")
-                || TIPO.equals("M") || TIPO.equals("O") || dynMovFondos != null)
+                || TIPO.equals("M") || TIPO.equals("O")  || TIPO.equals("T")|| dynMovFondos != null)
 			; else {
             throw new IllegalArgumentException("TIPO Invalid value - " + TIPO
-                    + " - Reference_ID=1000061 - B - C - D - M - O");
+                    + " - Reference_ID=1000061 - B - C - D - M - O - T");
         }
 //        if (TIPO.length() > 1) {
 //            log.warning("Length > 1 - truncated");

@@ -93,8 +93,13 @@ public class T_ProductCheckActualizado extends SvrProcess
         
         int count;
 
-        /* Lista de ID de Almacenes Aprobados */
-        private Vector<Integer> listAprobados = new Vector<Integer>();
+        /* IDs de Almacenes Aprobados */
+        private int p_WH_AprobadoFamatina = 1000028 ;
+        private int p_WH_AndreaniMPAprobado = 1000076 ;
+        private int p_WH_DepositoTercerosAprobado = 1000032 ;
+                private Vector<Integer> listAprobados = new Vector<Integer>();
+
+        
 
         /* Lista de ID de Almacenes Cuarentena */
         private Vector<Integer> listCuarentena = new Vector<Integer>();
@@ -174,15 +179,17 @@ public class T_ProductCheckActualizado extends SvrProcess
                 
                     p_Record_ID = getRecord_ID();
                     p_PInstance_ID = getAD_PInstance_ID();
+                    
                     /*
                      *  Creacion de la lista de todos los almacenes de tipo aprobado.
                      */
                     //Almacen Aprobado Famatina
-                    listAprobados.add(1000028);
+                    listAprobados.add(p_WH_AprobadoFamatina);
                     //Almacen Andreani MP Aprobado
-                    listAprobados.add(1000076);
+                    listAprobados.add(p_WH_AndreaniMPAprobado);
                     //Almacen Deposito de Terceros Aprobado
-                    listAprobados.add(1000032);
+                    listAprobados.add(p_WH_DepositoTercerosAprobado);
+
                     /*
                      *  Creacion de la lista de todos los almacenes de Cuarentena.
                      */
@@ -364,24 +371,26 @@ public class T_ProductCheckActualizado extends SvrProcess
     }
 
     private void cargarDetalle(int M_Product_ID) throws SQLException{
-                BigDecimal qtyCuarentena = Env.ZERO;
+        
+                BigDecimal qtyOnHand_AprobadoFamatina = Env.ZERO ;
+                BigDecimal qtyOnHand_AndreaniMPAprobado = Env.ZERO ;
+                BigDecimal qtyOnHand_DepositoTercerosAprobado = Env.ZERO ;
+                 
                 BigDecimal qtyOnHand = Env.ZERO;
+                BigDecimal qtyCuarentena = Env.ZERO;
                 BigDecimal qtyBOM = Env.ZERO;
-		BigDecimal qtyRequiered = Env.ZERO;
+	BigDecimal qtyRequiered = Env.ZERO;
                 BigDecimal qtyAvailable = Env.ZERO;
                 BigDecimal qtyReserved = Env.ZERO;
 
                 String res = "";
                 String sqlupd = "";
-		String sqlins = "";
-		String desc = "";
+                String sqlins = "";
+                String desc = "";
 
                 int productBOM = 0;
-                int cntu = 0;
-		int cnti = 0;
-                
 
-		log.info("Inventory Product Valuation Temporary Table (T_PRODUCTCHECK_DET)");
+                log.info("Inventory Product Valuation Temporary Table (T_PRODUCTCHECK_DET)");
 
                 /**
                  *  Para el producto seleccionado busco la planeación del mismo para luego explotarlo.
@@ -406,8 +415,13 @@ public class T_ProductCheckActualizado extends SvrProcess
                      *  Inicializo nuevamente en Cero todas las Cantidades.
                      */
                     qtyCuarentena = Env.ZERO;
-                    qtyOnHand = Env.ZERO;
+                    
+                    qtyOnHand_AprobadoFamatina = Env.ZERO ;
+                    qtyOnHand_AndreaniMPAprobado = Env.ZERO ;
+                    qtyOnHand_DepositoTercerosAprobado = Env.ZERO ;
+                    
                     qtyBOM = Env.ZERO;
+                    qtyOnHand = Env.ZERO;
                     qtyRequiered = Env.ZERO;
                     qtyAvailable = Env.ZERO;
                     qtyReserved = Env.ZERO;
@@ -546,6 +560,11 @@ public class T_ProductCheckActualizado extends SvrProcess
                      *  Resto los reservados en qtyAvailable y sumo en QtyReserved de todos los almacenes aprobados,
                      *  y sumo todos los QtyOnHand.
                      */
+                    /**
+                     * Discrimino las cantidades para los almacenes Aprobados
+                     */
+                    
+                    
                     for (int j = 0; j < listAprobados.size();j++){
                         String sqlLocatorAprobados = "select value from M_Locator where M_Warehouse_ID = " +
                                             listAprobados.elementAt(j);
@@ -564,9 +583,22 @@ public class T_ProductCheckActualizado extends SvrProcess
                                  *  <almacen, producto>
                                  */
                                     qtyAvailable =  qtyAvailable.add(getQtyDeposito(productBOM, rsLocatorAprobados.getString(1)));
-                                    qtyOnHand =  qtyOnHand.add(getQtyDeposito(productBOM, rsLocatorAprobados.getString(1)));
+                                    //qtyOnHand =  qtyOnHand.add(getQtyDeposito(productBOM, rsLocatorAprobados.getString(1)));
                                     qtyAvailable =  qtyAvailable.subtract(getQtyReservedDeposito(productBOM, rsLocatorAprobados.getString(1)));
                                     qtyReserved = qtyReserved.add(getQtyReservedDeposito(productBOM, rsLocatorAprobados.getString(1)));
+                                    
+                                    //Acumulo en cada variable por separado
+                                    if (listAprobados.elementAt(j) == p_WH_AprobadoFamatina) {
+                                        qtyOnHand_AprobadoFamatina = getQtyDeposito(productBOM, rsLocatorAprobados.getString(1));
+                                    }
+                                     //
+                                    if (listAprobados.elementAt(j) == p_WH_AndreaniMPAprobado) {
+                                        qtyOnHand_AndreaniMPAprobado = getQtyDeposito(productBOM, rsLocatorAprobados.getString(1));
+                                    }
+                                     //
+                                    if (listAprobados.elementAt(j) == p_WH_DepositoTercerosAprobado) {
+                                       qtyOnHand_DepositoTercerosAprobado = getQtyDeposito(productBOM, rsLocatorAprobados.getString(1));
+                                    }
                             }
                             rsLocatorAprobados.close();
                             pstmtLocatorAprobados.close();
@@ -596,9 +628,9 @@ public class T_ProductCheckActualizado extends SvrProcess
                         }                        
                         
                         sqlins  = "INSERT INTO T_PRODUCTCHECK_DET "
-                            + "(AD_CLIENT_ID,AD_ORG_ID,M_PRODUCT_ID,NAME,QTYREQUIERED,QTYONHAND,QTYRESERVED,QTYAVAILABLE,QTYCUARENTENA,AD_PInstance_ID,M_Warehouse_ID,Quantity,T_PRODUCTCHECK_DET_ID) VALUES "
+                            + "(AD_CLIENT_ID,AD_ORG_ID,M_PRODUCT_ID,NAME,QTYREQUIERED,QTYONHAND,QTYRESERVED,QTYAVAILABLE,QTYCUARENTENA,AD_PInstance_ID,M_Warehouse_ID,Quantity,T_PRODUCTCHECK_DET_ID,qtyOnHand_AprobadoFamatina,qtyOnHand_AndreaniMPAprobado,qtyOnHand_DepTercerosAprobado) VALUES "
                             + "(1000002, 1000033, " + productBOM + ", '" + desc + "', " + qtyRequiered + ", "
-                            + qtyOnHand + ", " + qtyReserved + ", " + qtyAvailable + ", " + qtyCuarentena + ", 0, " + p_M_WarehouseOrigen_ID + ", " + p_Quantity +" ,"+count+")";
+                            + qtyOnHand + ", " + qtyReserved + ", " + qtyAvailable + ", " + qtyCuarentena + ", 0, " + p_M_WarehouseOrigen_ID + ", " + p_Quantity +" ,"+count+" ,"+qtyOnHand_AprobadoFamatina+" ,"+qtyOnHand_AndreaniMPAprobado+" ,"+qtyOnHand_DepositoTercerosAprobado+")";
                         
                         count = count+1;
                         

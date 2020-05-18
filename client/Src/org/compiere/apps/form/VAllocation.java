@@ -267,6 +267,7 @@ public class VAllocation extends CPanel
 
 		//  Date set to Login Date
 		dateField.setValue(Env.getContextAsDate(Env.getCtx(), "#Date"));
+                	dateField.setEnabled(false);
 		dateField.addVetoableChangeListener(this);
 	}   //  dynInit
 
@@ -702,7 +703,7 @@ public class VAllocation extends CPanel
 		log.config("");
 		//
 		DecimalFormat format = DisplayType.getNumberFormat(DisplayType.Amount);
-		Timestamp allocDate = null;
+		//Timestamp allocDate = null;
 
 		//  Payment
 		TableModel payment = paymentTable.getModel();
@@ -714,7 +715,7 @@ public class VAllocation extends CPanel
 			if (((Boolean)payment.getValueAt(i, 0)).booleanValue())
 			{
 				Timestamp ts = (Timestamp)payment.getValueAt(i, 1);
-				allocDate = TimeUtil.max(allocDate, ts);
+				//allocDate = TimeUtil.max(allocDate, ts);
 				BigDecimal bd = (BigDecimal)payment.getValueAt(i, i_payment);
 				totalPay = totalPay.add(bd);  //  Applied Pay
 				m_noPayments++;
@@ -735,7 +736,7 @@ public class VAllocation extends CPanel
 			if (((Boolean)invoice.getValueAt(i, 0)).booleanValue())
 			{
 				Timestamp ts = (Timestamp)invoice.getValueAt(i, 1);
-				allocDate = TimeUtil.max(allocDate, ts);
+				//allocDate = TimeUtil.max(allocDate, ts);
 				BigDecimal bd = (BigDecimal)invoice.getValueAt(i, i_applied);
 				totalInv = totalInv.add(bd);  //  Applied Inv
 				m_noInvoices++;
@@ -747,8 +748,8 @@ public class VAllocation extends CPanel
 
 
 		//	Set AllocationDate
-		if (allocDate != null)
-			dateField.setValue(allocDate);
+		/*if (allocDate != null)
+			dateField.setValue(allocDate);*/
 		//  Set Allocation Currency
 		allocCurrencyLabel.setText(currencyPick.getDisplay());
 		//  Difference

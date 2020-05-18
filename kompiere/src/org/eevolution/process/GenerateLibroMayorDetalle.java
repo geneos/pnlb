@@ -788,9 +788,8 @@ public class GenerateLibroMayorDetalle extends SvrProcess {
                             detalle += "_" + bank.getName();
                         }
                     }
-                    
-                    detalle += " - Descripción: " + movFondos.getDescription();
                 }
+                detalle += " - Descripción: " + movFondos.getDescription();
 
             } else if (AD_TABLE_ID == MPayment.getTableId(MPayment.Table_Name)) {
                 MPayment payment = new MPayment(getCtx(), RECORD_ID, null);

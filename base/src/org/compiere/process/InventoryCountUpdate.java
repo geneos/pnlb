@@ -77,6 +77,8 @@ public class InventoryCountUpdate extends SvrProcess
 		log.info("DeletedMA=" + delMA);
 
 		//	ASI
+                                // TODO: Contemplar tambien storages inexistentes, para esos casos poner las qty en 0
+                                // TODO: Tener en cuenta de actualizar las cantidades en mano al completar el Inventory para que las cantidades sean las que corresponden.
 		sql = "UPDATE M_InventoryLine l "
 			+ "SET (QtyBook,QtyCount) = "
 				+ "(SELECT QtyOnHand,QtyOnHand FROM M_Storage s "

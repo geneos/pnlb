@@ -498,7 +498,13 @@ public class MPayment extends X_C_Payment
          *  Modificación realizada para que si la OP esta en borrador o en proceso se calculen nuevamente
          *  las retenciones.
          */
-        if (!this.isReceipt() && (super.isRetenciones()) && ((DOCSTATUS_Drafted.equals(getDocStatus())) || (DOCSTATUS_InProgress.equals(getDocStatus())))) {
+        if (!Env.getContext(Env.getCtx(), "OmitRetentionCalculation").equals("Y") 
+                &&  !this.isReceipt() 
+                && (super.isRetenciones()) 
+                        && ( (DOCSTATUS_Drafted.equals(getDocStatus())) 
+                                || (DOCSTATUS_InProgress.equals(getDocStatus()))
+                            )
+            ) {
             System.out.println("Entrando a evaluar el calcular retenciones");
 
             if (this.flagSave == false && this.retencion == true) {

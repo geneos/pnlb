@@ -60,3 +60,7 @@
 - Fix para pasar a la contabilidad Diario de CG (617)
 - Fix para notificar correctamente periodo cerrado al reactivar una factura (666)
 - Fix para parseo de cuenta contable cuando existen espacios en blanco en informe de libro mayor (670)
+#Version 20200415
+- Se agrega descripcion en Libro Mayor para algunos documentos (707)
+- Fix en asientos generados por diferencia de Pago (575)
+- FIx en asientos generados por pagos ya asignados (572)

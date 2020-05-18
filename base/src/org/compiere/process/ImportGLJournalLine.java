@@ -79,7 +79,7 @@ public class ImportGLJournalLine extends SvrProcess {
 
         //	Delete Old Imported
         if (m_DeleteOldImported) {
-            sql = new StringBuffer("DELETE I_GLJournalBatch "
+            sql = new StringBuffer("DELETE I_GLJournalLine "
                     + "WHERE I_IsImported='Y'");
             no = DB.executeUpdate(sql.toString(), get_TrxName());
             log.fine("Delete Old Impored =" + no);
@@ -87,7 +87,7 @@ public class ImportGLJournalLine extends SvrProcess {
         
         //	Delete Inactive record
         if (m_DeleteInactive) {
-            sql = new StringBuffer("DELETE I_GLJournalBatch "
+            sql = new StringBuffer("DELETE I_GLJournalLine "
                     + "WHERE isActive is null OR isActive='N'");
             no = DB.executeUpdate(sql.toString(), get_TrxName());
             log.fine("Delete Inactive =" + no);
@@ -152,14 +152,12 @@ public class ImportGLJournalLine extends SvrProcess {
         //	Accounted Amounts (Only if No Error) => (Currency Rate always 1, just ARS)
         sql = new StringBuffer("UPDATE I_GLJournalLine i "
                 + "SET AmtAcctDr = ROUND(AmtSourceDr * 1, 2) " //	HARDCODED rounding
-                + "WHERE AmtAcctDr IS NULL OR AmtAcctDr=0"
-                + " AND I_IsImported='N'").append(clientCheck).append(isActive);
+                + "WHERE  I_IsImported<>'Y'").append(clientCheck).append(isActive);
         no = DB.executeUpdate(sql.toString(), get_TrxName());
         log.fine("Calculate Acct Dr=" + no);
         sql = new StringBuffer("UPDATE I_GLJournalLine i "
                 + "SET AmtAcctCr = ROUND(AmtSourceCr * 1, 2) "
-                + "WHERE AmtAcctCr IS NULL OR AmtAcctCr=0"
-                + " AND I_IsImported='N'").append(clientCheck).append(isActive);
+                + "WHERE I_IsImported<>'Y'").append(clientCheck).append(isActive);
         no = DB.executeUpdate(sql.toString(), get_TrxName());
         log.fine("Calculate Acct Cr=" + no);
         sql = new StringBuffer("UPDATE I_GLJournalLine i "
@@ -184,7 +182,7 @@ public class ImportGLJournalLine extends SvrProcess {
         //	Get Balance
         sql = new StringBuffer("SELECT SUM(AmtSourceDr)-SUM(AmtSourceCr), SUM(AmtAcctDr)-SUM(AmtAcctCr) "
                 + "FROM I_GLJournalLine i "
-                + "WHERE I_IsImported='N'").append(clientCheck).append(isActive);
+                + "WHERE I_IsImported<>'Y'").append(clientCheck).append(isActive);
         PreparedStatement pstmt = null;
         try {
             pstmt = DB.prepareStatement(sql.toString(), get_TrxName());
@@ -225,6 +223,7 @@ public class ImportGLJournalLine extends SvrProcess {
 
         if (errors != 0) {
             if (m_IsValidateOnly || m_IsImportOnlyNoErrors) {
+                commit();
                 throw new Exception("@Errors@=" + errors);
             }
         } else if (m_IsValidateOnly) {
