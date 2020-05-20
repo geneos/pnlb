@@ -69,3 +69,6 @@
 - Fix al importador para que los mensajes de error queden correctamente guardados (748)
 - Bloqueo de fecha al asignar comprobantes + seteo en fecha actual (754)
 - Validacion de cantidades al completar ajuste de inventario (752)
+#Version xxxxxxxx
+- Fix al calcular cantidades contadas en el inventario (752)
+- Conteo de cantidades contadas al momento de completar (752)
