@@ -179,10 +179,10 @@ public class ImportGLJournalLine extends SvrProcess {
 
 
         /*********************************************************************/
-        //	Get Balance
+        //	Get Balance (Ony from NON IMPORTED NON ERROR records)
         sql = new StringBuffer("SELECT SUM(AmtSourceDr)-SUM(AmtSourceCr), SUM(AmtAcctDr)-SUM(AmtAcctCr) "
                 + "FROM I_GLJournalLine i "
-                + "WHERE I_IsImported<>'Y'").append(clientCheck).append(isActive);
+                + "WHERE I_IsImported = 'N'").append(clientCheck).append(isActive);
         PreparedStatement pstmt = null;
         try {
             pstmt = DB.prepareStatement(sql.toString(), get_TrxName());
@@ -257,7 +257,7 @@ public class ImportGLJournalLine extends SvrProcess {
                 //Always in ARS
                 line.setCurrency(118, 114, BigDecimal.ONE);
 
-                //	Set/Get Account Combination
+                //	Get Account Combination
 
                 MAccount acct = MAccount.get(getCtx(), journal.getAD_Client_ID(), journal.getAD_Org_ID(),
                         journal.getC_AcctSchema_ID(), imp.getAccount_ID(), 0,
@@ -269,7 +269,7 @@ public class ImportGLJournalLine extends SvrProcess {
                     acct.save();
                 }
                 if (acct == null || acct.get_ID() == 0) {
-                    imp.setI_ErrorMsg("ERROR creating Account");
+                    imp.setI_ErrorMsg("ERROR finding/creating Valid combination (Check if is active) ");
                     imp.setI_IsImported(false);
                     imp.save();
                     continue;

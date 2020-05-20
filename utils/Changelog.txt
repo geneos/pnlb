@@ -64,3 +64,8 @@
 - Se agrega descripcion en Libro Mayor para algunos documentos (707)
 - Fix en asientos generados por diferencia de Pago (575)
 - FIx en asientos generados por pagos ya asignados (572)
+#Version 20200518
+- Fix al importador para validar debito y credito (748)
+- Fix al importador para que los mensajes de error queden correctamente guardados (748)
+- Bloqueo de fecha al asignar comprobantes + seteo en fecha actual (754)
+- Validacion de cantidades al completar ajuste de inventario (752)
