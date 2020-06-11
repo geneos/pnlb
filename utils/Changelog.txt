@@ -55,7 +55,7 @@
 - Fix de decimales en el calculo de el balance al completar Libro Diaro (629)
 - Importador de cheques ICBC
 - Fix Importador de Lineas de diario cg (629)
-- Ajustes contables (NO PASAR A SERVER CONTABLE DE PRODUCCION AUN)
+- Ajustes contables
 #Version 20200214
 - Fix para pasar a la contabilidad Diario de CG (617)
 - Fix para notificar correctamente periodo cerrado al reactivar una factura (666)
@@ -69,6 +69,9 @@
 - Fix al importador para que los mensajes de error queden correctamente guardados (748)
 - Bloqueo de fecha al asignar comprobantes + seteo en fecha actual (754)
 - Validacion de cantidades al completar ajuste de inventario (752)
-#Version xxxxxxxx
+#Version 20200526
 - Fix al calcular cantidades contadas en el inventario (752)
 - Conteo de cantidades contadas al momento de completar (752)
+#Version 20200611
+- Se remueve chequeo de asientos mayores a 100 millones en la importacion de Lineas de Diario CG (776)
+- PARAMETRIZACION DE PRODUCTOS EN COMPIERE. (750)

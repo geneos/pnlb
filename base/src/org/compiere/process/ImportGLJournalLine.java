@@ -168,15 +168,6 @@ public class ImportGLJournalLine extends SvrProcess {
         if (no != 0) {
             log.warning("Zero Acct Balance=" + no);
         }
-        sql = new StringBuffer("UPDATE I_GLJournalLine i "
-                + "SET I_ErrorMsg=I_ErrorMsg||'WARN=Check Acct Balance, ' "
-                + "WHERE ABS(AmtAcctDr-AmtAcctCr)>100000000" //	100 mio
-                + " AND I_IsImported<>'Y'").append(clientCheck).append(isActive);
-        no = DB.executeUpdate(sql.toString(), get_TrxName());
-        if (no != 0) {
-            log.warning("Chack Acct Balance=" + no);
-        }
-
 
         /*********************************************************************/
         //	Get Balance (Ony from NON IMPORTED NON ERROR records)
@@ -221,17 +212,18 @@ public class ImportGLJournalLine extends SvrProcess {
         int errors = DB.getSQLValue(get_TrxName(),
                 "SELECT COUNT(*) FROM I_GLJournalLine i WHERE I_IsImported NOT IN ('Y','N')" + clientCheck + isActive);
 
+        log.info("Validation Errors=" + errors);
+        commit();
+        
         if (errors != 0) {
             if (m_IsValidateOnly || m_IsImportOnlyNoErrors) {
-                commit();
                 throw new Exception("@Errors@=" + errors);
             }
         } else if (m_IsValidateOnly) {
             return "@Errors@=" + errors;
         }
 
-        log.info("Validation Errors=" + errors);
-        commit();
+    
 
         /*********************************************************************/
         int noInsertLine = 0;

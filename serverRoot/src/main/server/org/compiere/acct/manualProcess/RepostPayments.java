@@ -24,10 +24,17 @@ import org.compiere.util.*;
 import org.compiere.acct.Doc;
 import org.compiere.acct.Doc;
 
-public class RepostPayments {
+/**
+ * Se puede ejecutar de manera directa o sino tambien desde el proeso  system RepostPayments. 
+ * Esta segunda opcion es para corridas mas grandes, para que no tarde tanto.
+ * @author pablo
+ */
+
+public class RepostPayments extends SvrProcess {
 
     private static boolean omitPeriod = true;
     private static boolean omitRetentionsCalculate = true;
+    private static boolean recalculateCotizacion = false;
     
     int m_postCount = 0;
     int m_postCount_Err = 0;
@@ -40,8 +47,19 @@ public class RepostPayments {
     private static String sqlPeriodoCerrado = "select C_Payment_ID from C_Payment   "
                                    + "WHERE posted = 'p' and extract(YEAR from dateacct) = 2020 and docstatus = 'CO' " ;
         
-    private static String sqlPagosEspecificos = "select C_Payment_ID from C_Payment   "
-                                   + "WHERE c_payment_id in (5179250,5181167)" ;
+    private static String sqlPagosEspecificosConCotizacion = "select p.C_Payment_ID,SUM(pv.importe),SUM(pv.mextranjera) "
+                    + "FROM c_payment p "
+                    + "JOIN c_valorpago pv on pv.c_payment_id = p.c_payment_id   "
+                    + "WHERE p.c_payment_id in ( 5182437) "
+                    + "GROUP BY  p.c_payment_id ";
+    
+     private static String sqlPagosEspecificos = "select C_Payment_ID FROM c_payment "
+                    + "WHERE c_payment_id in (5183408) ";   
+     //  (5180745,5181998,5183408)
+    
+    private static String sqlRecibos2020 = "select C_Payment_ID from C_Payment   "
+                                   + "WHERE IsReceipt='Y' and EXTRACT(YEAR from dateacct) = 2020" ;
+    
         
 
     /**************************************************************************
@@ -51,6 +69,82 @@ public class RepostPayments {
     public static void main(String[] args) {
         
         String sql = sqlPagosEspecificos;
+        
+        org.compiere.Compiere.startupEnvironment(true);
+        CLogMgt.setLevel(Level.FINE);
+        Properties ctx = Env.getCtx();
+        ctx.setProperty("#AD_Client_ID", "1000002");
+       
+        log.info("Repost Payments   $Revision: 1.0 $");
+        log.info("----------------------------------");
+           
+        Trx trx = Trx.get(Trx.createTrxName("RepostPayments"), true);
+
+        int count = 0;
+        int countE = 0;
+        int countS = 0;
+        
+        Env.setContext(Env.getCtx(), "OmitPeriod", omitPeriod ?  "Y" : "N");
+        Env.setContext(Env.getCtx(), "OmitRetentionCalculation", omitRetentionsCalculate ? "Y" : "N");
+        
+        PreparedStatement pstmt = DB.prepareStatement(sql.toString(), null);
+        MAcctSchema[] ass = MAcctSchema.getClientAcctSchema(ctx, Env.getAD_Client_ID(ctx));
+            
+         try {
+             ResultSet rs = pstmt.executeQuery();
+
+             while (rs.next()) {
+                 if (recalculateCotizacion) {
+                    MPayment payment = new MPayment(ctx,rs.getInt(1),null);
+                    if (!rs.getBigDecimal(3).equals(BigDecimal.ZERO)) {
+                        log.info("[ Recalculando tasa de cotizacion] Payment=" + rs.getInt(1));
+                        BigDecimal cotizacion = rs.getBigDecimal(2).divide(rs.getBigDecimal(3),3, RoundingMode.HALF_UP);
+                         System.out.println("OP"+payment.getDocumentNo()+": "+cotizacion);
+                        payment.setCotizacion(cotizacion);
+                        if (!payment.save()){
+                             countE++;
+                            log.log(Level.SEVERE, "Error: " + payment.getErrorMessage());
+                            System.out.println("Error: " + payment.getErrorMessage());
+                        }
+                           
+                    }
+                 }
+                //MAllocationHdr allocation = new MAllocationHdr(getCtx(),rs,get_TrxName());
+                log.info("[ Recontabilizando " + count + "] Payment=" + rs.getInt(1));
+                String ret = Doc.postImmediate(ass, 335, rs.getInt(1), true, null);
+                if (ret != null) {
+                    countE++;
+                    log.log(Level.SEVERE, "Error: " + ret);
+                    System.out.println("Error: " + ret);
+                } else {
+                    count++;
+                }
+            }
+        } catch (Exception e) {
+            log.severe("main - " + e);
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (Exception e) {
+            }
+            pstmt = null;
+        }
+
+        Env.setContext(Env.getCtx(), "OmitPeriod", 'N');
+        trx.commit();
+        log.info("Generated = " + count);
+        log.info("Errors = " + countE);
+        log.info("Skipped = " + countS);
+    }	//	doIt
+
+    @Override
+    protected void prepare() {
+    }
+
+    protected String doIt() throws Exception {
+         String sql = sqlRecibos2020;
         
         org.compiere.Compiere.startupEnvironment(true);
         CLogMgt.setLevel(Level.FINE);
@@ -104,6 +198,7 @@ public class RepostPayments {
         log.info("Generated = " + count);
         log.info("Errors = " + countE);
         log.info("Skipped = " + countS);
-    }	//	doIt
+        return "Generated = " + count + "Errors = " + countE + "Skipped = " + countS;
+    }
     
 }	

@@ -583,9 +583,29 @@ public class MProduct extends X_M_Product {
 
         //	New - Acct, Tree, Costing
         if (newRecord & success) {
-            insert_Accounting("M_Product_Acct", "M_Product_Category_Acct",
-                    "p.M_Product_Category_ID=" + getM_Product_Category_ID());
-            insert_Tree(MTree_Base.TREETYPE_Product);
+            //Create Accounts config from config
+            MPRODUCTACCTCONFIG prodAcctConfig = MPRODUCTACCTCONFIG.loadConfigForProduct(this, log);
+            if (prodAcctConfig == null) {
+                JOptionPane.showMessageDialog(null,"Por favor cree una configuración contable para el prefijo ingresado", "Error: no existe configuracioón contable para el prefijo ingresado", JOptionPane.ERROR_MESSAGE);      
+                return false;
+            }
+            X_M_Product_Acct prodAcct = new X_M_Product_Acct(getCtx(),0,get_TrxName());
+            prodAcct.setP_Asset_Acct(prodAcctConfig.getP_Asset_Acct());
+            prodAcct.setP_COGS_Acct(prodAcctConfig.getP_COGS_Acct());
+            prodAcct.setP_CostAdjustment_Acct(prodAcctConfig.getP_CostAdjustment_Acct());
+            prodAcct.setP_Expense_Acct(prodAcctConfig.getP_Expense_Acct());
+            prodAcct.setP_InventoryClearing_Acct(prodAcctConfig.getP_InventoryClearing_Acct());
+            prodAcct.setP_InvoicePriceVariance_Acct(prodAcctConfig.getP_InvoicePriceVariance_Acct());
+            prodAcct.setP_PurchasePriceVariance_Acct(prodAcctConfig.getP_PurchasePriceVariance_Acct());
+            prodAcct.setP_Revenue_Acct(prodAcctConfig.getP_Revenue_Acct());
+            prodAcct.setP_TradeDiscountGrant_Acct(prodAcctConfig.getP_TradeDiscountGrant_Acct());
+            prodAcct.setP_TradeDiscountRec_Acct(prodAcctConfig.getP_TradeDiscountRec_Acct());
+            prodAcct.setM_Product_ID(getM_Product_ID());
+            prodAcct.setC_AcctSchema_ID(prodAcctConfig.getC_AcctSchema_ID());
+            prodAcct.save();            
+            //End create accounts config from config
+            
+            
             MAcctSchema[] mass = MAcctSchema.getClientAcctSchema(getCtx(), getAD_Client_ID(), get_TrxName());
             for (int i = 0; i < mass.length; i++) {
                 MProductCosting pc = new MProductCosting(this, mass[i].getC_AcctSchema_ID());
