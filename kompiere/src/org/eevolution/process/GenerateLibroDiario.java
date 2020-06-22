@@ -43,6 +43,7 @@ public class GenerateLibroDiario extends SvrProcess {
     int count = 0;
     long org;
     int secuencia = 100;
+    int gl_category_id = 0;
     
     private static int ASIENTO_COMUN = 0;
     private static int ASIENTO_APERTURA = 1;
@@ -53,6 +54,8 @@ public class GenerateLibroDiario extends SvrProcess {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
+
+        gl_category_id = getGLCategory("Inflacion");
 
         try {
 
@@ -88,7 +91,11 @@ public class GenerateLibroDiario extends SvrProcess {
                     int asientoid = 1000000;
                     
                     //Inserto asiento de APERTURA (Si corresponde)
-                    if (asientoCuentasPatrimoniales(ASIENTO_APERTURA,asientoid));
+                    if (asientoCuentasPatrimoniales(ASIENTO_APERTURA,asientoid,false));
+                        asientoid++;
+                        
+                    //Inserto asiento de APERTURA con inlfacion (Si corresponde)
+                    if (asientoCuentasPatrimoniales(ASIENTO_APERTURA,asientoid,true));
                         asientoid++;
                         
                     count = 0;
@@ -110,11 +117,19 @@ public class GenerateLibroDiario extends SvrProcess {
                     } while (rs.next());
                     
                     //Inserto asiento RESULTADO (Si corresponde)
-                    if (asientoCuentasPatrimoniales(ASIENTO_RESULTADO,asientoid));
+                    if (asientoCuentasPatrimoniales(ASIENTO_RESULTADO,asientoid,false));
+                        asientoid++;
+                    
+                    //Inserto asiento RESULTADO con INFLACION (Si corresponde)
+                    if (asientoCuentasPatrimoniales(ASIENTO_RESULTADO,asientoid,true));
                         asientoid++;
                     
                     //Inserto asiento CIERRE (Si corresponde)
-                    if (asientoCuentasPatrimoniales(ASIENTO_CIERRE,asientoid));
+                    if (asientoCuentasPatrimoniales(ASIENTO_CIERRE,asientoid,false));
+                        asientoid++;
+                        
+                    //Inserto asiento CIERRE con INFLACION (Si corresponde)
+                    if (asientoCuentasPatrimoniales(ASIENTO_CIERRE,asientoid,true));
                         asientoid++;
                         
                     DB.commit(true, get_TrxName());
@@ -124,7 +139,8 @@ public class GenerateLibroDiario extends SvrProcess {
                 rs.close();
                 pstmt.close();
             } catch (Exception exception) {
-                exception.printStackTrace();
+                Logger.getLogger(GenerateLibroDiario.class.getName()).log(Level.SEVERE, null, exception);
+                throw exception;
             }
         } catch (SQLException ex) {
             Logger.getLogger(GenerateLibroDiario.class.getName()).log(Level.SEVERE, null, ex);
@@ -315,7 +331,7 @@ public class GenerateLibroDiario extends SvrProcess {
             BigDecimal sumaCR = new BigDecimal(0);
             PreparedStatement pstmtInsert = null;
 
-            sqlQuery = "SELECT NROCUENTA,CUENTA,DEBITO,CONCEPTO FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ? AND CREDITO = 0";
+            sqlQuery = "SELECT NROCUENTA,CUENTA,DEBITO,CONCEPTO FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ? AND DEBITO <> 0 AND DEBITO IS NOT NULL";
             PreparedStatement pstmt = DB.prepareStatement(sqlQuery, get_TrxName());
             pstmt.setInt(1, record_id);
             pstmt.setInt(2, ad_table_id);
@@ -368,7 +384,7 @@ public class GenerateLibroDiario extends SvrProcess {
             rs.close();
             pstmt.close();
 
-            sqlQuery = "SELECT NROCUENTA,CUENTA,CREDITO,CONCEPTO FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ? AND DEBITO = 0";
+            sqlQuery = "SELECT NROCUENTA,CUENTA,CREDITO,CONCEPTO FROM RV_LIBRODIARIO WHERE RECORD_ID = ? AND AD_TABLE_ID = ? AND CREDITO <> 0 AND CREDITO IS NOT NULL";
             pstmt = DB.prepareStatement(sqlQuery, get_TrxName());
             pstmt.setInt(1, record_id);
             pstmt.setInt(2, ad_table_id);
@@ -515,10 +531,14 @@ public class GenerateLibroDiario extends SvrProcess {
 
     
 
-    private boolean asientoCuentasPatrimoniales(int TIPO, int asientoid) throws Exception {
+    private boolean asientoCuentasPatrimoniales(int TIPO, int asientoid, boolean isAjusteInflacion) throws Exception {
         boolean found = false;
-        String sql = "select Distinct AD_CLIENT_ID,AD_ORG_ID,C_ACCTSCHEMA_ID,DATEACCT,RECORD_ID,COMPANIA,ANO,AD_TABLE_ID,FACTNO from RV_LIBRODIARIO where C_ACCTSCHEMA_ID = ? AND DATEACCT between ? and ? AND TIPO_ASIENTO = ? ";
-
+        String sql = "select Distinct AD_CLIENT_ID,AD_ORG_ID,C_ACCTSCHEMA_ID,DATEACCT,RECORD_ID,COMPANIA,ANO,AD_TABLE_ID,FACTNO from RV_LIBRODIARIO where C_ACCTSCHEMA_ID = ? AND DATEACCT between ? and ? AND TIPO_ASIENTO = ? AND AD_ORG_ID = ? ";
+        if (!isAjusteInflacion)
+            sql += "  AND GL_Category_Id <> "+gl_category_id;
+        else 
+            sql += "  AND GL_Category_Id = "+gl_category_id;
+         
         PreparedStatement pstmt = DB.prepareStatement(sql, get_TrxName());
         
         try {
@@ -526,6 +546,7 @@ public class GenerateLibroDiario extends SvrProcess {
             pstmt.setTimestamp(2, fromDate);
             pstmt.setTimestamp(3, toDate);
             pstmt.setInt(4, TIPO);
+            pstmt.setInt(5, Env.getAD_Org_ID(getCtx()));
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -544,5 +565,26 @@ public class GenerateLibroDiario extends SvrProcess {
         }
         
         return found;
+    }
+    
+    private int getGLCategory(String name) {
+        int GL_Category_Id = 1;
+         try {
+
+            String sqlQuery = "SELECT GL_Category_ID from GL_Category where name = '"+name+"'"; 
+
+            PreparedStatement pstmt = DB.prepareStatement(sqlQuery, get_TrxName());
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                GL_Category_Id = rs.getInt(1);
+            }
+
+            rs.close();
+            pstmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(GenerateBalance.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         return GL_Category_Id;
     }
 }
