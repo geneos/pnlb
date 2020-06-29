@@ -75,3 +75,7 @@
 #Version 20200611
 - Se remueve chequeo de asientos mayores a 100 millones en la importacion de Lineas de Diario CG (776)
 - PARAMETRIZACION DE PRODUCTOS EN COMPIERE. (750)
+#Version 20200626
+- Ajuste a libro diario para incorporar Asientos de Apertura, Cierre y resultados con inflacion (524)
+- Se remueven control de reservados en partidas especificas (737)
+- Se genera proceso () que permite actualizar los reservados, ejecutando el metodo "Actualizacion de reservados" que se utiliza en el MRP (737)

@@ -1019,16 +1019,13 @@ public class VOrderReceiptIssue extends CPanel
         reql=qtytodel;
         
         todeliveryl=qtytodel;
-        StringBuffer sql = new StringBuffer("SELECT s.M_Product_ID , s.QtyOnHand, s.M_AttributeSetInstance_ID, p.Name, masi.Description, l.Value, w.Value, w.M_warehouse_ID,p.Value, qr.remainingqty, CASE WHEN qr.remainingqty is null THEN s.QtyOnHand - s.QtyReserved ELSE s.QtyOnHand - s.QtyReserved + qr.remainingqty END as qtyAvailable ");
+        StringBuffer sql = new StringBuffer("SELECT s.M_Product_ID , s.QtyOnHand, s.M_AttributeSetInstance_ID, p.Name, masi.Description, l.Value, w.Value, w.M_warehouse_ID,p.Value, null , s.QtyOnHand - s.QtyReserved as qtyAvailable ");
         sql.append("  FROM M_Storage s ");
         sql.append(" INNER JOIN M_Product p ON (s.M_Product_ID = p.M_Product_ID) ");
         sql.append(" INNER JOIN C_UOM u ON (u.C_UOM_ID = p.C_UOM_ID) ");
         sql.append(" INNER JOIN M_AttributeSetInstance masi ON (masi.M_AttributeSetInstance_ID = s.M_AttributeSetInstance_ID) ");
         sql.append("  Inner Join M_Locator l ON(s.M_Locator_ID=l.M_Locator_ID) ");
         sql.append(" INNER JOIN M_Warehouse w ON (w.M_Warehouse_ID = l.M_Warehouse_ID and w.isproductionissue='Y' and w.AD_Org_ID=" +m_AD_Org_ID +")");
-        sql.append(" LEFT JOIN  mpc_order_qtyreserved qr ON (s.M_product_id = qr.M_Product_ID " +
-"                                        and s.M_AttributeSetInstance_ID = qr.M_AttributeSetInstance_ID " +
-"                                        and s.M_Locator_ID=qr.M_Locator_ID and qr.mpc_order_bomline_id="+mpc_order_bomline_id + ")");
         //cambio para que lo tome de diferentes lotes fjviejo panalab end
         sql.append(" WHERE s.M_Product_ID = " +M_Product_ID + " and ( qr.mpc_order_bomline_id="+mpc_order_bomline_id + " or qr.mpc_order_bomline_id is null ) and s.QtyOnHand <> 0 and s.m_attributesetinstance_id <> 0 AND ( masi.guaranteedate > current_date ) Order by qr.USEORDER, masi.guaranteedate " );
 
@@ -1972,32 +1969,7 @@ public class VOrderReceiptIssue extends CPanel
                             MStorage[] storagesSel = new MStorage[list.size()];
                             storagesSel[0] = storageSeleccionado;
                             list.toArray(storagesSel);
-                            
-                            
-                            BigDecimal diffReserved = BigDecimal.ZERO;
-                            //Instancio control de antes de createIssue para calcular
-                            //cuanto se va a desreservar!
-                            MMPCOrderQtyReserved qtyRes = MMPCOrderQtyReserved.get(Env.getCtx(),storageSeleccionado,MPC_Order_BOMLine_ID,trxName);
-                            
-                            
-                            
-                            if ( qtyRes != null ) {
-                                BigDecimal storageReservedBefore = qtyRes.getRemainingQty();
-                                BigDecimal storageReservedAfter = storageReservedBefore.subtract(m_qtyToDeliver);
-                                //Si entrego mas de lo que tenia disponible del reservado para la partida, entonces mi reservado pasa a CERO
-                                if ( storageReservedAfter.signum() == -1 )
-                                    storageReservedAfter=BigDecimal.ZERO;
 
-                                //Si lo que devuelvo + lo que tenia, es mayor a lo que habia reservado al liberarla orden, entonces el reservado
-                                //pasa a ser ese total
-                                if ( storageReservedAfter.compareTo(qtyRes.getTotalQty()) > 0 )
-                                    storageReservedAfter=qtyRes.getTotalQty();
-
-                                //Cantidad que se desreserva realmente
-                                diffReserved = storageReservedBefore.subtract(storageReservedAfter);
-                        }
-                            
-                            
                             createIssue( MPC_Order_BOMLine_ID  , m_movementDate , m_qtyToDeliver , m_scrapQtyComponet , Env.ZERO, storagesSel,trxName);
 
                             /*
@@ -2011,46 +1983,10 @@ public class VOrderReceiptIssue extends CPanel
                                 m_mpc_order.setDateStart(m_movementDate);
                                 m_mpc_order.save();
                             }                           
-                            
-                            
-                             /*
-                            * GENEOS - Pablo Velazquez
-                            * 10/10/2013
-                            * Si cambie de BomLine entonces desreservo lo acumulado que no fue desreservado por los
-                            * CostCollector del producto anterior
-                            */
-
-                           if (MPC_Order_BOMLine_ID != old_MPC_Order_BOMLine_ID) {
-                               if ( old_MPC_Order_BOMLine_ID != 0 && old_m_M_Product_ID!=0 && cantidadAgrupada.signum() == 1){
-                                   if ( !unreserveFeFo(m_mpc_order.getMPC_Order_ID(),old_m_M_Product_ID,old_MPC_Order_BOMLine_ID,cantidadAgrupada,trxName) ){
-                                       log.severe("No se pudo desreservar para producto: "+m_M_Product_ID);
-                                       return false;
-                                   }
-                                   cantidadAgrupada=Env.ZERO;
-                               }
-                               old_MPC_Order_BOMLine_ID = MPC_Order_BOMLine_ID;
-                               old_m_M_Product_ID = m_M_Product_ID;
-                           }
-                            
-                            
-                            
-                            //Agrupo cantidad que no se desreservo
-                            cantidadAgrupada = cantidadAgrupada.add(m_qtyToDeliver.subtract(diffReserved));                           
+                      
                         }
                         
                     }
-                    /*
-                    * GENEOS - Pablo Velazquez
-                    * 11/10/2013
-                    * Si termine de iterar y tengo cantidadAgrupada -> tengo que desreservar del ultimo producto
-                    */
-                   if ( cantidadAgrupada.signum() == 1){
-                       if ( !unreserveFeFo(m_mpc_order.getMPC_Order_ID(),m_M_Product_ID,MPC_Order_BOMLine_ID,cantidadAgrupada,trxName) ){
-                           log.severe("No se pudo desreservar para producto: "+m_M_Product_ID);
-                           return false;
-                       }
-                       cantidadAgrupada=Env.ZERO;
-                   }
  
                 }                             
                 m_mpc_order.setDescription(m_mpc_order.getDescription());
@@ -2655,36 +2591,7 @@ public class VOrderReceiptIssue extends CPanel
                 }   
             }
         }
-        
-       /*
-        * GENEOS - Pablo Velazquez
-        * 21/10/2013
-        * Se Agrega cartel de confirmacion si se surte de partida que no tiene reservado
-        */
-       //Si es surtimiento
-       if ( valueSelected== 2 ) {
-           boolean sobrepasaReservado = false;
-           for (int i = 0 ; i < issue.getRowCount(); i++) {
-               IDColumn id = (IDColumn) issue.getValueAt(i, 0);
-               if (id != null && id.isSelected()) {
-
-                   BigDecimal cantidadAEntregar = new BigDecimal((String)issue.getValueAt(i,8));
-                   BigDecimal cantidadAReservadaDisponible = (BigDecimal)issue.getValueAt(i,11);
-                   if ( cantidadAEntregar != null && cantidadAEntregar.compareTo(cantidadAReservadaDisponible)>0 ){
-                       sobrepasaReservado = true;
-                       break;
-                   }
-               }
-           }
-           if (sobrepasaReservado) {
-               int aux = JOptionPane.showConfirmDialog(null,"Esta surtiendo de partidas que no fueron reservadas para esta orden, o esta surtiendo mas de lo resevado. ¿Seguro que desa continuar?", "Cantidades no reservadas", JOptionPane.ERROR_MESSAGE);
-
-               if ( aux!=0 ) {
-                   return;
-               }   
-           }
-       }
-       
+  
        /*
         * GENEOS - Pablo Velazquez
         * 25/10/2013
@@ -3562,69 +3469,6 @@ public class VOrderReceiptIssue extends CPanel
             return users;
             //Integer[] usuarios = new Integer[users.size()];
             //return (Integer[]) users.toArray(usuarios);
-        }
-        
-        public boolean unreserveFeFo(int MPC_Order_ID,int m_M_Product_ID,int MPC_Order_BOMLine_ID,BigDecimal cantidadAgrupada, String trxName){
-                /*
-                 * Desreservo de los que vencen mas adelante primero, dejando comprometidas las que vencen primero
-                 * a no ser que se cancelen todos los reservados.
-                 */
-                String sql = "SELECT * FROM MPC_ORDER_QTYRESERVED"
-                        + " WHERE MPC_ORDER_ID=?"
-                        + " AND MPC_ORDER_BOMLINE_ID=?"
-                        + " AND M_PRODUCT_ID=? "
-                        + " AND REMAININGQTY > 0"
-                        + " ORDER BY USEORDER DESC";
-                PreparedStatement ps = DB.prepareStatement(sql,trxName);
-                try {
-                    ps.setInt(1, MPC_Order_ID);
-                    ps.setInt(2, MPC_Order_BOMLine_ID);
-                    ps.setInt(3, m_M_Product_ID);
-                    ResultSet rs = ps.executeQuery();
-                    while ( rs.next() && (cantidadAgrupada.compareTo(Env.ZERO) != 0) ){
-                        MMPCOrderQtyReserved qtyRes = new MMPCOrderQtyReserved(Env.getCtx(),rs,trxName);
-                        BigDecimal storageReservedBefore = qtyRes.getRemainingQty();
-                        BigDecimal toUnreserve = BigDecimal.ZERO;
-                        //Si lo que me queda supera a lo que tengo que desreservar
-                        if (storageReservedBefore.compareTo(cantidadAgrupada) >= 0){
-                            toUnreserve = cantidadAgrupada;
-                        }
-                        //Si lo que me queda no cubre lo que tengo que desreservar
-                        else {
-                            toUnreserve = storageReservedBefore;
-                        }
-                        
-                        //Desacumulo lo desreservado
-                        cantidadAgrupada = cantidadAgrupada.subtract(toUnreserve);
-                        
-                        //Actualizo control de reservados
-                        qtyRes.setRemainingQty(storageReservedBefore.subtract(toUnreserve));                      
-                        if ( !qtyRes.save() ){
-                            log.severe("Error al actualizar control de reservados: "+qtyRes);
-                            return false;
-                        }
-                        //Actualizo MStorage
-                        if (!MStorage.addDist(Env.getCtx(), 0,
-                            qtyRes.getM_Locator_ID(),
-                            qtyRes.getM_Product_ID(),
-                            qtyRes.getM_AttributeSetInstance_ID(), qtyRes.getM_AttributeSetInstance_ID(),
-                            BigDecimal.ZERO, toUnreserve.negate(), BigDecimal.ZERO, trxName) ) {
-                            log.severe("Error al actualizar mstorage para locator: "+qtyRes.getM_Locator_ID()+
-                                        " product_id: "+qtyRes.getM_Product_ID()+" m_attributesetintance_id: "+
-                                        qtyRes.getM_AttributeSetInstance_ID());
-                            return false;
-                        }
-                    }
-                    //Solo si se hace esto para surtimiento!
-                    if (cantidadAgrupada.compareTo(Env.ZERO) < 0){
-                        //Error
-                        return false;
-                    }
-                }
-                catch( Exception e){ 
-                    return false;
-                }            
-            return true;
         }
         
         private void fillCombo(){
