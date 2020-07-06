@@ -1881,6 +1881,8 @@ public class MRP extends SvrProcess {
 
             reserved = requiered.add(cantidad); //150
 
+            especifico = getReservadoEspecifico(bomline, trxName); //150
+
             if (reserved.compareTo(Env.ZERO) == -1) {
                 indneg++;
                 reserved = Env.ZERO;
@@ -1918,11 +1920,15 @@ public class MRP extends SvrProcess {
                 return false;
             }
 
-        }
-        
-        //Update de reservado Global en Storage correspondiente
+            //Update de reservado Global en Storage correspondiente
 
+            // System.out.println("update all bomline del producto " + M_Product_ID + " set qtyreserved = " + reserved + " where mpc_order_bomline_id = " + bomline);
+
+
+        }
         //Actualizo el MStorage del producto dado
+        int M_Locator_ID = 1000258;
+
 
         //Obtengo el almacen correspondiente a la orden de manufactura
         MWarehouse wh = MWarehouse.get(Env.getCtx(), 1000032);
@@ -1969,6 +1975,18 @@ public class MRP extends SvrProcess {
             System.out.println("No se pudo obtener la suma de Trx para la MPC_Order_BomLine_ID = " + MPC_Order_BomLine_ID);
         }
         return trx;
+    }
+
+    private BigDecimal getReservadoEspecifico(int MPC_Order_BomLine_ID, String trxName) {
+        BigDecimal especifico = BigDecimal.ZERO;
+        MMPCOrderQtyReserved qtyRes[] = MMPCOrderQtyReserved.getAllForBOMLine(Env.getCtx(), MPC_Order_BomLine_ID, trxName);
+        for (int i = 0; i < qtyRes.length; i++) {
+            //Solo obtengo las cantidades especificas !, las otras se deben acumular
+            if (qtyRes[i].getM_AttributeSetInstance_ID() != 0) {
+                especifico = especifico.add(qtyRes[i].getRemainingQty());
+            }
+        }
+        return especifico;
     }
 
     private BigDecimal getSurtimientosDevoluciones(int M_Product_ID) {
@@ -2152,7 +2170,7 @@ public class MRP extends SvrProcess {
 
     private void setZeroReservado(String trxName) throws Exception {
 
-        //Pongo en 0 el reservado para las ordenes de compra cerradas
+        //Pongo en 0 el ordenado para las ordenes de compra cerradas
         String sql = "update c_orderline ol set ol.qtyreserved = 0 "
                 + " where ol.c_order_id in (select c_order_id "
                 + " from c_order where docstatus = 'CL')";

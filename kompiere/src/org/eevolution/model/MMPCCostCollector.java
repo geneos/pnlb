@@ -406,7 +406,10 @@ public class MMPCCostCollector extends X_MPC_Cost_Collector implements DocAction
                 //	sLine.getM_AttributeSetInstance_ID() != 0
                 if (mtrx == null) {
                     //	Fallback: Update Storage - see also VMatch.createMatchRecord
-
+                    
+                    BigDecimal diffReserved = BigDecimal.ZERO;
+                    int M_Locator_ID = getM_Locator_ID();
+                    
                     if (MovementType.charAt(1) == '-') {
                         
                         /*
@@ -420,11 +423,10 @@ public class MMPCCostCollector extends X_MPC_Cost_Collector implements DocAction
                          */                   
 
                         //      QtyMA
-                        
+                        /*
                         Properties ctx = getCtx();
                         String trxName = get_TrxName();
                         MStorage st = null;
-                        //Obtengo storage 0
                         st = MStorage.get (ctx, getM_Locator_ID(),getM_Product_ID(), 0, trxName);
 
                         BigDecimal QtyReal = Qty.negate();
@@ -447,8 +449,9 @@ public class MMPCCostCollector extends X_MPC_Cost_Collector implements DocAction
                                 /** BISion - 04/05/2009 - Santiago Ibañez
                                  * Actualizar correctamente QtyIssue que es la variable
                                  * que actualiza el Storage
-                                 */
+                                 *//*
                                 BigDecimal entregado = obomline.getQtyDelivered();
+                                BigDecimal devolucion = getMovementQty();
                                 BigDecimal requerido =  obomline.getQtyRequiered();
 
                                 //Cantidad Entregada considerando esta devolucion
@@ -499,7 +502,7 @@ public class MMPCCostCollector extends X_MPC_Cost_Collector implements DocAction
                          * almacen y producto, que igual se contemple el caso de cuales son las cantidades
                          * que se estan trabajando en el Reservado que luego se va a sustraer de la linea del
                          * Storage.
-                         */
+                         *//*
                         else
                         {
                             BigDecimal requiered = obomline.getQtyRequiered();
@@ -508,7 +511,86 @@ public class MMPCCostCollector extends X_MPC_Cost_Collector implements DocAction
                             if ((QtyIssue.negate().add(delivered)).compareTo(requiered) > 0){
                                 QtyIssue = reserved.negate();
                             }
+                        }*/
+                        
+                        /*
+                        * GENEOS - Pablo Velazquez
+                        * 31/07/2013
+                        * Actualizo el control de reservados MMPCOrderQtyReserved y  obtengo el reservado a actualizar
+                        * de MStorage
+                        */
+                        MMPCOrderQtyReserved qtyRes = null; 
+                        
+                        try {
+                            
+                            
+                            if ( getMovementQty().signum() == 1 )
+                                qtyRes = getMMPCOrderQtyReserved();
+
+                            //Pueder ser que no exista el qtyRes, porque esta partida no estaba comprometida
+                            //O porque estoy en una devolucion entonces no es necesario instanciar
+                           
+                            if (qtyRes != null) {
+
+                                BigDecimal storageReservedBefore = qtyRes.getRemainingQty();
+                                BigDecimal storageReservedAfter = storageReservedBefore.subtract(getMovementQty());
+                                
+
+                                //Si entrego mas de lo que tenia disponible del reservado para la partida, entonces mi reservado pasa a CERO
+                                if ( storageReservedAfter.signum() == -1 )
+                                    storageReservedAfter=BigDecimal.ZERO;
+
+                                //Si lo que devuelvo + lo que tenia, es mayor a lo que habia reservado al liberarla orden, entonces el reservado
+                                //pasa a ser ese total
+                                if ( storageReservedAfter.compareTo(qtyRes.getTotalQty()) > 0 )
+                                    storageReservedAfter=qtyRes.getTotalQty();
+                                
+                                //Cantidad en la que se modifica el reserved del storage
+                                diffReserved = storageReservedAfter.subtract(storageReservedBefore);
+                                        
+                                qtyRes.setRemainingQty(storageReservedAfter);
+                                if (!qtyRes.save()){
+                                    log.severe("No se pudieron actualizar los reservados en "+qtyRes+" para MMPCCostCollector: "+toString());
+                                    return DocAction.STATUS_Invalid;
+                                }
+                            }
+                            else {
+                                // Si no existen partidas comprometidas para la linea, entonces sus cantidades reservadas estan en MStorage Cero
+                                if (  MMPCOrderQtyReserved.getAllForBOMLine(getCtx(), getMPC_Order_BOMLine_ID(), get_TrxName()).length == 0  ) {
+                            
+                                    BigDecimal storageReservedBefore = obomline.getQtyReserved();
+                                    BigDecimal storageReservedAfter = storageReservedBefore.subtract(getMovementQty());
+
+
+                                    //Si entrego mas de lo que tenia disponible del reservado para la partida, entonces mi reservado pasa a CERO
+                                    if ( storageReservedAfter.signum() == -1 )
+                                        storageReservedAfter=BigDecimal.ZERO;
+
+                                    //Cantidad en la que se modifica el reserved del storage
+                                    diffReserved = storageReservedAfter.subtract(storageReservedBefore);
+                                    
+                                    //Se modifica el storage CERO con Default locator (Solo el reservado)                                  
+                                    MWarehouse wh = MWarehouse.get(getCtx(), obomline.getM_Warehouse_ID());
+                                    int defaultLocator = wh.getDefaultLocator().getM_Locator_ID();                               
+                                   
+                                    if (!MStorage.addDist(getCtx(), getM_Warehouse_ID(),
+                                        defaultLocator, getM_Product_ID(), getM_AttributeSetInstance_ID(), 0, //fjviejo e-evolution cambio qtyordered
+                                        //reservationAttributeSetInstance_ID, reservationAttributeSetInstance_ID,
+                                        BigDecimal.ZERO, diffReserved, BigDecimal.ZERO, get_TrxName())) {
+                                        m_processMsg = "Cannot correct Inventory";
+                                            return DocAction.STATUS_Invalid;
+                                        }
+                                    
+                                    //Seteo reservado en CERO para que no lo actualize nuevamente
+                                    diffReserved = BigDecimal.ZERO;
+                                }
+                             }
+
                         }
+                        catch (Exception e){
+                            log.severe(e.getMessage());
+                            return DocAction.STATUS_Invalid;
+                        }                     
 
                     }
                     /** BISion - 09/03/2009 - Santiago Ibañez
@@ -540,13 +622,19 @@ public class MMPCCostCollector extends X_MPC_Cost_Collector implements DocAction
                      */
                           
                     //if (!MStorage.add(getCtx(), getM_Warehouse_ID(),
-                    
+                    /*
                     if (!MStorage.addDist(getCtx(), getM_Warehouse_ID(),
                             getM_Locator_ID(),
                             getM_Product_ID(),
-                            getM_AttributeSetInstance_ID(), 0, //fjviejo e-evolution cambio qtyordered
+                            getM_AttributeSetInstance_ID(), reservationAttributeSetInstance_ID, //fjviejo e-evolution cambio qtyordered
                             //reservationAttributeSetInstance_ID, reservationAttributeSetInstance_ID,
-                            Qty, QtyIssue, QtyReceipt, get_TrxName())) {
+                            Qty, QtyIssue, QtyReceipt, get_TrxName())) {*/
+                    if (!MStorage.addDist(getCtx(), getM_Warehouse_ID(),
+                            M_Locator_ID,
+                            getM_Product_ID(),
+                            getM_AttributeSetInstance_ID(), reservationAttributeSetInstance_ID, //fjviejo e-evolution cambio qtyordered
+                            //reservationAttributeSetInstance_ID, reservationAttributeSetInstance_ID,
+                            Qty, diffReserved, QtyReceipt, get_TrxName())) {
                         m_processMsg = "Cannot correct Inventory";
                         return DocAction.STATUS_Invalid;
                     } else {
@@ -1360,6 +1448,19 @@ public class MMPCCostCollector extends X_MPC_Cost_Collector implements DocAction
 			return 31536000;
 		return 0;
 	}	//	getDurationBaseSec 
+        
+        public MMPCOrderQtyReserved getMMPCOrderQtyReserved() throws Exception {
+            
+            MStorage storage = MStorage.get(getCtx(),getM_Locator_ID() ,getM_Product_ID() , getM_AttributeSetInstance_ID(), get_TrxName());
+            
+            if (storage == null) {
+                throw new Exception("No se pudo obtener Storage para MMPCCostCollector: "+toString());
+            }
+
+
+            MMPCOrderQtyReserved qtyRes = MMPCOrderQtyReserved.get(getCtx(),storage,getMPC_Order_BOMLine_ID(),get_TrxName());
+            return qtyRes;
+        }
     
 }	//	MMovement
 

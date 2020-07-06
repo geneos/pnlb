@@ -128,70 +128,149 @@ public class MMovement extends org.compiere.model.MMovement implements DocAction
          * y se mueven a la nueva ubicacion, actualizando el control de reservados. Se chequea disponibilidad
          */
         MMovementLine[] lines = getLines(false);
+        if (isQtyReservedMovement()) {
+            if (!alcanzaStockReservado()) {
+                return DocAction.STATUS_Invalid;
+            }
+            if (!checkTargetLocator(lines)) {
+                return DocAction.STATUS_Invalid;
+            }
+            if (!moveReserved(lines)) {
+                return DocAction.STATUS_Invalid;
+            }
+        } else {
+            if (!alcanzaStock()) {
+                return DocAction.STATUS_Invalid;
+            }
 
-        if (!alcanzaStock()) {
-            return DocAction.STATUS_Invalid;
-        }
+
+            for (int i = 0; i < lines.length; i++) {
+                MMovementLine line = lines[i];
+                MTransaction trxFrom = null;
+                if (line.getM_AttributeSetInstance_ID() == 0) {
+                    MMovementLineMA mas[] = MMovementLineMA.get(getCtx(),
+                            line.getM_MovementLine_ID(), get_TrxName());
+                    for (int j = 0; j < mas.length; j++) {
+                        MMovementLineMA ma = mas[j];
+                        //
+                        MStorage storageFrom = MStorage.get(getCtx(), line.getM_Locator_ID(),
+                                line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(), get_TrxName());
+                        if (storageFrom == null) {
+                            storageFrom = MStorage.getCreate(getCtx(), line.getM_Locator_ID(),
+                                    line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(), get_TrxName());
+                        }
+                        //
+                        MStorage storageTo = MStorage.get(getCtx(), line.getM_LocatorTo_ID(),
+                                line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(), get_TrxName());
+                        if (storageTo == null) {
+                            storageTo = MStorage.getCreate(getCtx(), line.getM_LocatorTo_ID(),
+                                    line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(), get_TrxName());
+                        }
+                        //
+                        storageFrom.setQtyOnHand(storageFrom.getQtyOnHand().subtract(ma.getMovementQty()));
+                        if (!storageFrom.save(get_TrxName())) {
+                            m_processMsg = "Storage From not updated (MA)";
+                            return DocAction.STATUS_Invalid;
+                        }
+                        //
+                        storageTo.setQtyOnHand(storageTo.getQtyOnHand().add(ma.getMovementQty()));
+                        if (!storageTo.save(get_TrxName())) {
+                            m_processMsg = "Storage To not updated (MA)";
+                            return DocAction.STATUS_Invalid;
+                        }
+
+                        //
+                        trxFrom = new MTransaction(getCtx(), MTransaction.MOVEMENTTYPE_MovementFrom,
+                                line.getM_Locator_ID(), line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(),
+                                ma.getMovementQty().negate(), getMovementDate(), get_TrxName());
+                        trxFrom.setM_MovementLine_ID(line.getM_MovementLine_ID());
+                        if (!trxFrom.save()) {
+                            m_processMsg = "Transaction From not inserted (MA)";
+                            return DocAction.STATUS_Invalid;
+                        }
+                        //
+                        MTransaction trxTo = new MTransaction(getCtx(), MTransaction.MOVEMENTTYPE_MovementTo,
+                                line.getM_LocatorTo_ID(), line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(),
+                                ma.getMovementQty(), getMovementDate(), get_TrxName());
+                        trxTo.setM_MovementLine_ID(line.getM_MovementLine_ID());
+                        if (!trxTo.save()) {
+                            m_processMsg = "Transaction To not inserted (MA)";
+                            return DocAction.STATUS_Invalid;
+                        }
+
+                        /*
+                         **  Vit4B - 20/04/2007
+                         **
+                         **  Emisi�n de un aviso a compras para notificar el rechazo de material para tomar las
+                         **  medidas correspondientes.
+                         **
+                         **  Debe enviarse un mensaje para cada usuario de compras ... lo ideal seria mandarselo a todos los usuarios del rol compras ...
+                         **
+                         */
+
+                        MProduct product = new MProduct(Env.getCtx(), line.getM_Product_ID(), get_TrxName());
 
 
-        for (int i = 0; i < lines.length; i++) {
-            MMovementLine line = lines[i];
-            MTransaction trxFrom = null;
-            if (line.getM_AttributeSetInstance_ID() == 0) {
-                MMovementLineMA mas[] = MMovementLineMA.get(getCtx(),
-                        line.getM_MovementLine_ID(), get_TrxName());
-                for (int j = 0; j < mas.length; j++) {
-                    MMovementLineMA ma = mas[j];
-                    //
+                        int LocatorTo = line.getM_LocatorTo_ID();
+
+                        if (isRejection(LocatorTo)) {
+                            sendMessageRejection(product, getMovementDate(), ma.getM_AttributeSetInstance_ID());
+
+                        }
+
+                    }
+                }
+                //	Fallback - We have ASI
+                if (trxFrom == null) {
                     MStorage storageFrom = MStorage.get(getCtx(), line.getM_Locator_ID(),
-                            line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(), get_TrxName());
+                            line.getM_Product_ID(), line.getM_AttributeSetInstance_ID(), get_TrxName());
                     if (storageFrom == null) {
                         storageFrom = MStorage.getCreate(getCtx(), line.getM_Locator_ID(),
-                                line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(), get_TrxName());
+                                line.getM_Product_ID(), line.getM_AttributeSetInstance_ID(), get_TrxName());
                     }
                     //
                     MStorage storageTo = MStorage.get(getCtx(), line.getM_LocatorTo_ID(),
-                            line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(), get_TrxName());
+                            line.getM_Product_ID(), line.getM_AttributeSetInstanceTo_ID(), get_TrxName());
                     if (storageTo == null) {
                         storageTo = MStorage.getCreate(getCtx(), line.getM_LocatorTo_ID(),
-                                line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(), get_TrxName());
+                                line.getM_Product_ID(), line.getM_AttributeSetInstanceTo_ID(), get_TrxName());
                     }
                     //
-                    storageFrom.setQtyOnHand(storageFrom.getQtyOnHand().subtract(ma.getMovementQty()));
+                    storageFrom.setQtyOnHand(storageFrom.getQtyOnHand().subtract(line.getMovementQty()));
                     if (!storageFrom.save(get_TrxName())) {
-                        m_processMsg = "Storage From not updated (MA)";
+                        m_processMsg = "Storage From not updated";
                         return DocAction.STATUS_Invalid;
                     }
                     //
-                    storageTo.setQtyOnHand(storageTo.getQtyOnHand().add(ma.getMovementQty()));
+                    storageTo.setQtyOnHand(storageTo.getQtyOnHand().add(line.getMovementQty()));
                     if (!storageTo.save(get_TrxName())) {
-                        m_processMsg = "Storage To not updated (MA)";
+                        m_processMsg = "Storage To not updated";
                         return DocAction.STATUS_Invalid;
                     }
 
                     //
                     trxFrom = new MTransaction(getCtx(), MTransaction.MOVEMENTTYPE_MovementFrom,
-                            line.getM_Locator_ID(), line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(),
-                            ma.getMovementQty().negate(), getMovementDate(), get_TrxName());
+                            line.getM_Locator_ID(), line.getM_Product_ID(), line.getM_AttributeSetInstance_ID(),
+                            line.getMovementQty().negate(), getMovementDate(), get_TrxName());
                     trxFrom.setM_MovementLine_ID(line.getM_MovementLine_ID());
                     if (!trxFrom.save()) {
-                        m_processMsg = "Transaction From not inserted (MA)";
+                        m_processMsg = "Transaction From not inserted";
                         return DocAction.STATUS_Invalid;
                     }
                     //
                     MTransaction trxTo = new MTransaction(getCtx(), MTransaction.MOVEMENTTYPE_MovementTo,
-                            line.getM_LocatorTo_ID(), line.getM_Product_ID(), ma.getM_AttributeSetInstance_ID(),
-                            ma.getMovementQty(), getMovementDate(), get_TrxName());
+                            line.getM_LocatorTo_ID(), line.getM_Product_ID(), line.getM_AttributeSetInstanceTo_ID(),
+                            line.getMovementQty(), getMovementDate(), get_TrxName());
                     trxTo.setM_MovementLine_ID(line.getM_MovementLine_ID());
                     if (!trxTo.save()) {
-                        m_processMsg = "Transaction To not inserted (MA)";
+                        m_processMsg = "Transaction To not inserted";
                         return DocAction.STATUS_Invalid;
                     }
 
                     /*
                      **  Vit4B - 20/04/2007
                      **
-                     **  Emisi�n de un aviso a compras para notificar el rechazo de material para tomar las
+                     **  Emision de un aviso a compras para notificar el rechazo de material para tomar las
                      **  medidas correspondientes.
                      **
                      **  Debe enviarse un mensaje para cada usuario de compras ... lo ideal seria mandarselo a todos los usuarios del rol compras ...
@@ -204,109 +283,40 @@ public class MMovement extends org.compiere.model.MMovement implements DocAction
                     int LocatorTo = line.getM_LocatorTo_ID();
 
                     if (isRejection(LocatorTo)) {
-                        sendMessageRejection(product, getMovementDate(), ma.getM_AttributeSetInstance_ID());
-
+                        sendMessageRejection(product, getMovementDate(), line.getM_AttributeSetInstance_ID());
+                    }
+                }	//	Fallback
+                        /*
+                 * 07/06/2013 Maria Jesus Martin
+                 * Agregado para que genere un aviso al sistema por cada movimiento de
+                 * rechazo.
+                 */
+                MProduct product = new MProduct(Env.getCtx(), line.getM_Product_ID(), get_TrxName());
+                if (isRechazoMaterial(this.getC_DocType_ID())) {
+                    try {
+                        enviarMensajeRechazoMaterial(product, getMovementDate(), get_TrxName(), line.getM_AttributeSetInstance_ID(), line.getMovementQty(), line.getM_LocatorTo_ID());
+                    } catch (SQLException ex) {
+                        System.out.println("No se emitieron avisos");
                     }
 
                 }
-            }
-            //	Fallback - We have ASI
-            if (trxFrom == null) {
-                MStorage storageFrom = MStorage.get(getCtx(), line.getM_Locator_ID(),
-                        line.getM_Product_ID(), line.getM_AttributeSetInstance_ID(), get_TrxName());
-                if (storageFrom == null) {
-                    storageFrom = MStorage.getCreate(getCtx(), line.getM_Locator_ID(),
-                            line.getM_Product_ID(), line.getM_AttributeSetInstance_ID(), get_TrxName());
-                }
-                //
-                MStorage storageTo = MStorage.get(getCtx(), line.getM_LocatorTo_ID(),
-                        line.getM_Product_ID(), line.getM_AttributeSetInstanceTo_ID(), get_TrxName());
-                if (storageTo == null) {
-                    storageTo = MStorage.getCreate(getCtx(), line.getM_LocatorTo_ID(),
-                            line.getM_Product_ID(), line.getM_AttributeSetInstanceTo_ID(), get_TrxName());
-                }
-                //
-                storageFrom.setQtyOnHand(storageFrom.getQtyOnHand().subtract(line.getMovementQty()));
-                if (!storageFrom.save(get_TrxName())) {
-                    m_processMsg = "Storage From not updated";
-                    return DocAction.STATUS_Invalid;
-                }
-                //
-                storageTo.setQtyOnHand(storageTo.getQtyOnHand().add(line.getMovementQty()));
-                if (!storageTo.save(get_TrxName())) {
-                    m_processMsg = "Storage To not updated";
-                    return DocAction.STATUS_Invalid;
-                }
 
-                //
-                trxFrom = new MTransaction(getCtx(), MTransaction.MOVEMENTTYPE_MovementFrom,
-                        line.getM_Locator_ID(), line.getM_Product_ID(), line.getM_AttributeSetInstance_ID(),
-                        line.getMovementQty().negate(), getMovementDate(), get_TrxName());
-                trxFrom.setM_MovementLine_ID(line.getM_MovementLine_ID());
-                if (!trxFrom.save()) {
-                    m_processMsg = "Transaction From not inserted";
-                    return DocAction.STATUS_Invalid;
+                //Si el movimiento es por liberacion de producto terminado valido el campo LOTE ANDREANI
+                //Y lo traslado a la partida.
+                if (getC_DocType_ID() == 5000030 && line.getM_AttributeSetInstanceTo_ID() != 0) {
+                    if (line.getLoteAndreani() == null || line.getLoteAndreani().equals("")) {
+                        m_processMsg = "Error en linea: " + line + ". Lote andreani obligatorio";
+                        return DocAction.STATUS_Invalid;
+                    }
+                    MAttributeSetInstance masi = new MAttributeSetInstance(getCtx(), line.getM_AttributeSetInstanceTo_ID(), get_TrxName());
+                    masi.setLoteAndreani(line.getLoteAndreani());
+                    if (!masi.save()) {
+                        m_processMsg = "Error en linea: " + line + ". No se pudo actualizar lote andreani en partida";
+                        return DocAction.STATUS_Invalid;
+                    }
                 }
-                //
-                MTransaction trxTo = new MTransaction(getCtx(), MTransaction.MOVEMENTTYPE_MovementTo,
-                        line.getM_LocatorTo_ID(), line.getM_Product_ID(), line.getM_AttributeSetInstanceTo_ID(),
-                        line.getMovementQty(), getMovementDate(), get_TrxName());
-                trxTo.setM_MovementLine_ID(line.getM_MovementLine_ID());
-                if (!trxTo.save()) {
-                    m_processMsg = "Transaction To not inserted";
-                    return DocAction.STATUS_Invalid;
-                }
-
-                /*
-                 **  Vit4B - 20/04/2007
-                 **
-                 **  Emision de un aviso a compras para notificar el rechazo de material para tomar las
-                 **  medidas correspondientes.
-                 **
-                 **  Debe enviarse un mensaje para cada usuario de compras ... lo ideal seria mandarselo a todos los usuarios del rol compras ...
-                 **
-                 */
-
-                MProduct product = new MProduct(Env.getCtx(), line.getM_Product_ID(), get_TrxName());
-
-
-                int LocatorTo = line.getM_LocatorTo_ID();
-
-                if (isRejection(LocatorTo)) {
-                    sendMessageRejection(product, getMovementDate(), line.getM_AttributeSetInstance_ID());
-                }
-            }	//	Fallback
-                    /*
-             * 07/06/2013 Maria Jesus Martin
-             * Agregado para que genere un aviso al sistema por cada movimiento de
-             * rechazo.
-             */
-            MProduct product = new MProduct(Env.getCtx(), line.getM_Product_ID(), get_TrxName());
-            if (isRechazoMaterial(this.getC_DocType_ID())) {
-                try {
-                    enviarMensajeRechazoMaterial(product, getMovementDate(), get_TrxName(), line.getM_AttributeSetInstance_ID(), line.getMovementQty(), line.getM_LocatorTo_ID());
-                } catch (SQLException ex) {
-                    System.out.println("No se emitieron avisos");
-                }
-
-            }
-
-            //Si el movimiento es por liberacion de producto terminado valido el campo LOTE ANDREANI
-            //Y lo traslado a la partida.
-            if (getC_DocType_ID() == 5000030 && line.getM_AttributeSetInstanceTo_ID() != 0) {
-                if (line.getLoteAndreani() == null || line.getLoteAndreani().equals("")) {
-                    m_processMsg = "Error en linea: " + line + ". Lote andreani obligatorio";
-                    return DocAction.STATUS_Invalid;
-                }
-                MAttributeSetInstance masi = new MAttributeSetInstance(getCtx(), line.getM_AttributeSetInstanceTo_ID(), get_TrxName());
-                masi.setLoteAndreani(line.getLoteAndreani());
-                if (!masi.save()) {
-                    m_processMsg = "Error en linea: " + line + ". No se pudo actualizar lote andreani en partida";
-                    return DocAction.STATUS_Invalid;
-                }
-            }
-        }	//	for all lines
-        
+            }	//	for all lines
+        }
         //	User Validation
         String valid = ModelValidationEngine.get().fireDocValidate(this, ModelValidator.TIMING_AFTER_COMPLETE);
         if (valid != null) {
@@ -730,5 +740,167 @@ public class MMovement extends org.compiere.model.MMovement implements DocAction
         return check;
     }
 
+    private boolean moveReserved(MMovementLine[] lines) {
+        for (int i = 0; i < lines.length; i++) {
+            MMovementLine line = lines[i];
+            // Si no especifica partida, obtengo por FeFo todas las partidas de esa ubicacion y voy moviendo en cascada
+            // los reservados hasta completar 
+            if (line.getM_AttributeSetInstance_ID() == 0) {
+                BigDecimal qtyTotalResToMove = line.getMovementQty();
+                MAttributeSetInstance[] asis = null;//getAllForLocatorFEFO();
+                    /*MMovementLineMA mas[] = MMovementLineMA.get(getCtx(),
+                line.getM_MovementLine_ID(), get_TrxName());*/
+                for (int j = 0; j < asis.length && qtyTotalResToMove.signum() != 0; j++) {
+                    MAttributeSetInstance asi = asis[j];
+
+
+                    //Obtego storage From
+                    MStorage storageFrom = MStorage.get(getCtx(), line.getM_Locator_ID(),
+                            line.getM_Product_ID(), asi.getM_AttributeSetInstance_ID(), get_TrxName());
+
+                    if (storageFrom == null) {//Nunca puede ser nulo, debe existir si o si!
+                        m_processMsg = "Storage From not Found (FeFo)" + " Linea: " + line.getLine();
+                        return false;
+                    }
+                    //Obtengo/Creo storage To
+                    MStorage storageTo = MStorage.getCreate(getCtx(), line.getM_LocatorTo_ID(),
+                            line.getM_Product_ID(), asi.getM_AttributeSetInstance_ID(), get_TrxName());
+
+                    BigDecimal qtyResAvailable = storageFrom.getQtyReserved();
+                    BigDecimal qtyResToMove = BigDecimal.ZERO;
+
+
+                    if (qtyResAvailable.signum() != 0) {
+                        //Si quiero mover mas de lo que hay en este storage, muevo lo que me queda
+                        if (qtyTotalResToMove.compareTo(qtyResAvailable) > 0) {
+                            qtyResToMove = qtyResAvailable;
+                        } else {
+                            qtyResToMove = qtyTotalResToMove;
+                        }
+
+                        //Actualizo Storages
+                        if (!moveReservedFromTo(storageFrom, storageTo, qtyResToMove, line)) {
+                            return false;
+                        }
+
+                        //Decremento la cantidad restante a mover
+                        qtyTotalResToMove = qtyTotalResToMove.subtract(qtyResToMove);
+                    }
+                }
+            } //	Si tenemos Partida, entonces muevo solo de esa partida
+            else {
+                BigDecimal qtyResToMove = line.getMovementQty();
+
+                //Obtego storage From
+                MStorage storageFrom = MStorage.get(getCtx(), line.getM_Locator_ID(),
+                        line.getM_Product_ID(), line.getM_AttributeSetInstance_ID(), get_TrxName());
+
+                if (storageFrom == null) {//Nunca puede ser nulo, debe existir si o si!
+                    m_processMsg = "Storage From not Found" + " Linea: " + line.getLine();
+                    return false;
+                }
+                //Obtengo/Creo storage To
+                MStorage storageTo = MStorage.getCreate(getCtx(), line.getM_LocatorTo_ID(),
+                        line.getM_Product_ID(), line.getM_AttributeSetInstance_ID(), get_TrxName());
+
+                //Actualizo Storages
+                if (!moveReservedFromTo(storageFrom, storageTo, qtyResToMove, line)) {
+                    return false;
+                }
+            }
+        }	//	for all lines
+        return true;
+    }
+
+    private boolean moveReservedFromTo(MStorage storageFrom, MStorage storageTo, BigDecimal qtyResToMove, MMovementLine line) {
+
+        //Chequeo disponibilidad en Storage From
+        if (storageFrom.getQtyOnHand().compareTo(qtyResToMove) == -1) {
+            m_processMsg = "Cantidad en almacen insuficiente" + " Linea: " + line.getLine();
+            return false;
+        }
+        //Actualizo Storage From
+        storageFrom.setQtyOnHand(storageFrom.getQtyOnHand().subtract(qtyResToMove));
+        storageFrom.setQtyReserved(storageFrom.getQtyReserved().subtract(qtyResToMove));
+        if (!storageFrom.save(get_TrxName())) {
+            m_processMsg = "Storage From not updated (FeFo)" + " Linea: " + line.getLine();
+            return false;
+        }
+
+        //Actualizo Storage To
+        storageTo.setQtyOnHand(storageTo.getQtyOnHand().add(qtyResToMove));
+        storageTo.setQtyReserved(storageTo.getQtyReserved().add(qtyResToMove));
+        if (!storageTo.save(get_TrxName())) {
+            m_processMsg = "Storage To not updated (FeFo)" + " Linea: " + line.getLine();
+            return false;
+        }
+
+        //
+        MTransaction trxFrom = new MTransaction(getCtx(), MTransaction.MOVEMENTTYPE_MovementFrom,
+                line.getM_Locator_ID(), line.getM_Product_ID(), storageFrom.getM_AttributeSetInstance_ID(),
+                qtyResToMove.negate(), getMovementDate(), get_TrxName());
+        trxFrom.setM_MovementLine_ID(line.getM_MovementLine_ID());
+        if (!trxFrom.save()) {
+            m_processMsg = "Transaction From not inserted (FeFo)" + " Linea: " + line.getLine();
+            return false;
+        }
+        //
+        MTransaction trxTo = new MTransaction(getCtx(), MTransaction.MOVEMENTTYPE_MovementTo,
+                line.getM_LocatorTo_ID(), line.getM_Product_ID(), storageFrom.getM_AttributeSetInstance_ID(),
+                qtyResToMove, getMovementDate(), get_TrxName());
+        trxTo.setM_MovementLine_ID(line.getM_MovementLine_ID());
+        if (!trxTo.save()) {
+            m_processMsg = "Transaction To not inserted (FeFo)" + " Linea: " + line.getLine();
+            return false;
+        }
+
+        if (!updateReserveControl(storageFrom, storageTo, qtyResToMove)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean updateReserveControl(MStorage storageFrom, MStorage storageTo, BigDecimal qtyResToMove) {
+        //Obtengo todos los controles del StorageFrom, priorizando segun fecha en la que se emitio la orden
+        MMPCOrderQtyReserved[] resCtrls = MMPCOrderQtyReserved.getAllForStorage(getCtx(), storageFrom, get_TrxName());
+
+        //Actualizo Control de reservados del StorageFrom
+        BigDecimal ctrlTotalToMove = qtyResToMove;
+        for (int i = 0; i < resCtrls.length; i++) {
+            MMPCOrderQtyReserved resCtrlFrom = resCtrls[i];
+            BigDecimal ctrlToMove = BigDecimal.ZERO;
+            if (ctrlTotalToMove.compareTo(resCtrlFrom.getRemainingQty()) > 0) {
+                ctrlToMove = resCtrlFrom.getRemainingQty();
+            } else {
+                ctrlToMove = ctrlTotalToMove;
+            }
+
+            resCtrlFrom.setRemainingQty(resCtrlFrom.getRemainingQty().subtract(ctrlToMove));
+            resCtrlFrom.setTotalQty(resCtrlFrom.getTotalQty().subtract(ctrlToMove));
+            if (!resCtrlFrom.save()) {
+                log.log(Level.SEVERE, "Error al guardar control de reservado: " + resCtrlFrom + "del storage From");
+                return false;
+            }
+
+            //Obtengo/Creo el control
+            MMPCOrderQtyReserved resCtrlTo = MMPCOrderQtyReserved.getCreate(getCtx(), storageTo, resCtrlFrom.getMPC_Order_BOMLine_ID(), get_TrxName());
+            resCtrlTo.setRemainingQty(resCtrlTo.getRemainingQty().add(ctrlToMove));
+            resCtrlTo.setTotalQty(resCtrlTo.getTotalQty().add(ctrlToMove));
+            resCtrlTo.setUseOrder(resCtrlFrom.getUseOrder());
+            if (!resCtrlTo.save()) {
+                log.log(Level.SEVERE, "Error al guardar control de reservado: " + resCtrlTo + " del storage To");
+                return false;
+            }
+
+            ctrlTotalToMove = ctrlTotalToMove.subtract(ctrlToMove);
+
+        }
+
+        //Puede sobrar cantidad a reservar, ya que otros documentos pueden reservar en los Storages
+        if (ctrlTotalToMove.signum() > 0) {
+            log.log(Level.SEVERE, "Se hizo movimiento de reservado, pero hay cantidades reservadas que no estan vinculadas a ordenes");
+        }
+        return true;
+    }
 }	//	MMovement
 
