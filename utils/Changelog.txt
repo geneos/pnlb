@@ -75,3 +75,11 @@
 #Version 20200611
 - Se remueve chequeo de asientos mayores a 100 millones en la importacion de Lineas de Diario CG (776)
 - PARAMETRIZACION DE PRODUCTOS EN COMPIERE. (750)
+#Version 20200629
+- Incorporacion de asientos de apertura, cierre y resultados en libro diario (524)
+- Ajuste a sistema de reservados para volver al esquema de reservados globales (737)
+#Version 20200708
+- Se remueven ajuste a sistemas de reservados para volver a esquema de reservados globales, conservando el esquema por partida (737)
+- Se remueven restricciones a las ubicaciones destino al hacer movimiento de reservados (737)
+#Version 20200713
+- Se agrega funcionalidad de completar lote_andreani con 0 cuando el mismo no llega a 3 digitos en Exportar txt Andreani (788)

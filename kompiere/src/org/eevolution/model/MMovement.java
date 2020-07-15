@@ -132,9 +132,10 @@ public class MMovement extends org.compiere.model.MMovement implements DocAction
             if (!alcanzaStockReservado()) {
                 return DocAction.STATUS_Invalid;
             }
-            if (!checkTargetLocator(lines)) {
+            //Se deshabilita chequeo de Target Locator
+            /*if (!checkTargetLocator(lines)) {
                 return DocAction.STATUS_Invalid;
-            }
+            }*/
             if (!moveReserved(lines)) {
                 return DocAction.STATUS_Invalid;
             }

@@ -54,7 +54,7 @@ public class RepostPayments extends SvrProcess {
                     + "GROUP BY  p.c_payment_id ";
     
      private static String sqlPagosEspecificos = "select C_Payment_ID FROM c_payment "
-                    + "WHERE c_payment_id in (5183408) ";   
+                    + "WHERE c_payment_id in (5185196,5185227,5185229,5185280) ";   
      //  (5180745,5181998,5183408)
     
     private static String sqlRecibos2020 = "select C_Payment_ID from C_Payment   "

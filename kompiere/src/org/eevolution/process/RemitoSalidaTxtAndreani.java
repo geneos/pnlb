@@ -137,7 +137,8 @@ public class RemitoSalidaTxtAndreani extends SvrProcess {
                 crea_mm = crea_date[1];
                 crea_yy = crea_date[0].substring(0, 4);
 
-                venc_txt = rs.getDate(3).toString();
+                
+                venc_txt = rs.getString(3) != null ? rs.getString(3) : "0000-00-00";
                 venc_date = venc_txt.split("-");
                 venc_dd = venc_date[2];
                 venc_mm = venc_date[1];
@@ -146,6 +147,7 @@ public class RemitoSalidaTxtAndreani extends SvrProcess {
                 System.out.println(venc_date[1]);
                 System.out.println(venc_date[2]);
                 lote_txt = rs.getString(4) != null ? rs.getString(4) : "";
+                lote_txt = completeWhitZeros(lote_txt, 3);
                 desc = rs.getString(5) != null ? rs.getString(5) : "";
 
 
