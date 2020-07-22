@@ -82,9 +82,7 @@ public class T_ProductCheckActualizado extends SvrProcess
          *  Zynnia
          * 
          */
-        
-        private int p_M_WarehouseOrigen_ID = 0;
-	
+        	
         /** The Record */
 	private int p_Record_ID = 0;
 	
@@ -97,7 +95,7 @@ public class T_ProductCheckActualizado extends SvrProcess
         private int p_WH_AprobadoFamatina = 1000028 ;
         private int p_WH_AndreaniMPAprobado = 1000076 ;
         private int p_WH_DepositoTercerosAprobado = 1000032 ;
-                private Vector<Integer> listAprobados = new Vector<Integer>();
+        private Vector<Integer> listAprobados = new Vector<Integer>();
 
         
 
@@ -143,11 +141,7 @@ public class T_ProductCheckActualizado extends SvrProcess
                             p_M_Product_ID10 = para[i].getParameterAsInt();
                    
                     } else if (name.equals("M_Warehouse_ID"))
-                        if (i==0)
-                            p_M_WarehouseOrigen_ID = para[i].getParameterAsInt();
-                        else
-                            p_M_Warehouse_ID = para[i].getParameterAsInt();
-                    
+                            p_M_Warehouse_ID = para[i].getParameterAsInt();    
                     else if (name.equals("Quantity")){
                         if (i==2)
                             p_Quantity1 = para[i].getParameterAsInt();
@@ -383,8 +377,6 @@ public class T_ProductCheckActualizado extends SvrProcess
                 BigDecimal qtyAvailable = Env.ZERO;
                 BigDecimal qtyReserved = Env.ZERO;
 
-                String res = "";
-                String sqlupd = "";
                 String sqlins = "";
                 String desc = "";
 
@@ -461,31 +453,6 @@ public class T_ProductCheckActualizado extends SvrProcess
                         String sqlUpdateBloqueo ="update T_Bloqueos set bloqueado = 'N' where AD_Process_ID = 1000292";
                         DB.executeUpdate(sqlUpdateBloqueo,null);                          
                     }
-                    
-                    /**
-                     *  Buscamos el QtyOnHand y el QtyReserved para el almacen de Origen seleccionado.
-                     */
-                    String sqlLocator = "select value from M_Locator where M_Warehouse_ID = " +
-                                        p_M_WarehouseOrigen_ID;
-                    try
-                    {
-                        pstmtt = DB.prepareStatement(sqlLocator,null);
-                        rst = pstmtt.executeQuery();
-                        while (rst.next())
-                        {
-                            qtyOnHand = getQtyDeposito(productBOM, rst.getString(1));
-                        }
-                        rst.close();
-                        pstmtt.close();
-                    }
-                    catch(SQLException tex)
-                    {
-                        log.info("Bloqueo de doIt para Explosión de materiales");
-                        String sqlUpdateBloqueo ="update T_Bloqueos set bloqueado = 'N' where AD_Process_ID = 1000292";
-                        DB.executeUpdate(sqlUpdateBloqueo,null);
-                    }
-                    if(qtyOnHand == null)
-                        qtyOnHand = Env.ZERO;
 
                     /*
                      *  Sumo todos los QtyOnHand para los almacenes Cuarentena guardandolo en la variable
@@ -514,60 +481,15 @@ public class T_ProductCheckActualizado extends SvrProcess
                     }
                     if(qtyCuarentena == null)
                         qtyCuarentena = Env.ZERO;
-                    /*
-                     *  Para el WareHouse de Origen tomo el QtyReserved y se lo resto a QtyAvailable, y
-                     *  se lo sumo al acumulado de QtyReserved.
-                     */
-                    sqlLocator = "select value from M_Locator where M_Warehouse_ID = " +
-                                        p_M_WarehouseOrigen_ID;
                     
-                    qtyAvailable = qtyOnHand;
-                    qtyReserved =  Env.ZERO;
-                    
-                    try
-                    {
-                        PreparedStatement pstmtLocator = DB.prepareStatement(sqlLocator,null);
-                        ResultSet rsLocator = pstmtLocator.executeQuery();
 
-                        while (rsLocator.next())
-                        {
-                            //storage = MStorage.get(getCtx(), rsLocator.getInt(1), productBOM, 0, null);
-                            /*
-                             *  22/07/2013 Maria Jesus
-                             *  Modificacion para que tome todos los reservados y todos los qtyonhand de cada partida, no
-                             *  solo la que tiene 0.
-                             *  Se calcula como la suma de todos los reservados y de todos los qtyonhand de cada par
-                             *  <almacen, producto> del almacen de origen.
-                             */
-
-                            if(storage != null){
-                             //   qtyAvailable =  qtyAvailable.subtract(storage.getQtyReserved());
-                                qtyAvailable =  qtyAvailable.subtract(getQtyReservedDeposito(productBOM, rsLocator.getString(1)));
-                                //   qtyReserved = qtyReserved.add(storage.getQtyReserved());
-                                qtyReserved = qtyReserved.add(getQtyReservedDeposito(productBOM, rsLocator.getString(1)));
-                            }
-                        }
-                        rsLocator.close();
-                        pstmtLocator.close();
-                    }
-                    catch(SQLException tex) {
-                        log.info("Bloqueo de doIt para Explosión de materiales");
-                        String sqlUpdateBloqueo ="update T_Bloqueos set bloqueado = 'N' where AD_Process_ID = 1000292";
-                        DB.executeUpdate(sqlUpdateBloqueo,null);                          
-                    }
-
-                    /**
-                     *  Resto los reservados en qtyAvailable y sumo en QtyReserved de todos los almacenes aprobados,
-                     *  y sumo todos los QtyOnHand.
-                     */
                     /**
                      * Discrimino las cantidades para los almacenes Aprobados
                      */
                     
-                    
                     for (int j = 0; j < listAprobados.size();j++){
                         String sqlLocatorAprobados = "select value from M_Locator where M_Warehouse_ID = " +
-                                            listAprobados.elementAt(j);
+                                            listAprobados.elementAt(j); 
                         try
                         {
                             PreparedStatement pstmtLocatorAprobados = DB.prepareStatement(sqlLocatorAprobados,null);
@@ -583,21 +505,20 @@ public class T_ProductCheckActualizado extends SvrProcess
                                  *  <almacen, producto>
                                  */
                                     qtyAvailable =  qtyAvailable.add(getQtyDeposito(productBOM, rsLocatorAprobados.getString(1)));
-                                    //qtyOnHand =  qtyOnHand.add(getQtyDeposito(productBOM, rsLocatorAprobados.getString(1)));
                                     qtyAvailable =  qtyAvailable.subtract(getQtyReservedDeposito(productBOM, rsLocatorAprobados.getString(1)));
                                     qtyReserved = qtyReserved.add(getQtyReservedDeposito(productBOM, rsLocatorAprobados.getString(1)));
                                     
                                     //Acumulo en cada variable por separado
                                     if (listAprobados.elementAt(j) == p_WH_AprobadoFamatina) {
-                                        qtyOnHand_AprobadoFamatina = getQtyDeposito(productBOM, rsLocatorAprobados.getString(1));
+                                        qtyOnHand_AprobadoFamatina = qtyOnHand_AprobadoFamatina.add(getQtyDeposito(productBOM, rsLocatorAprobados.getString(1)));
                                     }
                                      //
                                     if (listAprobados.elementAt(j) == p_WH_AndreaniMPAprobado) {
-                                        qtyOnHand_AndreaniMPAprobado = getQtyDeposito(productBOM, rsLocatorAprobados.getString(1));
+                                        qtyOnHand_AndreaniMPAprobado = qtyOnHand_AndreaniMPAprobado.add(getQtyDeposito(productBOM, rsLocatorAprobados.getString(1)));
                                     }
                                      //
                                     if (listAprobados.elementAt(j) == p_WH_DepositoTercerosAprobado) {
-                                       qtyOnHand_DepositoTercerosAprobado = getQtyDeposito(productBOM, rsLocatorAprobados.getString(1));
+                                       qtyOnHand_DepositoTercerosAprobado = qtyOnHand_DepositoTercerosAprobado.add(getQtyDeposito(productBOM, rsLocatorAprobados.getString(1)));
                                     }
                             }
                             rsLocatorAprobados.close();
@@ -625,18 +546,27 @@ public class T_ProductCheckActualizado extends SvrProcess
                         if(qtyAvailable.compareTo(Env.ZERO) < 0){
                             System.out.println("Ojo !!!! qtyAvailable menor a 0");
                             qtyAvailable = Env.ZERO;
-                        }                        
+                        }                      
+                        
+                        /*
+                         sqlins  = "INSERT INTO T_PRODUCTCHECK_DET "
+                            + "(AD_CLIENT_ID,AD_ORG_ID,M_PRODUCT_ID,NAME,QTYREQUIERED,QTYONHAND,QTYRESERVED,QTYAVAILABLE,QTYCUARENTENA,AD_PInstance_ID,M_Warehouse_ID,Quantity,T_PRODUCTCHECK_DET_ID,qtyOnHand_AprobadoFamatina,qtyOnHand_AndreaniMPAprobado,qtyOnHand_DepTercerosAprobado) VALUES "
+                            + "(1000002, 1000033, " + productBOM + ", '" + desc + "', " + qtyRequiered + ", "
+                            + qtyOnHand + ", " + qtyReserved + ", " + qtyAvailable + ", " + qtyCuarentena + ", 0" + p_M_WarehouseOrigen_ID + ", " + p_Quantity +" ,"+count+" ,"+qtyOnHand_AprobadoFamatina+" ,"+qtyOnHand_AndreaniMPAprobado+" ,"+qtyOnHand_DepositoTercerosAprobado+")";
+                        
+                         */
                         
                         sqlins  = "INSERT INTO T_PRODUCTCHECK_DET "
                             + "(AD_CLIENT_ID,AD_ORG_ID,M_PRODUCT_ID,NAME,QTYREQUIERED,QTYONHAND,QTYRESERVED,QTYAVAILABLE,QTYCUARENTENA,AD_PInstance_ID,M_Warehouse_ID,Quantity,T_PRODUCTCHECK_DET_ID,qtyOnHand_AprobadoFamatina,qtyOnHand_AndreaniMPAprobado,qtyOnHand_DepTercerosAprobado) VALUES "
                             + "(1000002, 1000033, " + productBOM + ", '" + desc + "', " + qtyRequiered + ", "
-                            + qtyOnHand + ", " + qtyReserved + ", " + qtyAvailable + ", " + qtyCuarentena + ", 0, " + p_M_WarehouseOrigen_ID + ", " + p_Quantity +" ,"+count+" ,"+qtyOnHand_AprobadoFamatina+" ,"+qtyOnHand_AndreaniMPAprobado+" ,"+qtyOnHand_DepositoTercerosAprobado+")";
+                            + qtyOnHand + ", " + qtyReserved + ", " + qtyAvailable + ", " + qtyCuarentena + ", 0, 0 , " + p_Quantity +" ,"+count+" ,"+qtyOnHand_AprobadoFamatina+" ,"+qtyOnHand_AndreaniMPAprobado+" ,"+qtyOnHand_DepositoTercerosAprobado+")";
                         
                         count = count+1;
                         
                      }
                      pstmtt = DB.prepareStatement(sqlins.toString(),null);
 		     rst = pstmtt.executeQuery();
+                     String res =  null;
 
                      if (rst.next())
                      {
@@ -685,13 +615,21 @@ public class T_ProductCheckActualizado extends SvrProcess
     private void cargarHeader()throws SQLException{
         //String sqlDel = "delete from T_PRODUCTCHECK_CAB";
         //DB.executeUpdate(sqlDel, null);
-        String sqlIns = "insert into T_PRODUCTCHECK_CAB(AD_Client_ID, AD_Org_ID,IsActive,AD_PInstance_ID,M_Warehouse_ID, " +
+        /*String sqlIns = "insert into T_PRODUCTCHECK_CAB(AD_Client_ID, AD_Org_ID,IsActive,AD_PInstance_ID,M_Warehouse_ID, " +
                         "Producto1, Cantidad1, Producto2, Cantidad2, " +
                         "Producto3, Cantidad3, Producto4, Cantidad4, " +
                         "Producto5, Cantidad5, Producto6, Cantidad6, " +
                         "Producto7, Cantidad7, Producto8, Cantidad8, " +
                         "Producto9, Cantidad9, Producto10, Cantidad10, T_PRODUCTCHECK_CAB_ID) " +
                         "values(1000002,1000033,'Y', 0," + p_M_WarehouseOrigen_ID + ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";
+        */
+        String sqlIns = "insert into T_PRODUCTCHECK_CAB(AD_Client_ID, AD_Org_ID,IsActive,AD_PInstance_ID,M_Warehouse_ID, " +
+                        "Producto1, Cantidad1, Producto2, Cantidad2, " +
+                        "Producto3, Cantidad3, Producto4, Cantidad4, " +
+                        "Producto5, Cantidad5, Producto6, Cantidad6, " +
+                        "Producto7, Cantidad7, Producto8, Cantidad8, " +
+                        "Producto9, Cantidad9, Producto10, Cantidad10, T_PRODUCTCHECK_CAB_ID) " +
+                        "values(1000002,1000033,'Y', 0,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)";
         PreparedStatement ps = DB.prepareStatement(sqlIns, null);
         //Producto 1
         MProduct p = new MProduct(getCtx(), p_M_Product_ID1, null);
