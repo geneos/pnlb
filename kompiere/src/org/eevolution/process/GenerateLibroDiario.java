@@ -100,7 +100,6 @@ public class GenerateLibroDiario extends SvrProcess {
                         
                     count = 0;
                     do {
-                        System.out.println("Asiento con fecha: "+rs.getDate(4));
                         if (asiento(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(5), rs.getDate(4), rs.getInt(8), rs.getString(9), asientoid)) {
                             secuencia = renglon(rs.getInt(1), rs.getInt(2), rs.getInt(5), secuencia, rs.getInt(8), asientoid, rs.getString(9));
                         }
@@ -110,7 +109,6 @@ public class GenerateLibroDiario extends SvrProcess {
                             DB.commit(true, get_TrxName());
 
                             date = new Date(System.currentTimeMillis());
-                            System.out.println("[" + formatter.format(date) + "] Commit!: " + asientoid);
                         }
 
                         asientoid++;
@@ -393,7 +391,7 @@ public class GenerateLibroDiario extends SvrProcess {
 
             if (rs.next()) {
                 do {
-                    String descripcion = "";
+                    String descripcion = rs.getString(4);
                     if (ad_table_id == MPayment.getTableId(MPayment.Table_Name) && rs.getString(4) != null) {
                         //Optimization
                         /*MPayment pay = new MPayment(getCtx(), record_id, null);

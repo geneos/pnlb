@@ -85,3 +85,5 @@
 - Se agrega funcionalidad de completar lote_andreani con 0 cuando el mismo no llega a 3 digitos en Exportar txt Andreani (788)
 #Version 20200722
 - Se incorporan modificaciones a la explosion de materiales: Discriminado de cantidades en almacenes aprobados (741)
+#Version 20200724
+- Se agrega descripcion a los asientos del DEBE en el libro diario (524)
