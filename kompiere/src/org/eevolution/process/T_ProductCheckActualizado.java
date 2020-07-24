@@ -119,23 +119,23 @@ public class T_ProductCheckActualizado extends SvrProcess
                             ;			
                     else if (name.equals("M_Product_ID")){
                         //Como el nombre es el mismo para los 3 me fijo cual encuentra primero
-                        if (i==1)
+                        if (i==0)
                             p_M_Product_ID1 = para[i].getParameterAsInt();
-                        else if (i==3)
+                        else if (i==2)
                             p_M_Product_ID2 = para[i].getParameterAsInt();
-                        else if (i==5)
+                        else if (i==4)
                             p_M_Product_ID3 = para[i].getParameterAsInt();
-                        else if (i==7)
+                        else if (i==6)
                             p_M_Product_ID4 = para[i].getParameterAsInt();
-                        else if (i==9)
+                        else if (i==8)
                             p_M_Product_ID5 = para[i].getParameterAsInt();
-                        else if (i==11)
+                        else if (i==10)
                             p_M_Product_ID6 = para[i].getParameterAsInt();
-                        else if (i==13)
+                        else if (i==12)
                             p_M_Product_ID7 = para[i].getParameterAsInt();
-                        else if (i==15)
+                        else if (i==14)
                             p_M_Product_ID8 = para[i].getParameterAsInt();
-                        else if (i==17)
+                        else if (i==16)
                             p_M_Product_ID9 = para[i].getParameterAsInt();
                         else
                             p_M_Product_ID10 = para[i].getParameterAsInt();
@@ -143,23 +143,23 @@ public class T_ProductCheckActualizado extends SvrProcess
                     } else if (name.equals("M_Warehouse_ID"))
                             p_M_Warehouse_ID = para[i].getParameterAsInt();    
                     else if (name.equals("Quantity")){
-                        if (i==2)
+                        if (i==1)
                             p_Quantity1 = para[i].getParameterAsInt();
-                        else if (i==4)
+                        else if (i==3)
                             p_Quantity2 = para[i].getParameterAsInt();
-                        else if (i== 6)
+                        else if (i== 5)
                             p_Quantity3 = para[i].getParameterAsInt();
-                        else if (i== 8)
+                        else if (i== 7)
                             p_Quantity4 = para[i].getParameterAsInt();
-                        else if (i== 10)
+                        else if (i== 9)
                             p_Quantity5 = para[i].getParameterAsInt();
-                        else if (i== 12)
+                        else if (i== 11)
                             p_Quantity6 = para[i].getParameterAsInt();
-                        else if (i== 14)
+                        else if (i== 13)
                             p_Quantity7 = para[i].getParameterAsInt();
-                        else if (i== 16)
+                        else if (i== 15)
                             p_Quantity8 = para[i].getParameterAsInt();
-                        else if (i== 18)
+                        else if (i== 17)
                             p_Quantity9 = para[i].getParameterAsInt();
                         else
                             p_Quantity10 = para[i].getParameterAsInt();
@@ -557,9 +557,9 @@ public class T_ProductCheckActualizado extends SvrProcess
                          */
                         
                         sqlins  = "INSERT INTO T_PRODUCTCHECK_DET "
-                            + "(AD_CLIENT_ID,AD_ORG_ID,M_PRODUCT_ID,NAME,QTYREQUIERED,QTYONHAND,QTYRESERVED,QTYAVAILABLE,QTYCUARENTENA,AD_PInstance_ID,M_Warehouse_ID,Quantity,T_PRODUCTCHECK_DET_ID,qtyOnHand_AprobadoFamatina,qtyOnHand_AndreaniMPAprobado,qtyOnHand_DepTercerosAprobado) VALUES "
+                            + "(AD_CLIENT_ID,AD_ORG_ID,M_PRODUCT_ID,NAME,QTYREQUIERED,QTYONHAND,QTYRESERVED,QTYAVAILABLE,QTYCUARENTENA,AD_PInstance_ID,M_Warehouse_ID,Quantity,T_PRODUCTCHECK_DET_ID,qtyOnHand_AprobadoFamatina,qtyOnHand_AndreaniMPAprobado,qtyOnHand_DepTercerosAprobado,T_PRODUCTCHECK_CAB_ID ) VALUES "
                             + "(1000002, 1000033, " + productBOM + ", '" + desc + "', " + qtyRequiered + ", "
-                            + qtyOnHand + ", " + qtyReserved + ", " + qtyAvailable + ", " + qtyCuarentena + ", 0, 0 , " + p_Quantity +" ,"+count+" ,"+qtyOnHand_AprobadoFamatina+" ,"+qtyOnHand_AndreaniMPAprobado+" ,"+qtyOnHand_DepositoTercerosAprobado+")";
+                            + qtyOnHand + ", " + qtyReserved + ", " + qtyAvailable + ", " + qtyCuarentena + ", 0, 0 , " + p_Quantity +" ,"+count+" ,"+qtyOnHand_AprobadoFamatina+" ,"+qtyOnHand_AndreaniMPAprobado+" ,"+qtyOnHand_DepositoTercerosAprobado+",1)";
                         
                         count = count+1;
                         
