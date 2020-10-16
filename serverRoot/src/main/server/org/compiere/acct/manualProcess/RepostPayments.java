@@ -53,8 +53,17 @@ public class RepostPayments extends SvrProcess {
                     + "WHERE p.c_payment_id in ( 5182437) "
                     + "GROUP BY  p.c_payment_id ";
     
+    private static String sqlPagosEspecificosConMalaCotizacion = "select p.C_Payment_ID,SUM(pv.importe),SUM(pv.mextranjera), p.COTIZACION, ROUND(SUM(pv.importe) / SUM(pv.mextranjera),3) as cotizacion_calc" +
+                    " FROM c_payment p " +
+                    " JOIN c_valorpago pv on pv.c_payment_id = p.c_payment_id " +
+                    " WHERE extract(YEAR from dateacct) = 2020 " +
+                    " and docstatus in ('CO','CL') " +
+                    " and p.c_currency_id != 118 " +
+                    " GROUP BY  p.c_payment_id,p.COTIZACION " +
+                    " HAVING  ROUND(SUM(pv.importe) / SUM(pv.mextranjera),3) <> p.COTIZACION";
+    
      private static String sqlPagosEspecificos = "select C_Payment_ID FROM c_payment "
-                    + "WHERE c_payment_id in (5185196,5185227,5185229,5185280) ";   
+                    + "WHERE c_payment_id in (5189550) ";   
      //  (5180745,5181998,5183408)
     
     private static String sqlRecibos2020 = "select C_Payment_ID from C_Payment   "

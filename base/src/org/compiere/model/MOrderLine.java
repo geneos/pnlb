@@ -621,7 +621,8 @@ public class MOrderLine extends X_C_OrderLine {
             if (m_productPrice == null) {
                 getProductPricing(m_M_PriceList_ID);
             }
-            if (!m_productPrice.isCalculated()) {
+            if (!m_productPrice.isCalculated() 
+                    && !Env.getContext(Env.getCtx(), "OmitPriceListValidation").equals("Y")) {
                 JOptionPane.showMessageDialog(null, Msg.getMsg(getCtx(), "ProductNotOnPriceList"), "Info", JOptionPane.ERROR_MESSAGE);
                 log.saveError("Error", Msg.getMsg(getCtx(), "ProductNotOnPriceList"));
                 return false;

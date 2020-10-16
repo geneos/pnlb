@@ -1337,8 +1337,8 @@ public class MInvoice extends X_C_Invoice implements DocAction {
          *  25/10/2013 Maria Jesus Martin
          *  Verificacion de la existencia de la direccion de un socio de negocio.
          */
-        MBPartnerLocation bPartnerLocation = new MBPartnerLocation(getCtx(), getC_BPartner_ID(), null);
-        if (bPartnerLocation == null) {
+        MBPartnerLocation bPartnerLocation = new MBPartnerLocation(getCtx(), getC_BPartner_Location_ID(), get_TrxName());
+        if (bPartnerLocation == null || bPartnerLocation.get_ID() == 0) {
             JOptionPane.showMessageDialog(null, "El Socio de Negocio no tiene Localización. Por favor agregue estos datos en la Ventana del Socio de Negocio.", "Error - Socio de Negocio", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -1488,6 +1488,50 @@ public class MInvoice extends X_C_Invoice implements DocAction {
         }
         //	log.fine("getAllocatedAmt - " + retValue);
         //	? ROUND(NVL(v_AllocatedAmt,0), 2);
+        return retValue;
+    }	//	getAllocatedAmt
+    
+    /**
+     * 	Get Allocated OCs of Invoice
+     *	@return concatenated OCs DocumentNo
+     */
+    public String getAllocatedOCs() {
+        String retValue = "";
+        boolean found = false;
+        String sql = "SELECT distinct o.DocumentNo  "
+                + "FROM M_MatchPO mpo"
+                + " INNER JOIN C_InvoiceLine il ON (mpo.C_InvoiceLine_ID =  il.C_InvoiceLine_ID)"
+                + " INNER JOIN C_Invoice i ON (il.C_Invoice_ID=i.C_Invoice_ID) "
+                + " INNER JOIN C_OrderLine ol ON (ol.C_OrderLine_ID=mpo.C_OrderLine_ID) "
+                + " INNER JOIN C_Order o ON (o.C_Order_ID=ol.C_Order_ID) "
+                + " WHERE mpo.isactive='Y' AND o.isActive ='Y' "
+                + " AND i.C_Invoice_ID=?";
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = DB.prepareStatement(sql, get_TrxName());
+            pstmt.setInt(1, getC_Invoice_ID());
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                found = true;
+                retValue += rs.getString(1) + ", ";
+            }
+            rs.close();
+            pstmt.close();
+            pstmt = null;
+        } catch (Exception e) {
+            log.log(Level.SEVERE, sql, e);
+        }
+        try {
+            if (pstmt != null) {
+                pstmt.close();
+            }
+            pstmt = null;
+        } catch (Exception e) {
+            pstmt = null;
+        }
+        if (found)
+            retValue = retValue.substring(0, retValue.length() - 2);
         return retValue;
     }	//	getAllocatedAmt
 
@@ -2472,7 +2516,6 @@ public class MInvoice extends X_C_Invoice implements DocAction {
         {
             setCotizacion(TasaCambio.rate(getC_Currency_ID(), acct.getC_Currency_ID(), getDateAcct(), getC_ConversionType_ID(), getAD_Client_ID(), getAD_Org_ID()));
         }
-
         m_processMsg = info.toString().trim();
         setProcessed(true);
         setDocAction(DOCACTION_Close);

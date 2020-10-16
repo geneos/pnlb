@@ -509,6 +509,24 @@ public class MVALORPAGO extends X_C_VALORPAGO {
         
     }   
     
+    public static MVALORPAGO getCheque(Properties ctx, String cheque, String trxName) {
+        MVALORPAGO ret = null;
+        String sql = "SELECT * "
+                        + "FROM C_ValorPago "
+                        + "WHERE NroCheque = '" +cheque + "'";
+                try {
+                    PreparedStatement pstm = DB.prepareStatement(sql, trxName);
+                    ResultSet rs = pstm.executeQuery();
+                    if (rs.next()) 
+                        ret = new MVALORPAGO(ctx, rs, trxName);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    
+                }
+                        
+        return ret;
+    }
+    
     
     
     

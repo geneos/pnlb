@@ -290,6 +290,13 @@ public class X_C_VALORPAGO extends PO {
     public String getTIPO() {
         return (String) get_Value("TIPO");
     }
+    
+    /**
+     * Get TIPO
+     */
+    public String getSTATE() {
+        return (String) get_Value("STATE");
+    }
 
     /**
      * REQ-037 - Modificado por Daniel Gini.

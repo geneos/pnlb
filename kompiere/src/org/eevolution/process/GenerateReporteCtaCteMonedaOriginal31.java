@@ -166,7 +166,6 @@ protected String doIt() throws Exception {
 
     // Agregar mensaje con sistema de compiere
 
-
     GregorianCalendar cal = new GregorianCalendar();
     cal.set(2011, Calendar.NOVEMBER, 30, 00, 00, 00);
     Date desde = cal.getTime();
@@ -371,14 +370,14 @@ protected String doIt() throws Exception {
                     // Jose Fantasia
                     // Zynnia
 
-                    sql = "INSERT INTO T_CTACTE_BPARTNER_DETALLE VALUES(?,?,'Y',?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    sql = "INSERT INTO T_CTACTE_BPARTNER_DETALLE VALUES(?,?,'Y',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     ps = DB.prepareStatement(sql, null);
                     ps.setInt(1, cliente);						//	CLIENTE
                     ps.setInt(2, organizacion);					//	ORGANIZACION
                     //Luego del 'Y'
                     ps.setInt(3, rs.getInt(8));					//	C_BPARTNER_ID
                     ps.setInt(4, p_instance);					//	INSTANCE
-                    ps.setDate(5, null);						//	FECHA
+                    ps.setDate(5, null);						//	FECHA TRANSACCION
                     ps.setString(6, "Saldo de Inicio");			//	CONCEPTO
                     // 	Si saldo es positivo va en el DEBE
                     if (saldoInicial.compareTo(BigDecimal.ZERO)>0){
@@ -408,8 +407,8 @@ protected String doIt() throws Exception {
                     ps.setString(13, null);						//	CODIGO_MONEDA
                     ps.setInt(14, CC_BPARTNER_ID);				//	T_CS_BPARTNER_ID
                     ps.setString(15, null);						//	TASA
-                    ps.setString(16, null);						//	MONEDA ORIGEN
-
+                    ps.setString(16, null);
+                    ps.setDate(17, null); // Fecha ACCT	
 
                     ps.executeUpdate();
                     ps.close();
@@ -430,14 +429,14 @@ protected String doIt() throws Exception {
                         // Zynnia
 
                         // 	Ingreso en la tabla el detalle los totales
-                        sql = "INSERT INTO T_CTACTE_BPARTNER_DETALLE VALUES(?,?,'Y',?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                        sql = "INSERT INTO T_CTACTE_BPARTNER_DETALLE VALUES(?,?,'Y',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                         ps = DB.prepareStatement(sql, null);
                         ps.setInt(1, cliente);						//	CLIENTE
                         ps.setInt(2, organizacion);					//	ORGANIZACION
                         //Luego del 'Y'
                         ps.setInt(3, C_BPartner_ID);				//	C_BPARTNER_ID
                         ps.setInt(4, p_instance);					//	INSTANCE
-                        ps.setDate(5,rs.getDate(3));				//	FECHA
+                        ps.setDate(5,rs.getDate(17));				//	FECHA TRAMSACCION
                         ps.setString(6, rs.getString(4));			//	CONCEPTO
 
                         if(!conSaldo.containsKey(C_BPartner_ID))
@@ -489,6 +488,9 @@ protected String doIt() throws Exception {
                         {
                                 ps.setBigDecimal(16, rs.getBigDecimal(12));         //	MONTO ORIGEN
                         }
+                        
+                        ps.setDate(17,rs.getDate(3)); //FECHA ACCT
+                        
                         ps.executeUpdate();
                         ps.close();
 
@@ -523,7 +525,7 @@ protected String doIt() throws Exception {
                         ps.setString(6, C_BPartner_name + dateString);	//	NAME
                         ps.setString(7, C_BPartner_value);		// 	VALUE
                         ps.setString(8, "N");				// 	ISSOTRX
-                        ps.setDate(9, null);                            // 	DATE
+                        ps.setDate(9, null);                            // 	DATE TRX
                         ps.setInt(10, 0);                               //	BP_LOCATION_ID
                         ps.setString(11, "");                           // 	BP_LOCATION_NAME
                         ps.setInt(12, CC_BPARTNER_ID);			//	T_CTACTE_BPARTNER_ID
@@ -551,7 +553,7 @@ protected String doIt() throws Exception {
 
                         // 	Ingreso en la tabla el detalle del saldo inicial
 
-                        sql = "INSERT INTO T_CTACTE_BPARTNER_DETALLE VALUES(?,?,'Y',?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                        sql = "INSERT INTO T_CTACTE_BPARTNER_DETALLE VALUES(?,?,'Y',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                         ps = DB.prepareStatement(sql, null);
                         ps.setInt(1, cliente);						//	CLIENTE
                         ps.setInt(2, organizacion);					//	ORGANIZACION
@@ -581,7 +583,8 @@ protected String doIt() throws Exception {
                         ps.setString(13, null);						//	CODIGO_MONEDA
                         ps.setInt(14, CC_BPARTNER_ID);				//	T_CS_BPARTNER_ID
                         ps.setString(15, null);						//	TASA
-                        ps.setString(16, null);						//	MONEDA ORIGEN
+                        ps.setString(16, null);
+                        ps.setDate(17, null);//	FECHA ACCT
 
 
                         ps.executeUpdate();
@@ -656,7 +659,7 @@ protected String doIt() throws Exception {
 
                 // 	Ingreso en la tabla el detalle del saldo inicial
 
-                sql = "INSERT INTO T_CTACTE_BPARTNER_DETALLE VALUES(?,?,'Y',?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                sql = "INSERT INTO T_CTACTE_BPARTNER_DETALLE VALUES(?,?,'Y',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 ps = DB.prepareStatement(sql, null);
                 ps.setInt(1, cliente);						//	CLIENTE
                 ps.setInt(2, organizacion);					//	ORGANIZACION
@@ -687,7 +690,7 @@ protected String doIt() throws Exception {
                 ps.setInt(14, CC_BPARTNER_ID);				//	CONDICION
                 ps.setString(15, null);						//	TASA
                 ps.setString(16, null);						//	MONEDA ORIGEN
-
+                ps.setDate(17, null);	// DATE ACCT
 
                 ps.executeUpdate();
                 ps.close();
@@ -789,7 +792,8 @@ protected String doIt() throws Exception {
 		"			CASE" +
 		"				WHEN bpl.C_BPartner_Location_ID is null THEN 'SIN ASIGNAR'" +
 		"				ELSE TO_CHAR(bpl.name)" +
-		"			END as C_BPartner_Location_Name " + 
+		"			END as C_BPartner_Location_Name, " + 
+                                "           i.DATEINVOICED as fecha_cbte" +
 
 		"	FROM C_Invoice i" +
 		"		INNER JOIN C_BPARTNER b ON(i.C_BPARTNER_ID = b.C_BPARTNER_ID)" +
@@ -851,7 +855,8 @@ protected String doIt() throws Exception {
 		"              CASE" +
 		"	              WHEN bpl.C_BPartner_Location_ID is null THEN 'SIN ASIGNAR'" +
 		"                 ELSE TO_CHAR(bpl.name)" +
-		"              END as C_BPartner_Location_Name" +
+		"              END as C_BPartner_Location_Name," +
+                                "               p.DATETRX as fecha_cbte " +
 
                         /*
                          *  Modificacion 28/06/2012 Maria Jesus Martin
@@ -938,9 +943,10 @@ protected String doIt() throws Exception {
 		"              CASE" +
 		"	              WHEN bpl.C_BPartner_Location_ID is null THEN 'SIN ASIGNAR'" +
 		"                 ELSE TO_CHAR(bpl.name)" +
-		"              END as C_BPartner_Location_Name" +
+		"              END as C_BPartner_Location_Name, " +
 //	    "                  0 as C_BPartner_Location_ID," +
 //	    "                  'SIN ASIGNAR' as C_BPartner_Location_Name" +
+                    "                    t.DATETRX as fecha_cbte" +
 
 	    "           FROM C_Payment t" +
 	    "	           INNER JOIN C_DocType d ON(t.C_DocType_ID = d.C_DocType_ID)" +
@@ -964,7 +970,7 @@ protected String doIt() throws Exception {
 	    "   )" +
 	    ") ORDER BY CLAVE,C_BPartner_Location_ID,FECHA";
 
-
+        System.out.println(sql);
         PreparedStatement pstmt = DB.prepareStatement(sql, get_TrxName());
         int paramIndex = 1;
 
@@ -1339,6 +1345,7 @@ protected String doIt() throws Exception {
      
     private String getSqlWhere(String param1, String param2, String param3, String param4, String param5, String param6){
     	String BP = "VALUE";
+                //String BP = "C_BPartner_ID";
     	String sqlWhere = " WHERE "+param1+" = ?";
 
 		if (toDate!=null && fromDate!=null)
@@ -1347,7 +1354,7 @@ protected String doIt() throws Exception {
 			sqlWhere+= " AND "+param2+" <= ?";
 		else if (toDate==null && fromDate!=null)
 			sqlWhere+= " AND "+param2+" >= ?";
-
+                                
 		if (toBPartner!=null && fromBPartner!=null)
 			sqlWhere+= " AND b." + BP + "  >= ? AND b." + BP + " <= ?";
 		else if (toBPartner!=null && fromBPartner==null)
@@ -1355,6 +1362,9 @@ protected String doIt() throws Exception {
 		else if (toBPartner==null && fromBPartner!=null)
 			sqlWhere+= " AND b." + BP + " >= ?";
                 
+                                /** Modificacion auxiliar para sacar solo un rango de socios **/
+                                //sqlWhere+= " AND b." + BP + "  in (1002186,6003128,1006924,6006507,1006732,6007118,1006916,6007183,6006018,1002131,6004525,1006759,6004546,6003780,6003462,6007313,1006771,6007273,1008443,6003614,1002481,1008384,1003180,1008192,6000694,1002356,5000609,6004119,6006923,6002014,1002417,6004324,6001062,1002187,5000272,1002810,1002811,6006982,6000839,6001069,1002134,6004171,6007056,1003737,6004896,1008444,1003784,6005576,5000185,6007206,1006793,5000938,1006675,6000596,6004773,1003344,6003342,6004284,6002267,1004381,1006932,5000178,1006749,5000391,1002694,6006705,6004870,1002036,1002424,1008219,5000233,1002037,6002907,1002135,6007184,6007237,1002425,1004286,1006388,6002023,1003067,5000075,1002662,6000515,6006508,6003548,6003892,6005586,1002760,1002485,1002605,6000143,1006769,1008228,1006733,1008325,1004432,6003559,6001745,1008247,1002039,1008381,6001094,1004418,1002762,6003674,1002041,5000066,1004313,1006656,1008345,1002763,1002429,5000238,1002430,6005909,1003166,6002126,6004727,1002212,1002044,1002764,6003081,1002431,6003787,1006655,1008423,6004523,6003898,6005275,6001295,6007122,6006383,1006392,6001550,1006856,1006356,1004350,1002766,1006850,1002767,1006865,6007207,6006154,6003344,1006335,6000310,1003677,6005001,1002145,6004079,6003675,1002048,3006154,1004052,6007117,6005935,1003112,6005019,1004380,6004770,5000187,1004309,6003154,6001545,1002700,1006654,6003481,1006406,6003891,6003763,5000236,6006618,1002213,6001541,1004358,6001613,6006224,6007182,1003041,1002054,5000268,6006024,1003110,1008439,1002769,1004489,6006706,1002607,1003462,6002615,6002720,1002444,3005239,1002770,6005276,1002650,1003347,6002667,1008348,1002057,6002025,1002188,1002058,1004500,6003350,6007208,5000133,1002215,6002982,1006895,1002222,1002150,1003799,1004424,1004461,6001850,1006336,6006828,6005416,1002205,6003482,6004885,1006382,1006687,6003274,1002206,6004492,1006665,1006658,6007123,6003484,1002495,6006499,5000244,1002703,6000296,6004897,1002704,1002446,6006855,6000777,1003790,6002983,6004520,1004267,1004277,6003071,6000132,5000108,1003168,6004183,6006385,1002636,1002448,1006635,1002497,1002498,6001617,5000253,1008451,1004528,6001365,6004609,6006264,1002160,1002774,6007062,6007240,6007150,6004704,5000295,1002452,5000251,6002906,1003678,6005925,1006660,6006454,5000217,6007259,1002223,6007209,1008425,6005824,6007236,1002628,1002063,1006887,1002776,1002506,1002678,6000410,6000142,6000311,1002453,1002668,1008258,5000177,1002163,6006687,1002454,1003087,1008135,6002621,1003088,6004762,1008397,6004745,1006334,1002456,1002229,1006709,6007107,6002013,5000220,5000317,6007395,1004460,6003485,1003743,1006736,1003511,1003505,6003640,6004744,1006634,6004899,6003619,6003673,6006778,1002457,6001846,1006893,6007241,5000376,1008351,6007154,6006922,6004290,1006785,6000577,1008373,5000208,1004541,6005791,6005552,6002367,6001368,1004272,1008203,1003132,6003347,6004768,6006384,6001607,1006390,6003096,1002460,6004833,6003282,6006238,6001148,6005810,1003170,6001539,1006347,6001677,1002170,1008150,1006387,1004525,1006876,1008374,1002173,6005244,6004981,6003849,1004297,6006686,1006836,6005496,1002682,5000132,1002465,1002783,1002068,6002996,5000172,5000074,6007385,6007157,1002069,1008265,6002985,1008338,5000143,6000511,1003119,1002711,1002786,6000520,6003881,6000237,6002499,6003200,1006372,6004150,6005948,1002070,6001678,6005557,1002209,6004061,5000216,1006846,6004938,6001769,6001948,6000316,5000264,6006509,6002884,1008138,1008307,1006773,6006019,6005922,1002513,6006337,1006333,6005920,6003068,6002620,1002793,6005751,1002794,6001363,1003760,1002178,6000324,1003465,1002179,6004771,6003967,1002415,1006783,6001089,6006404,1002471,1008287,1008452,6003609,1002181,6003097,6002494,6001457,1008379,1002075,6007238,5000285,1002516,1002615,6006685,1003423,1002518,6002614,1006358,6004847,1004459,1002519,1008235,1003636,6005353,1002183,6007272,1002520,6001867,1008433,6006979,6004644,1008182,6003276,6004446,6001110,6001042,1002800,1002472,1002635,6005168,1006389,1002475,1002078,6000821,6001364,6006609,6004009,1006754,1006819,6004686,1002654,1004520,1003763,1004421,1002658,1002511,5000266,1004552,6002182,6007103,6004114,6005278,6004743)";
+                             
                 /*
                  *  11/09/2012 Zynnia.
                  *  Agregamos el parametro de fecha de vencimiento, el cual es calculado a partir

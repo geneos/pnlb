@@ -67,6 +67,10 @@ implements DocAction, ProcessCall*/
 public class MPayment extends X_C_Payment
         implements DocAction, ProcessCall // End e-Evolution 20Abril2006
 {
+    
+    
+    public static int AD_PROCESS_ImportICBCCheck_ID = 5000046;
+    public static int  AD_PROCESS_ImportBankTransfers = 5000048;
 
     /**
      * 	Get Payments Of BPartner
@@ -105,6 +109,68 @@ public class MPayment extends X_C_Payment
         list.toArray(retValue);
         return retValue;
     }	//	getOfBPartner
+
+    public static void blockCreatePayments(char newStatus, int AD_Process_ID) {
+        boolean flag = true;
+        String sqlBloqueo;
+        PreparedStatement psBloqueo;
+        ResultSet rsBloqueo;
+
+        while(flag) {
+            // ImportICBCCheck 5000046
+           //  ImportBankTransfers 5000048
+            sqlBloqueo = "SELECT bloqueado FROM T_Bloqueos WHERE AD_Process_ID = "+AD_Process_ID;
+            psBloqueo = DB.prepareStatement(sqlBloqueo, null);
+            try {
+                rsBloqueo = psBloqueo.executeQuery();
+
+                if(rsBloqueo.next()) {
+
+                        if(rsBloqueo.getString(1).equals("N")){
+                            String sqlUpdateBloqueo ="update T_Bloqueos set bloqueado = 'Y' where AD_Process_ID = "+AD_Process_ID;
+                            DB.executeUpdate(sqlUpdateBloqueo,null);
+                            flag = false;
+                        }
+
+                }
+                rsBloqueo.close();
+                psBloqueo.close();
+
+            } catch (SQLException ex) {
+                Logger.getLogger(MPayment.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public boolean byPassPaymentsBlock = false;
+    
+     private  boolean isCreatePaymentsBlocked() {
+        String sqlBloqueo;
+        PreparedStatement psBloqueo;
+        ResultSet rsBloqueo;
+        boolean retValue = false;
+
+        sqlBloqueo = "SELECT bloqueado FROM T_Bloqueos "
+                        + " WHERE AD_Process_ID IN ("+ AD_PROCESS_ImportBankTransfers + "," + AD_PROCESS_ImportICBCCheck_ID + ")";
+        psBloqueo = DB.prepareStatement(sqlBloqueo, null);
+        try {
+            rsBloqueo = psBloqueo.executeQuery();
+
+            if(rsBloqueo.next()) {
+
+                    retValue = rsBloqueo.getString(1).equals("N");
+
+            }
+            rsBloqueo.close();
+            psBloqueo.close();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(MPayment.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return retValue;
+
+    }
 
     /**************************************************************************
      *  Default Constructor
@@ -591,6 +657,12 @@ public class MPayment extends X_C_Payment
     protected boolean beforeSave(boolean newRecord) {
 
         if (newRecord) {
+            
+            if ( !byPassPaymentsBlock && isCreatePaymentsBlocked()){
+                JOptionPane.showMessageDialog(null, "Creado de pagos bloquedo temporalmente por proceso de Importación de Cheques o Transferencias. Intente nuevamente mas tarde", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+                
             MDocType dt = new MDocType(getCtx(), getC_DocType_ID(), get_TrxName());
 
             if (getC_DocType_ID() != 0) {
@@ -3101,6 +3173,9 @@ public class MPayment extends X_C_Payment
             }
             //Eliminar Asignaciones
             deleteAllocations();
+            
+            //Set docStatus in VOID  para saltear el trigger que no permite eliminar retenciones
+            setDocStatus("VO");
             // Eliminar Retenciones
             deleteRetenciones();
             // Eliminar la contabilidad generada para el comprobante

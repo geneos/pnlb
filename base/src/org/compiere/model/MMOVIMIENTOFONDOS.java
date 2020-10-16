@@ -386,7 +386,7 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                         + "WHERE C_MOVIMIENTOFONDOS_ID = ? AND IsActive = 'Y'";
 
                 try {
-                    PreparedStatement pstmt = DB.prepareStatement(sql, null);
+                    PreparedStatement pstmt = DB.prepareStatement(sql, get_TrxName());
 
                     pstmt.setInt(1, getC_MOVIMIENTOFONDOS_ID());
 
@@ -1973,7 +1973,7 @@ public class MMOVIMIENTOFONDOS extends X_C_MOVIMIENTOFONDOS implements DocAction
                     + "FROM C_MOVIMIENTOFONDOS "
                     + "WHERE C_MOVIMIENTOFONDOS_ID = " + getC_MOVIMIENTOFONDOS_ID();
             try {
-                PreparedStatement pstm = DB.prepareStatement(sql, null);
+                PreparedStatement pstm = DB.prepareStatement(sql, get_TrxName());
                 ResultSet rs = pstm.executeQuery();
 
                 if (rs.next()) {

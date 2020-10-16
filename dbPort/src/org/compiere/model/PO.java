@@ -692,7 +692,8 @@ public abstract class PO implements Serializable, Comparator, Evaluatee {
 			if (p_info.getColumnClass(index) == String.class) {
 				String stringValue = value.toString();
 				int length = p_info.getFieldLength(index);
-				if (stringValue.length() > length && length > 0) {
+                                                                //Skip limit for process parameters
+				if (stringValue.length() > length && length > 0 && p_info.getAD_Table_ID() != 283) {
 					log.warning(ColumnName
 							+ " - Value too long - truncated to length="
 							+ length);

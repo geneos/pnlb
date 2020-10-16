@@ -152,6 +152,11 @@ public class AutomaticPaymentFromInvoice implements ModelValidator {
         }
         //
         if (po.get_TableName().equals("C_Invoice")) {
+            
+            if (Env.getContext(Env.getCtx(), "OmitAutomaticPayment").equals("Y")) {
+                return null;
+            }
+            
             MInvoice invoice = (MInvoice) po;
             int windowsID = Env.getLastActiveWindowNo();
             if (invoice.isProcessed() && MInvoice.DOCACTION_Close.equals(invoice.getDocAction()) && ADialog.ask(windowsID, Env.getWindow(windowsID), "AutomaticPaymentMsg")) {

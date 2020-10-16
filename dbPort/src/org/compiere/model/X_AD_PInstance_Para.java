@@ -174,10 +174,10 @@ public class X_AD_PInstance_Para extends PO {
 	 * Set Process String. Process Parameter
 	 */
 	public void setP_String(String P_String) {
-		if (P_String != null && P_String.length() > 60) {
+		/*if (P_String != null && P_String.length() > 60) {
 			log.warning("Length > 60 - truncated");
 			P_String = P_String.substring(0, 59);
-		}
+		}*/
 		set_Value("P_String", P_String);
 	}
 

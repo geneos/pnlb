@@ -657,6 +657,9 @@ public final class VAccountDialog extends CDialog
 		//	User 2
 		if (f_User2_ID != null && f_User2_ID.getValue() != null)
 			query.addRestriction("User2_ID", MQuery.EQUAL, f_User2_ID.getValue());
+                                
+                                //Only active valid combinations.
+                                query.addRestriction("IsActive", MQuery.EQUAL, 'Y');
 
 		//	Query
 		m_mTab.setQuery(query);

@@ -81,7 +81,8 @@ public class ImportBankTransfers extends SvrProcess {
 
 
         //	****	Prepare	****
-
+        MPayment.blockCreatePayments('Y', MPayment.AD_PROCESS_ImportBankTransfers);
+        
         //	Delete Old Imported
         if (m_DeleteOldImported) {
             sql = new StringBuffer("DELETE FROM " + tableName
@@ -164,6 +165,7 @@ public class ImportBankTransfers extends SvrProcess {
                     payment = new MPayment(getCtx(), imp.getC_Payment_ID(), get_TrxName());
                 }
 
+                payment.byPassPaymentsBlock = true;
                 payment.setAD_Org_ID(imp.getAD_Org_ID());
                 payment.setC_DocType_ID(false);
                 payment.setTrxType(MPayment.TRXTYPE_CreditPayment);
@@ -273,6 +275,7 @@ public class ImportBankTransfers extends SvrProcess {
             rs.close();
             pstmt.close();
         } catch (Exception e) {
+            MPayment.blockCreatePayments('N', MPayment.AD_PROCESS_ImportBankTransfers);
             e.printStackTrace();
         }
         //	clean up
@@ -311,6 +314,8 @@ public class ImportBankTransfers extends SvrProcess {
         addLog(0, null, new BigDecimal(noInsertPayment), "Pagos creados");
         addLog(0, null, new BigDecimal(noInsertLine), "Transferencias creadas");
         addLog(0, null, new BigDecimal(noProcessPayment), "Pagos Procesados");
+        
+        MPayment.blockCreatePayments('N', MPayment.AD_PROCESS_ImportBankTransfers);
 
         return "";
     }	//	doIt

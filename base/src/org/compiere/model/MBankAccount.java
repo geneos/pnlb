@@ -17,117 +17,128 @@ import java.sql.*;
 import java.util.*;
 import org.compiere.util.*;
 
-
 /**
  *  Bank Account Model
  *
  *  @author Jorg Janke
  *  @version $Id: MBankAccount.java,v 1.17 2005/12/27 06:17:56 jjanke Exp $
  */
-public class MBankAccount extends X_C_BankAccount
-{
-	/**
-	 * 	Get BankAccount from Cache
-	 *	@param ctx context
-	 *	@param C_BankAccount_ID id
-	 *	@return MBankAccount
-	 */
-	public static MBankAccount get (Properties ctx, int C_BankAccount_ID)
-	{
-		Integer key = new Integer (C_BankAccount_ID);
-		MBankAccount retValue = (MBankAccount) s_cache.get (key);
-		if (retValue != null)
-			return retValue;
-		retValue = new MBankAccount (ctx, C_BankAccount_ID, null);
-		if (retValue.get_ID () != 0)
-			s_cache.put (key, retValue);
-		return retValue;
-	} //	get
+public class MBankAccount extends X_C_BankAccount {
 
-	/**	Cache						*/
-	private static CCache<Integer,MBankAccount>	s_cache
-		= new CCache<Integer,MBankAccount>("C_BankAccount", 5);
-	
-	/**
-	 * 	Bank Account Model
-	 *	@param ctx context
-	 *	@param C_BankAccount_ID bank account
-	 */
-	public MBankAccount (Properties ctx, int C_BankAccount_ID, String trxName)
-	{
-		super (ctx, C_BankAccount_ID, trxName);
-		if (C_BankAccount_ID == 0)
-		{
-			setIsDefault (false);
-			setBankAccountType (BANKACCOUNTTYPE_Checking);
-			setCurrentBalance (Env.ZERO);
-		//	setC_Currency_ID (0);
-			setCreditLimit (Env.ZERO);
-		//	setC_BankAccount_ID (0);
-		}
-	}	//	MBankAccount
+    /**
+     * 	Get BankAccount from Cache
+     *	@param ctx context
+     *	@param C_BankAccount_ID id
+     *	@return MBankAccount
+     */
+    public static MBankAccount get(Properties ctx, int C_BankAccount_ID) {
+        Integer key = new Integer(C_BankAccount_ID);
+        MBankAccount retValue = (MBankAccount) s_cache.get(key);
+        if (retValue != null) {
+            return retValue;
+        }
+        retValue = new MBankAccount(ctx, C_BankAccount_ID, null);
+        if (retValue.get_ID() != 0) {
+            s_cache.put(key, retValue);
+        }
+        return retValue;
+    } //	get
+    /**	Cache						*/
+    private static CCache<Integer, MBankAccount> s_cache = new CCache<Integer, MBankAccount>("C_BankAccount", 5);
 
-	/**
-	 * 	Bank Account Model
-	 *	@param ctx context
-	 *	@param rs result set
-	 */
-	public MBankAccount (Properties ctx, ResultSet rs, String trxName)
-	{
-		super(ctx, rs, trxName);
-	}	//	MBankAccount
+    /**
+     * 	Bank Account Model
+     *	@param ctx context
+     *	@param C_BankAccount_ID bank account
+     */
+    public MBankAccount(Properties ctx, int C_BankAccount_ID, String trxName) {
+        super(ctx, C_BankAccount_ID, trxName);
+        if (C_BankAccount_ID == 0) {
+            setIsDefault(false);
+            setBankAccountType(BANKACCOUNTTYPE_Checking);
+            setCurrentBalance(Env.ZERO);
+            //	setC_Currency_ID (0);
+            setCreditLimit(Env.ZERO);
+            //	setC_BankAccount_ID (0);
+        }
+    }	//	MBankAccount
 
-	/**
-	 * 	String representation
-	 *	@return info
-	 */
-	public String toString ()
-	{
-		StringBuffer sb = new StringBuffer ("MBankAccount[")
-			.append (get_ID())
-			.append("-").append(getAccountNo())
-			.append ("]");
-		return sb.toString ();
-	}	//	toString
+    /**
+     * 	Bank Account Model
+     *	@param ctx context
+     *	@param rs result set
+     */
+    public MBankAccount(Properties ctx, ResultSet rs, String trxName) {
+        super(ctx, rs, trxName);
+    }	//	MBankAccount
 
-	/**
-	 * 	Get Bank
-	 *	@return bank parent
-	 */
-	public MBank getBank()
-	{
-		return MBank.get(getCtx(), getC_Bank_ID());
-	}	//	getBank
-	
-	/**
-	 * 	Get Bank Name and Account No
-	 *	@return Bank/Account
-	 */
-	public String getName()
-	{
-		return getBank().getName() + " " + getAccountNo();
-	}	//	getName
-	
-	/**
-	 * 	After Save
-	 *	@param newRecord new record
-	 *	@param success success
-	 *	@return success
-	 */
-	protected boolean afterSave (boolean newRecord, boolean success)
-	{
-		if (newRecord & success)
-			return insert_Accounting("C_BankAccount_Acct", "C_AcctSchema_Default", null);
-		return success;
-	}	//	afterSave
-	
-	/**
-	 * 	Before Delete
-	 *	@return true
-	 */
-	protected boolean beforeDelete ()
-	{
-		return delete_Accounting("C_BankAccount_Acct");
-	}	//	beforeDelete
+    /**
+     * 	String representation
+     *	@return info
+     */
+    public String toString() {
+        StringBuffer sb = new StringBuffer("MBankAccount[").append(get_ID()).append("-").append(getAccountNo()).append("]");
+        return sb.toString();
+    }	//	toString
 
+    /**
+     * 	Get Bank
+     *	@return bank parent
+     */
+    public MBank getBank() {
+        return MBank.get(getCtx(), getC_Bank_ID());
+    }	//	getBank
+
+    /**
+     * 	Get Bank Name and Account No
+     *	@return Bank/Account
+     */
+    public String getName() {
+        return getBank().getName() + " " + getAccountNo();
+    }	//	getName
+
+    /**
+     * 	After Save
+     *	@param newRecord new record
+     *	@param success success
+     *	@return success
+     */
+    protected boolean afterSave(boolean newRecord, boolean success) {
+        if (newRecord & success) {
+            return insert_Accounting("C_BankAccount_Acct", "C_AcctSchema_Default", null);
+        }
+        return success;
+    }	//	afterSave
+
+    /**
+     * 	Before Delete
+     *	@return true
+     */
+    protected boolean beforeDelete() {
+        return delete_Accounting("C_BankAccount_Acct");
+    }	//	beforeDelete
+
+    public int getAcct() {
+        int retValue = 0;
+        /**
+         * GET DE CUENTA CONTABLE
+         */
+        try {
+            String sql = "SELECT B_Asset_Acct "
+                    + "FROM C_BankAccount_Acct "
+                    + "WHERE C_BankAccount_ID = ?";
+
+            PreparedStatement pstm = DB.prepareStatement(sql, null);
+            pstm.setInt(1, getC_BankAccount_ID());
+            ResultSet rs = pstm.executeQuery();
+
+            if (rs.next()) {
+                retValue = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return retValue;
+    }
 }	//	MBankAccount

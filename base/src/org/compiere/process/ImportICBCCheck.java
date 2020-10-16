@@ -74,6 +74,7 @@ public class ImportICBCCheck extends SvrProcess {
         int maxNroCheque= 0;
 
 
+        MPayment.blockCreatePayments('Y', MPayment.AD_PROCESS_ImportICBCCheck_ID);
 
         //	****	Prepare	****
 
@@ -169,6 +170,7 @@ public class ImportICBCCheck extends SvrProcess {
                     payment = new MPayment(getCtx(), imp.getC_Payment_ID(), get_TrxName());
                 }
 
+                payment.byPassPaymentsBlock = true;
                 payment.setAD_Org_ID(imp.getAD_Org_ID());
                 payment.setC_DocType_ID(false);
                 payment.setTrxType(MPayment.TRXTYPE_CreditPayment);
@@ -290,6 +292,7 @@ public class ImportICBCCheck extends SvrProcess {
             rs.close();
             pstmt.close();
         } catch (Exception e) {
+            MPayment.blockCreatePayments('N', MPayment.AD_PROCESS_ImportICBCCheck_ID);
             e.printStackTrace();
         }
         //	clean up
@@ -328,6 +331,7 @@ public class ImportICBCCheck extends SvrProcess {
         addLog(0, null, new BigDecimal(noInsertPayment), "Pagos creados");
         addLog(0, null, new BigDecimal(noInsertLine), "Cheques creados");
         addLog(0, null, new BigDecimal(noProcessPayment), "Pagos Procesados");
+        MPayment.blockCreatePayments('N', MPayment.AD_PROCESS_ImportICBCCheck_ID);
 
         return "";
     }	//	doIt

@@ -87,3 +87,5 @@
 - Se incorporan modificaciones a la explosion de materiales: Discriminado de cantidades en almacenes aprobados (741)
 #Version 20200724
 - Se agrega descripcion a los asientos del DEBE en el libro diario (524)
+Version 20200907
+- Se agrega proceso para anular cheques (808)

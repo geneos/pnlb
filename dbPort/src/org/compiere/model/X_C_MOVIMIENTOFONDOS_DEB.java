@@ -97,7 +97,7 @@ public class X_C_MOVIMIENTOFONDOS_DEB extends PO {
     public static final String TIPO_CambioCheque = "C";
 
     /** Set C_VALORPAGO_ID */
-    public void setgetC_VALORPAGO_ID(int C_VALORPAGO_ID) {
+    public void setC_VALORPAGO_ID(int C_VALORPAGO_ID) {
         if (C_VALORPAGO_ID < 1) {
             throw new IllegalArgumentException("C_VALORPAGO_ID is mandatory.");
         }
@@ -251,4 +251,35 @@ public class X_C_MOVIMIENTOFONDOS_DEB extends PO {
         }
         return bd;
     }
+ 
+    /** Set PAYMENTDATE */
+    public void setPAYMENTDATE(Timestamp PAYMENTDATE) {
+        set_Value("PAYMENTDATE", PAYMENTDATE);
+    }
+
+    /** Get PAYMENTDATE */
+    public Timestamp getPAYMENTDATE() {
+        return (Timestamp) get_Value("PAYMENTDATE");
+    }
+    /** TIPOCHEQUE AD_Reference_ID=1000079 */
+    public static final int TIPOCHEQUE_AD_Reference_ID = 1000079;
+    /** Comun = C */
+    public static final String TIPOCHEQUE_Comun = "C";
+    /** Pago Diferido (CHPD) = D */
+    public static final String TIPOCHEQUE_PagoDiferidoCHPD = "D";
+
+    /** Set TIPOCHEQUE */
+    public void setTIPOCHEQUE(String TIPOCHEQUE) {
+        if (TIPOCHEQUE != null && TIPOCHEQUE.length() > 30) {
+            log.warning("Length > 30 - truncated");
+            TIPOCHEQUE = TIPOCHEQUE.substring(0, 29);
+        }
+        set_Value("TIPOCHEQUE", TIPOCHEQUE);
+    }
+
+    /** Get TIPOCHEQUE */
+    public String getTIPOCHEQUE() {
+        return (String) get_Value("TIPOCHEQUE");
+    }
+
 }
